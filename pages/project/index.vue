@@ -7,28 +7,10 @@
 		</view>
 		<!-- #endif -->
 
-		<!-- 头部轮播 -->
-		<view class="carousel-section">
-			<!-- 标题栏和状态栏占位符 -->
-			<view class="titleNview-placing"></view>
-			<!-- 背景色区域 -->
-			<view class="titleNview-background" :style="{backgroundColor:titleNViewBackground}"></view>
-			<swiper class="carousel" circular @change="swiperChange">
-				<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item"
-					@click="navToAdvertisePage(item)">
-					<image :src="item.pic" />
-				</swiper-item>
-			</swiper>
-			<!-- 自定义swiper指示器 -->
-			<view class="swiper-dots">
-				<text class="num">{{swiperCurrent+1}}</text>
-				<text class="sign">/</text>
-				<text class="num">{{swiperLength}}</text>
-			</view>
-		</view>
 		<view class="main">
-			<!-- 菜单 -->
-			<view class="cate-section mt">
+
+			<!-- 头部功能区 -->
+			<view class="cate-section">
 				<view class="cate-item">
 					<image src="/static/temp/c3.png"></image>
 					<text>爱心</text>
@@ -46,36 +28,23 @@
 					<text>日捐</text>
 				</view>
 			</view>
-
-			<!-- 消息公告 -->
-			<view class="notice mt">
-				<view class="icon"></view>
-				<veiw class="cont">
-					<view class="li">恭喜平台开台大吉！</view>
-				</veiw>
+			<!-- 推荐选择 -->
+			<view class="commend">
+				<view class="li s">
+					<text>精选项目</text>
+				</view>
+				<view class="li">
+					<text>最近项目</text>
+				</view>
 			</view>
-
-			<view class="seckill-section mt">
-				<scroll-view class="floor-list" scroll-x>
-					<view class="scoll-wrapper">
-						<view v-for="(item, index) in newProductList" :key="index" class="floor-item"
-							@click="navToDetailPage(item)">
-							<image :src="item.pic" mode="aspectFill"></image>
-							<text class="title clamp">{{item.name}}</text>
-							<text class="title2 clamp">{{item.subTitle}}</text>
-							<text class="price">￥{{item.price}}</text>
-						</view>
-					</view>
-				</scroll-view>
-			</view>
-
-			<!-- 爱心捐购 -->
+			<!-- 列表信息楼层 -->
 			<view class="f-header m-t" @click="navToHotProudctListPage()">
 				<image src="/static/icon_hot_product.png"></image>
 				<view class="tit-box">
-					<text class="tit">爱心捐购</text>
-					<text class="tit2">大家都赞不绝口的</text>
+					<text class="tit">项目信息</text>
+					<text class="tit2">和爱心用户一起做好事吧~</text>
 				</view>
+				<text class="yticon icon-you"></text>
 			</view>
 
 			<view class="hot-section">
@@ -91,9 +60,7 @@
 					</view>
 				</view>
 			</view>
-
 		</view>
-
 		<uni-load-more :status="loadingType"></uni-load-more>
 	</view>
 </template>
@@ -217,7 +184,7 @@
 			navToDetailPage(item) {
 				let id = item.id;
 				uni.navigateTo({
-					url: `/pages/product/product?id=${id}`
+					url: `/pages/project/detail?id=${id}`
 				})
 			},
 			//广告详情页
@@ -332,6 +299,7 @@
 
 	/* #endif */
 
+
 	page {
 		background: #f5f5f5;
 	}
@@ -410,7 +378,33 @@
 		}
 	}
 
+	/* 分类 */
+	.cate-section {
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		flex-wrap: wrap;
+		padding: 30upx 22upx;
+		background: #fff;
 
+		.cate-item {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			font-size: $font-sm + 2upx;
+			color: $font-color-dark;
+		}
+
+		/* 原图标颜色太深,不想改图了,所以加了透明度 */
+		image {
+			width: 88upx;
+			height: 88upx;
+			margin-bottom: 14upx;
+			border-radius: 50%;
+			opacity: .7;
+			box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
+		}
+	}
 
 	.ad-1 {
 		width: 100%;
@@ -699,6 +693,7 @@
 	.hot-section {
 		display: flex;
 		flex-wrap: wrap;
+		padding: 0 30upx;
 		background: #fff;
 
 		.guess-item {
@@ -752,6 +747,7 @@
 	}
 
 	.container {
+		padding: 20upx 0 0;
 		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
 	}
 
@@ -762,86 +758,26 @@
 		.mt {
 			margin-top: 20upx;
 		}
-
-		/* 分类 */
-		.menu {
-			display: flex;
-			justify-content: space-around;
-			align-items: center;
-			flex-wrap: wrap;
-			padding: 30upx 22upx;
-			background: #fff;
-
-			.li {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				font-size: $font-sm + 2upx;
-				color: $font-color-dark;
-			}
-
-			/* 原图标颜色太深,不想改图了,所以加了透明度 */
-			image {
-				width: 88upx;
-				height: 88upx;
-				margin-bottom: 14upx;
-				border-radius: 50%;
-				opacity: .7;
-				box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
-			}
-		}
-
-		/*消息公告*/
-		.notice {
-			width: 100%;
-			line-height: 60upx;
-			padding: 20upx;
+		
+		.commend{
+			padding:20upx;
+			font-size: 26upx;
 			background-color: #fff;
+			border-top:1upx #eee solid;
 			display: flex;
-
-			.icon {
-				width: 60upx;
-				height: 60upx;
-				margin-right: 20upx;
-				background-image: url(/static/icon_home_brand.png);
-				background-size: contain;
+			.li{
+				margin-right:20upx;
+				padding:10upx 30upx;
+				border:1upx solid #ccc;
+				border-radius: 40upx;
 			}
-
-			.cont {
-				flex: 1;
+			.li:last-child{
+				margin-right: 0upx;
 			}
-
-			.more {
-				color: #999;
+			.s{
+				color:#ee0000;
+				border:1upx #ee0000 solid;
 			}
-		}
-	}
-
-	/* 分类 */
-	.cate-section {
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
-		flex-wrap: wrap;
-		padding: 30upx 22upx;
-		background: #fff;
-
-		.cate-item {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			font-size: $font-sm + 2upx;
-			color: $font-color-dark;
-		}
-
-		/* 原图标颜色太深,不想改图了,所以加了透明度 */
-		image {
-			width: 88upx;
-			height: 88upx;
-			margin-bottom: 14upx;
-			border-radius: 50%;
-			opacity: .7;
-			box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
 		}
 	}
 </style>

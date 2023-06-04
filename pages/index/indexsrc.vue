@@ -14,8 +14,7 @@
 			<!-- 背景色区域 -->
 			<view class="titleNview-background" :style="{backgroundColor:titleNViewBackground}"></view>
 			<swiper class="carousel" circular @change="swiperChange">
-				<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item"
-					@click="navToAdvertisePage(item)">
+				<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item" @click="navToAdvertisePage(item)">
 					<image :src="item.pic" />
 				</swiper-item>
 			</swiper>
@@ -26,74 +25,142 @@
 				<text class="num">{{swiperLength}}</text>
 			</view>
 		</view>
-		<view class="main">
-			<!-- 菜单 -->
-			<view class="cate-section mt">
-				<view class="cate-item">
-					<image src="/static/temp/c3.png"></image>
-					<text>爱心</text>
+		<!-- 头部功能区 -->
+		<view class="cate-section">
+			<view class="cate-item">
+				<image src="/static/temp/c3.png"></image>
+				<text>专题</text>
+			</view>
+			<view class="cate-item">
+				<image src="/static/temp/c5.png"></image>
+				<text>话题</text>
+			</view>
+			<view class="cate-item">
+				<image src="/static/temp/c6.png"></image>
+				<text>优选</text>
+			</view>
+			<view class="cate-item">
+				<image src="/static/temp/c7.png"></image>
+				<text>特惠</text>
+			</view>
+		</view>
+
+		<!-- 品牌制造商直供 -->
+		<view class="f-header m-t" @click="navToRecommendBrandPage()">
+			<image src="/static/icon_home_brand.png"></image>
+			<view class="tit-box">
+				<text class="tit">品牌制造商直供</text>
+				<text class="tit2">工厂直达消费者，剔除品牌溢价</text>
+			</view>
+			<text class="yticon icon-you"></text>
+		</view>
+
+		<view class="guess-section">
+			<view v-for="(item, index) in brandList" :key="index" class="guess-item" @click="navToBrandDetailPage(item)">
+				<view class="image-wrapper-brand">
+					<image :src="item.logo" mode="aspectFit"></image>
 				</view>
-				<view class="cate-item">
-					<image src="/static/temp/c5.png"></image>
-					<text>公益</text>
-				</view>
-				<view class="cate-item">
-					<image src="/static/temp/c6.png"></image>
-					<text>慈善</text>
-				</view>
-				<view class="cate-item">
-					<image src="/static/temp/c7.png"></image>
-					<text>日捐</text>
+				<text class="title clamp">{{item.name}}</text>
+				<text class="title2">商品数量：{{item.productCount}}</text>
+			</view>
+		</view>
+
+		<!-- 秒杀专区 -->
+		<view class="f-header m-t" v-if="homeFlashPromotion!==null">
+			<image src="/static/icon_flash_promotion.png"></image>
+			<view class="tit-box">
+				<text class="tit">秒杀专区</text>
+				<text class="tit2">下一场 {{homeFlashPromotion.nextStartTime | formatTime}} 开始</text>
+			</view>
+			<view class="tit-box">
+				<text class="tit2" style="text-align: right;">本场结束剩余：</text>
+				<view style="text-align: right;">
+					<text class="hour timer">{{cutDownTime.endHour}}</text>
+					<text>:</text>
+					<text class="minute timer">{{cutDownTime.endMinute}}</text>
+					<text>:</text>
+					<text class="second timer">{{cutDownTime.endSecond}}</text>
 				</view>
 			</view>
+			<text class="yticon icon-you" v-show="false"></text>
+		</view>
 
-			<!-- 消息公告 -->
-			<view class="notice mt">
-				<view class="icon"></view>
-				<veiw class="cont">
-					<view class="li">恭喜平台开台大吉！</view>
-				</veiw>
-			</view>
-
-			<view class="seckill-section mt">
-				<scroll-view class="floor-list" scroll-x>
-					<view class="scoll-wrapper">
-						<view v-for="(item, index) in newProductList" :key="index" class="floor-item"
-							@click="navToDetailPage(item)">
-							<image :src="item.pic" mode="aspectFill"></image>
-							<text class="title clamp">{{item.name}}</text>
-							<text class="title2 clamp">{{item.subTitle}}</text>
-							<text class="price">￥{{item.price}}</text>
-						</view>
-					</view>
-				</scroll-view>
-			</view>
-
-			<!-- 爱心捐购 -->
-			<view class="f-header m-t" @click="navToHotProudctListPage()">
-				<image src="/static/icon_hot_product.png"></image>
-				<view class="tit-box">
-					<text class="tit">爱心捐购</text>
-					<text class="tit2">大家都赞不绝口的</text>
+		<view class="guess-section">
+			<view v-for="(item, index) in homeFlashPromotion.productList" :key="index" class="guess-item" @click="navToDetailPage(item)">
+				<view class="image-wrapper">
+					<image :src="item.pic" mode="aspectFill"></image>
 				</view>
+				<text class="title clamp">{{item.name}}</text>
+				<text class="title2 clamp">{{item.subTitle}}</text>
+				<text class="price">￥{{item.price}}</text>
 			</view>
+		</view>
 
-			<view class="hot-section">
-				<view v-for="(item, index) in hotProductList" :key="index" class="guess-item"
-					@click="navToDetailPage(item)">
-					<view class="image-wrapper">
+		<!-- 新鲜好物 -->
+		<view class="f-header m-t" @click="navToNewProudctListPage()">
+			<image src="/static/icon_new_product.png"></image>
+			<view class="tit-box">
+				<text class="tit">新鲜好物</text>
+				<text class="tit2">为你寻觅世间好物</text>
+			</view>
+			<text class="yticon icon-you"></text>
+		</view>
+		<view class="seckill-section">
+			<scroll-view class="floor-list" scroll-x>
+				<view class="scoll-wrapper">
+					<view v-for="(item, index) in newProductList" :key="index" class="floor-item" @click="navToDetailPage(item)">
 						<image :src="item.pic" mode="aspectFill"></image>
-					</view>
-					<view class="txt">
 						<text class="title clamp">{{item.name}}</text>
-						<text class="title2">{{item.subTitle}}</text>
+						<text class="title2 clamp">{{item.subTitle}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
 				</view>
-			</view>
-
+			</scroll-view>
 		</view>
 
+		<!-- 人气推荐楼层 -->
+		<view class="f-header m-t" @click="navToHotProudctListPage()">
+			<image src="/static/icon_hot_product.png"></image>
+			<view class="tit-box">
+				<text class="tit">人气推荐</text>
+				<text class="tit2">大家都赞不绝口的</text>
+			</view>
+			<text class="yticon icon-you"></text>
+		</view>
+
+		<view class="hot-section">
+			<view v-for="(item, index) in hotProductList" :key="index" class="guess-item" @click="navToDetailPage(item)">
+				<view class="image-wrapper">
+					<image :src="item.pic" mode="aspectFill"></image>
+				</view>
+				<view class="txt">
+					<text class="title clamp">{{item.name}}</text>
+					<text class="title2">{{item.subTitle}}</text>
+					<text class="price">￥{{item.price}}</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 猜你喜欢-->
+		<view class="f-header m-t">
+			<image src="/static/icon_recommend_product.png"></image>
+			<view class="tit-box">
+				<text class="tit">猜你喜欢</text>
+				<text class="tit2">你喜欢的都在这里了</text>
+			</view>
+			<text class="yticon icon-you" v-show="false"></text>
+		</view>
+
+		<view class="guess-section">
+			<view v-for="(item, index) in recommendProductList" :key="index" class="guess-item" @click="navToDetailPage(item)">
+				<view class="image-wrapper">
+					<image :src="item.pic" mode="aspectFill"></image>
+				</view>
+				<text class="title clamp">{{item.name}}</text>
+				<text class="title2 clamp">{{item.subTitle}}</text>
+				<text class="price">￥{{item.price}}</text>
+			</view>
+		</view>
 		<uni-load-more :status="loadingType"></uni-load-more>
 	</view>
 </template>
@@ -109,7 +176,7 @@
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	export default {
 		components: {
-			uniLoadMore
+			uniLoadMore	
 		},
 		data() {
 			return {
@@ -129,28 +196,28 @@
 					pageNum: 1,
 					pageSize: 4
 				},
-				loadingType: 'more'
+				loadingType:'more'
 			};
 		},
 		onLoad() {
 			this.loadData();
 		},
 		//下拉刷新
-		onPullDownRefresh() {
-			this.recommendParams.pageNum = 1;
+		onPullDownRefresh(){
+			this.recommendParams.pageNum=1;
 			this.loadData();
 		},
 		//加载更多
-		onReachBottom() {
+		onReachBottom(){
 			this.recommendParams.pageNum++;
 			this.loadingType = 'loading';
 			fetchRecommendProductList(this.recommendParams).then(response => {
 				let addProductList = response.data;
-				if (response.data.length === 0) {
+				if(response.data.length===0){
 					//没有更多了
 					this.recommendParams.pageNum--;
 					this.loadingType = 'nomore';
-				} else {
+				}else{
 					this.recommendProductList = this.recommendProductList.concat(addProductList);
 					this.loadingType = 'more';
 				}
@@ -223,7 +290,7 @@
 			//广告详情页
 			navToAdvertisePage(item) {
 				let id = item.id;
-				console.log("navToAdvertisePage", item)
+				console.log("navToAdvertisePage",item)
 			},
 			//品牌详情页
 			navToBrandDetailPage(item) {
@@ -332,6 +399,7 @@
 
 	/* #endif */
 
+
 	page {
 		background: #f5f5f5;
 	}
@@ -410,7 +478,33 @@
 		}
 	}
 
+	/* 分类 */
+	.cate-section {
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		flex-wrap: wrap;
+		padding: 30upx 22upx;
+		background: #fff;
 
+		.cate-item {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			font-size: $font-sm + 2upx;
+			color: $font-color-dark;
+		}
+
+		/* 原图标颜色太深,不想改图了,所以加了透明度 */
+		image {
+			width: 88upx;
+			height: 88upx;
+			margin-bottom: 14upx;
+			border-radius: 50%;
+			opacity: .7;
+			box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
+		}
+	}
 
 	.ad-1 {
 		width: 100%;
@@ -663,13 +757,13 @@
 				opacity: 1;
 			}
 		}
-
+		
 		.image-wrapper-brand {
 			width: 100%;
 			height: 150upx;
 			border-radius: 3px;
 			overflow: hidden;
-
+		
 			image {
 				width: 100%;
 				height: 100%;
@@ -699,6 +793,7 @@
 	.hot-section {
 		display: flex;
 		flex-wrap: wrap;
+		padding: 0 30upx;
 		background: #fff;
 
 		.guess-item {
@@ -748,100 +843,6 @@
 			display: flex;
 			flex-direction: column;
 			padding-left: 40upx;
-		}
-	}
-
-	.container {
-		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
-	}
-
-	.main {
-		width: 700upx;
-		margin: 0 auto;
-
-		.mt {
-			margin-top: 20upx;
-		}
-
-		/* 分类 */
-		.menu {
-			display: flex;
-			justify-content: space-around;
-			align-items: center;
-			flex-wrap: wrap;
-			padding: 30upx 22upx;
-			background: #fff;
-
-			.li {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				font-size: $font-sm + 2upx;
-				color: $font-color-dark;
-			}
-
-			/* 原图标颜色太深,不想改图了,所以加了透明度 */
-			image {
-				width: 88upx;
-				height: 88upx;
-				margin-bottom: 14upx;
-				border-radius: 50%;
-				opacity: .7;
-				box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
-			}
-		}
-
-		/*消息公告*/
-		.notice {
-			width: 100%;
-			line-height: 60upx;
-			padding: 20upx;
-			background-color: #fff;
-			display: flex;
-
-			.icon {
-				width: 60upx;
-				height: 60upx;
-				margin-right: 20upx;
-				background-image: url(/static/icon_home_brand.png);
-				background-size: contain;
-			}
-
-			.cont {
-				flex: 1;
-			}
-
-			.more {
-				color: #999;
-			}
-		}
-	}
-
-	/* 分类 */
-	.cate-section {
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
-		flex-wrap: wrap;
-		padding: 30upx 22upx;
-		background: #fff;
-
-		.cate-item {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			font-size: $font-sm + 2upx;
-			color: $font-color-dark;
-		}
-
-		/* 原图标颜色太深,不想改图了,所以加了透明度 */
-		image {
-			width: 88upx;
-			height: 88upx;
-			margin-bottom: 14upx;
-			border-radius: 50%;
-			opacity: .7;
-			box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
 		}
 	}
 </style>

@@ -1,18 +1,35 @@
 <template>
 	<view class="container">
-		<view class="list-cell b-b m-t" @click="navTo('个人资料')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b m-t" @click="navTo('/pages/me/edit')" hover-class="cell-hover" :hover-stay-time="50">
 			<text class="cell-tit">个人资料</text>
 			<text class="cell-more yticon icon-you"></text>
-		</view>
-		<view class="list-cell b-b" @click="navTo('/pages/address/address')" hover-class="cell-hover" :hover-stay-time="50">
-			<text class="cell-tit">收货地址</text>
-			<text class="cell-more yticon icon-you"></text>
-		</view>
-		<view class="list-cell" @click="navTo('实名认证')" hover-class="cell-hover" :hover-stay-time="50">
+		</view>	
+		<view class="list-cell b-b" @click="navTo('/pages/me/realnameauth')" hover-class="cell-hover" :hover-stay-time="50">
 			<text class="cell-tit">实名认证</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
+		<view class="list-cell b-b" @click="navTo('/pages/address/address')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">地址管理</text>
+			<text class="cell-more yticon icon-you"></text>
+		</view>
+		<view class="list-cell b-b" @click="navTo('/pages/me/passwordpay')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">支付密码</text>
+			<text class="cell-more yticon icon-you"></text>
+		</view>
+		<view class="list-cell b-b" @click="navTo('/pages/me/passwordlogin')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">登录密码</text>
+			<text class="cell-more yticon icon-you"></text>
+		</view>
+		<view class="list-cell b-b" @click="navTo('/pages/me/mobile')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">更改手机号</text>
+			<text class="cell-more yticon icon-you"></text>
+		</view>
+		<view class="list-cell b-b" @click="navTo('/pages/me/bankcard')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">银行卡管理</text>
+			<text class="cell-more yticon icon-you"></text>
+		</view>
 		
+		<!--
 		<view class="list-cell m-t">
 			<text class="cell-tit">消息推送</text>
 			<switch checked color="#fa436a" @change="switchChange" />
@@ -29,7 +46,7 @@
 			<text class="cell-tit">检查更新</text>
 			<text class="cell-tip">当前版本 1.0.0</text>
 			<text class="cell-more yticon icon-you"></text>
-		</view>
+		</view>-->
 		<view class="list-cell log-out-btn" @click="toLogout">
 			<text class="cell-tit">退出登录</text>
 		</view>

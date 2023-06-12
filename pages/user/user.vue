@@ -2,13 +2,13 @@
 	<view class="container">
 
 		<view class="user-section">
-			<image class="bg" src="/static/user-bg.jpg"></image>
+			<image class="bg" src="/static/me/normal_bg.jpg"></image>
 			<view class="user-info-box">
 				<view class="portrait-box">
 					<image class="portrait" :src="userInfo.icon || '/static/missing-face.png'"></image>
 				</view>
 				<view class="info-box">
-					<view class="username">{{userInfo.nickname || '游客'}}</view>
+					<view class="username">{{userInfo.nickname || '平安建设基金会'}}</view>
 					<view class="job">社长</view>
 					<view class="lv">P1</view>
 				</view>
@@ -22,19 +22,19 @@
 			<image class="arc" src="/static/arc.png"></image>
 
 			<view class="tj-sction">
-				<view class="tj-item">
+				<view class="tj-item" @click="navTo('/pages/me/valuelove')">
 					<text class="num">{{userInfo.integration || '暂无'}}</text>
 					<text>爱心值</text>
 				</view>
-				<view class="tj-item">
+				<view class="tj-item" @click="navTo('/pages/me/valuecontribute')">
 					<text class="num">{{userInfo.growth || '暂无'}}</text>
 					<text>贡献值</text>
 				</view>
-				<view class="tj-item">
+				<view class="tj-item" @click="navTo('/pages/me/valuenetwork')">
 					<text class="num">{{userInfo.growth || '暂无'}}</text>
 					<text>人脉值</text>
 				</view>
-				<view class="tj-item" @click="navTo('/pages/coupon/couponList')">
+				<view class="tj-item" @click="navTo('/pages/me/valueteam')">
 					<text class="num">{{couponCount || '暂无'}}</text>
 					<text>团队值</text>
 				</view>
@@ -62,20 +62,20 @@
 				</view>
 			</view>
 			<!-- 菜单 -->
-			<view class="order-section">
-				<view class="order-item" @click="navTo('/pages/order/order?state=0')" hover-class="common-hover"
+			<view class="menu2">
+				<view class="order-item" @click="navTo('/pages/me/contribute')" hover-class="common-hover"
 					:hover-stay-time="50">
-					<text class="yticon icon-shouye"></text>
+					<image src="/static/me/lb1.png"></image>
 					<text>我的捐款</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=1')" hover-class="common-hover"
+				<view class="order-item" @click="navTo('/pages/me/project')" hover-class="common-hover"
 					:hover-stay-time="50">
-					<text class="yticon icon-daifukuan"></text>
+					<image src="/static/me/lb2.png"></image>
 					<text>我的项目</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/order/order?state=2')" hover-class="common-hover"
+				<view class="order-item" @click="navTo('/pages/me/invite')" hover-class="common-hover"
 					:hover-stay-time="50">
-					<text class="yticon icon-yishouhuo"></text>
+					<image src="/static/me/lb3.png"></image>
 					<text>公益名片</text>
 				</view>
 			</view>
@@ -85,8 +85,7 @@
 					<view class="li s" hover-class="common-hover" :hover-stay-time="50">
 						<text>公益成就(1/20)</text>
 					</view>
-					<view class="li" hover-class="common-hover" :hover-stay-time="50"
-						style="border-bottom: 1px solid #ff0000;border-radius: 0;">
+					<view class="li" hover-class="common-hover" :hover-stay-time="50">
 						<text>慈善成就(1/20)</text>
 					</view>
 				</view>
@@ -95,61 +94,61 @@
 						<image src="/static/me/love_f.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 					<view class="li">
-						<image src="/static/me/love.svg"></image>
+						<image src="/static/me/love_fy.svg"></image>
 					</view>
 				</view>
 				<view class="cont" v-if="false">
@@ -161,6 +160,12 @@
 			</view>
 			<!-- 菜单 -->
 			<view class="history-section icon">
+				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="爱心申购页"
+					@eventClick="navTo('/pages/address/address')"></list-cell>
+				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="爱心传递页"
+					@eventClick="navTo('/pages/address/address')"></list-cell>
+				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="贡献传递页"
+					@eventClick="navTo('/pages/address/address')"></list-cell>
 				<list-cell icon="icon-dizhi" iconColor="#5fcda2" title="联系客服"
 					@eventClick="navTo('/pages/address/address')"></list-cell>
 				<list-cell icon="icon-lishijilu" iconColor="#e07472" title="帮助中心"
@@ -169,7 +174,6 @@
 					@eventClick="navTo('/pages/user/brandAttention')"></list-cell>
 				<list-cell icon="icon-shoucang_xuanzhongzhuangtai" iconColor="#54b4ef" title="义工系统"
 					@eventClick="navTo('/pages/user/productCollection')"></list-cell>
-				<list-cell icon="icon-pingjia" iconColor="#ee883b" title="退出登入"></list-cell>
 			</view>
 		</view>
 
@@ -335,21 +339,19 @@
 
 		.info-box {
 			margin-left: 20upx;
+			color: #fff;
 		}
 
 		.username {
 			font-size: $font-lg + 6upx;
-			color: $font-color-dark;
 		}
 
 		.lv {
-			font-size: $font-lg + 6upx;
-			color: $font-color-dark;
+			font-size: $font-lg;
 		}
 
 		.job {
-			font-size: $font-lg + 6upx;
-			color: $font-color-dark;
+			font-size: $font-lg;
 		}
 
 	}
@@ -547,5 +549,28 @@
 				}
 			}
 		}
+	}
+
+	.menu2 {
+		@extend %section;
+		padding: 28upx 0;
+		margin-top: 20upx;
+
+		.order-item {
+			@extend %flex-center;
+			width: 120upx;
+			height: 120upx;
+			border-radius: 10upx;
+			font-size: $font-sm;
+			color: $font-color-dark;
+		}
+
+		image{
+			width:60upx;
+			height:60upx;
+			margin-bottom: 20upx;
+		}
+		
+		
 	}
 </style>

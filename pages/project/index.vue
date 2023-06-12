@@ -8,38 +8,27 @@
 		<!-- #endif -->
 
 		<view class="main">
-
 			<!-- 头部功能区 -->
-			<view class="cate-section">
-				<view class="cate-item">
-					<image src="/static/temp/c3.png"></image>
-					<text>爱心</text>
-				</view>
-				<view class="cate-item">
-					<image src="/static/temp/c5.png"></image>
-					<text>公益</text>
-				</view>
-				<view class="cate-item">
-					<image src="/static/temp/c6.png"></image>
-					<text>慈善</text>
-				</view>
-				<view class="cate-item">
-					<image src="/static/temp/c7.png"></image>
-					<text>日捐</text>
-				</view>
-			</view>
+			<movable-area class="menu">
+				<movable-view direction="all" :inertia="true" damping="1" friction="0.2" class="init">
+					<view class="cont">
+						<view class="li" v-for="(it,key) of menus" :key="key" :class="menusIndex.s1===key?'s':''"
+							@click="changeMenu(key,0)">
+							<image :src="it.img"></image>
+							<text>{{it.name}}</text>
+						</view>
+					</view>
+				</movable-view>
+			</movable-area>
 			<!-- 推荐选择 -->
 			<view class="commend">
-				<view class="li s">
-					<text>精选项目</text>
-				</view>
-				<view class="li">
-					<text>最近项目</text>
+				<view class="li" v-for="(it,key) of menusIndex.lst2" :key="key" :class="menusIndex.s2===key?'s':''" @click="changeMenu(menusIndex.s1,key)">
+					<text>{{it.name}}</text>
 				</view>
 			</view>
 			<!-- 列表信息楼层 -->
 			<view class="f-header m-t" @click="navToHotProudctListPage()">
-				<image src="/static/icon_hot_product.png"></image>
+				<image src="/static/project/lb1.png"></image>
 				<view class="tit-box">
 					<text class="tit">项目信息</text>
 					<text class="tit2">和爱心用户一起做好事吧~</text>
@@ -74,12 +63,21 @@
 		formatDate
 	} from '@/utils/date';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+	import test from '@/components/drag/test.vue';
+
 	export default {
 		components: {
-			uniLoadMore
+			uniLoadMore,
+			test
 		},
 		data() {
 			return {
+				menusIndex: {
+					s1: 0,
+					s2: 0,
+					lst2: []
+				},
+				menus: [],
 				titleNViewBackground: '',
 				titleNViewBackgroundList: ['rgb(203, 87, 60)', 'rgb(205, 215, 218)'],
 				swiperCurrent: 0,
@@ -100,6 +98,7 @@
 			};
 		},
 		onLoad() {
+			this.loadMenus();
 			this.loadData();
 		},
 		//下拉刷新
@@ -154,6 +153,75 @@
 			},
 		},
 		methods: {
+			loadMenus() {
+				const menus = [{
+					name: "教育助学",
+					img: "/static/project/mu1.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, {
+					name: "乡村振兴",
+					img: "/static/project/mu2.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, {
+					name: "医疗救助",
+					img: "/static/project/mu3.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, {
+					name: "灾害救援",
+					img: "/static/project/mu4.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, {
+					name: "自然保护",
+					img: "/static/project/mu5.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, {
+					name: "关怀倡导",
+					img: "/static/project/mu6.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, {
+					name: "一对一",
+					img: "/static/project/mu7.png",
+					lst: [{
+						name: "精选项目"
+					}, {
+						name: "最近项目"
+					}]
+				}, ];
+				this.menus.push(...menus);
+				this.menusIndex.lst2.push(...menus[0].lst);
+			},
+			changeMenu(s1, s2) {
+				const me = this;
+				me.menusIndex.s1 = s1;
+				me.menusIndex.s2 = s2;
+				me.menusIndex.lst2.splice(0, me.menusIndex.lst2.length);
+				me.menusIndex.lst2.push(...me.menus[s1].lst);
+			},
+			
 			/**
 			 * 加载数据
 			 */
@@ -378,34 +446,6 @@
 		}
 	}
 
-	/* 分类 */
-	.cate-section {
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
-		flex-wrap: wrap;
-		padding: 30upx 22upx;
-		background: #fff;
-
-		.cate-item {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			font-size: $font-sm + 2upx;
-			color: $font-color-dark;
-		}
-
-		/* 原图标颜色太深,不想改图了,所以加了透明度 */
-		image {
-			width: 88upx;
-			height: 88upx;
-			margin-bottom: 14upx;
-			border-radius: 50%;
-			opacity: .7;
-			box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
-		}
-	}
-
 	.ad-1 {
 		width: 100%;
 		height: 210upx;
@@ -545,151 +585,7 @@
 		}
 	}
 
-	/* 分类推荐楼层 */
-	.hot-floor {
-		width: 100%;
-		overflow: hidden;
-		margin-bottom: 20upx;
-
-		.floor-img-box {
-			width: 100%;
-			height: 320upx;
-			position: relative;
-
-			&:after {
-				content: '';
-				position: absolute;
-				left: 0;
-				top: 0;
-				width: 100%;
-				height: 100%;
-				background: linear-gradient(rgba(255, 255, 255, .06) 30%, #f8f8f8);
-			}
-		}
-
-		.floor-img {
-			width: 100%;
-			height: 100%;
-		}
-
-		.floor-list {
-			white-space: nowrap;
-			padding: 20upx;
-			padding-right: 50upx;
-			border-radius: 6upx;
-			margin-top: -140upx;
-			margin-left: 30upx;
-			background: #fff;
-			box-shadow: 1px 1px 5px rgba(0, 0, 0, .2);
-			position: relative;
-			z-index: 1;
-		}
-
-		.scoll-wrapper {
-			display: flex;
-			align-items: flex-start;
-		}
-
-		.floor-item {
-			width: 180upx;
-			margin-right: 20upx;
-			font-size: $font-sm+2upx;
-			color: $font-color-dark;
-			line-height: 1.8;
-
-			image {
-				width: 180upx;
-				height: 180upx;
-				border-radius: 6upx;
-			}
-
-			.price {
-				color: $uni-color-primary;
-			}
-		}
-
-		.more {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			flex-direction: column;
-			flex-shrink: 0;
-			width: 180upx;
-			height: 180upx;
-			border-radius: 6upx;
-			background: #f3f3f3;
-			font-size: $font-base;
-			color: $font-color-light;
-
-			text:first-child {
-				margin-bottom: 4upx;
-			}
-		}
-	}
-
-	/* 猜你喜欢 */
-	.guess-section {
-		display: flex;
-		flex-wrap: wrap;
-		padding: 0 30upx;
-		background: #fff;
-
-		.guess-item {
-			display: flex;
-			flex-direction: column;
-			width: 48%;
-			padding-bottom: 40upx;
-
-			&:nth-child(2n+1) {
-				margin-right: 4%;
-			}
-		}
-
-		.image-wrapper {
-			width: 100%;
-			height: 330upx;
-			border-radius: 3px;
-			overflow: hidden;
-
-			image {
-				width: 100%;
-				height: 100%;
-				opacity: 1;
-			}
-		}
-
-		.image-wrapper-brand {
-			width: 100%;
-			height: 150upx;
-			border-radius: 3px;
-			overflow: hidden;
-
-			image {
-				width: 100%;
-				height: 100%;
-				opacity: 1;
-			}
-		}
-
-		.title {
-			font-size: $font-lg;
-			color: $font-color-dark;
-			line-height: 80upx;
-		}
-
-		.title2 {
-			font-size: $font-sm;
-			color: $font-color-light;
-			line-height: 40upx;
-		}
-
-		.price {
-			font-size: $font-lg;
-			color: $uni-color-primary;
-			line-height: 1;
-		}
-	}
-
+	
 	.hot-section {
 		display: flex;
 		flex-wrap: wrap;
@@ -758,25 +654,79 @@
 		.mt {
 			margin-top: 20upx;
 		}
-		
-		.commend{
-			padding:20upx;
+
+		.menu {
+			width: 100%;
+			height: 188upx;
+			overflow: hidden;
+
+			>.init {
+				width: 1330upx;
+				height: 100%;
+			}
+
+			/* 分类 */
+			.cont {
+				height: 100%;
+				border-bottom: 1upx #eee solid;
+				background-color: #f6f6f5;
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				flex-wrap: wrap;
+
+				.li {
+					width: 190upx;
+					height: 189upx;
+					padding: 20px 0 0;
+					text-align: center;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					font-size: $font-sm + 2upx;
+					color: $font-color-dark;
+				}
+
+				.li.s {
+					position: relative;
+					background-image: linear-gradient(rgba(255, 255, 255, 0.06) 20%, #fff 90%);
+				}
+
+				/* 原图标颜色太深,不想改图了,所以加了透明度 */
+				image {
+					width: 88upx;
+					height: 88upx;
+					border-radius: 50%;
+					opacity: .7;
+					box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
+				}
+				text{
+					height:60upx;
+					line-height: 60upx;
+				}
+			}
+		}
+
+		.commend {
+			padding: 20upx;
 			font-size: 26upx;
 			background-color: #fff;
-			border-top:1upx #eee solid;
 			display: flex;
-			.li{
-				margin-right:20upx;
-				padding:10upx 30upx;
-				border:1upx solid #ccc;
+
+			.li {
+				margin-right: 20upx;
+				padding: 10upx 30upx;
+				border: 1upx solid #ccc;
 				border-radius: 40upx;
 			}
-			.li:last-child{
+
+			.li:last-child {
 				margin-right: 0upx;
 			}
-			.s{
-				color:#ee0000;
-				border:1upx #ee0000 solid;
+
+			.s {
+				color: #ee0000;
+				border: 1upx #ee0000 solid;
 			}
 		}
 	}

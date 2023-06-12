@@ -1,6 +1,5 @@
 {
-	"pages": [
-		{
+	"pages": [{
 			"path": "pages/index/index",
 			"style": {
 				// #ifdef MP 
@@ -121,42 +120,6 @@
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent"
-					}
-				}
-			}
-		},
-		{
-			"path": "pages/project/me",
-			"style": {
-				"navigationBarTitleText": "我的项目",
-				"enablePullDownRefresh": true,
-				"app-plus": {
-					"titleNView": {
-						//"type": "transparent",
-						"searchInput": {
-							"backgroundColor": "rgba(231, 231, 231,.7)",
-							"borderRadius": "16px",
-							"placeholder": "请输入项目名",
-							"disabled": true,
-							"placeholderColor": "#606266"
-						},
-						"buttons": [{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue60d",
-								"fontSize": "26",
-								"color": "#fff",
-								"float": "left",
-								"background": "rgba(0,0,0,0)"
-							},
-							{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue744",
-								"fontSize": "27",
-								"color": "#fff",
-								"background": "rgba(0,0,0,0)",
-								"redDot": true
-							}
-						]
 					}
 				}
 			}
@@ -365,7 +328,8 @@
 					}
 				}
 			}
-		}, {
+		},
+		{
 			"path": "pages/user/brandAttention",
 			"style": {
 				"enablePullDownRefresh": true,
@@ -382,16 +346,121 @@
 					}
 				}
 			}
+		},
+		{
+			"path": "pages/me/edit",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "个人资料"
+			}
+		},
+		{
+			"path": "pages/me/realnameauth",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "实名认证"
+			}
+		},
+		{
+			"path": "pages/me/passwordpay",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "支付密码"
+			}
+		},
+		{
+			"path": "pages/me/passwordlogin",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "登录密码"
+			}
+		},
+		{
+			"path": "pages/me/mobile",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "更改手机号"
+			}
+		},
+		{
+			"path": "pages/me/bankcard",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "银行卡管理"
+			}
+		},
+		{
+			"path": "pages/me/bankcardedit",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "银行卡编辑"
+			}
+		},
+		{
+			"path": "pages/me/invite",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "公益名片"
+			}
+		},
+		{
+			"path": "pages/me/contribute",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "我的捐献"
+			}
+		},
+		{
+			"path": "pages/me/project",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "我的项目"
+			}
+		},
+		{
+			"path": "pages/me/valuelove",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "爱心值"
+			}
+		},
+		{
+			"path": "pages/me/valuecontribute",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "贡献值"
+			}
+		},
+		{
+			"path": "pages/me/valuecontributedetail",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "贡献值详细"
+			}
+		},
+		{
+			"path": "pages/me/valuenetwork",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "人脉值"
+			}
+		},
+		{
+			"path": "pages/me/valueteam",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "团队值"
+			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "mall-app-web",
-		"navigationBarBackgroundColor": "#C2543B",
+		"navigationBarBackgroundColor": "#f15d6b",
 		"backgroundColor": "#f8f8f8"
 	},
 	"tabBar": {
-		"height":"120upx",
+		"height": "120upx",
 		"color": "#C0C4CC",
 		"selectedColor": "#fa436a",
 		"borderStyle": "black",
@@ -407,18 +476,6 @@
 				"iconPath": "static/tabbar/tab-cate.png",
 				"selectedIconPath": "static/tabbar/tab-cate-current.png",
 				"text": "发现项目"
-			},
-			{
-				"pagePath": "pages/project/me",
-				"iconPath": "static/tabbar/list.svg",
-				"selectedIconPath": "static/tabbar/list_h.svg",
-				"text": "我的项目"
-			},
-			{
-				"pagePath": "pages/cart/cart",
-				"iconPath": "static/tabbar/datepicker.svg",
-				"selectedIconPath": "static/tabbar/datepicker_h.svg",
-				"text": "签到"
 			},
 			{
 				"pagePath": "pages/user/user",

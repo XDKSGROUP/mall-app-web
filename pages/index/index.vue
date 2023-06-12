@@ -14,35 +14,49 @@
 			<!-- 背景色区域 -->
 			<view class="titleNview-background" :style="{backgroundColor:titleNViewBackground}"></view>
 			<swiper class="carousel" circular @change="swiperChange">
-				<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item"
+				<!--<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item"
 					@click="navToAdvertisePage(item)">
 					<image :src="item.pic" />
+				</swiper-item>-->
+				<swiper-item class="carousel-item">
+					<image src="/static/index/ad1.jpg" />
+				</swiper-item>
+				<swiper-item class="carousel-item">
+					<image src="/static/index/ad2.jpg" />
+				</swiper-item>
+				<swiper-item class="carousel-item">
+					<image src="/static/index/ad3.jpg" />
 				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
-			<view class="swiper-dots">
+			<!--<view class="swiper-dots">
 				<text class="num">{{swiperCurrent+1}}</text>
 				<text class="sign">/</text>
 				<text class="num">{{swiperLength}}</text>
+			</view>-->
+			<view class="swiper-dots">
+				<text class="num">{{swiperCurrent+1}}</text>
+				<text class="sign">/</text>
+				<text class="num">3</text>
 			</view>
 		</view>
 		<view class="main">
 			<!-- 菜单 -->
 			<view class="cate-section mt">
-				<view class="cate-item">
-					<image src="/static/temp/c3.png"></image>
+				<view class="cate-item s">
+					<image src="/static/index/mu1.png"></image>
 					<text>爱心</text>
 				</view>
 				<view class="cate-item">
-					<image src="/static/temp/c5.png"></image>
+					<image src="/static/index/mu2.png"></image>
 					<text>公益</text>
 				</view>
 				<view class="cate-item">
-					<image src="/static/temp/c6.png"></image>
+					<image src="/static/index/mu3.png"></image>
 					<text>慈善</text>
 				</view>
 				<view class="cate-item">
-					<image src="/static/temp/c7.png"></image>
+					<image src="/static/index/mu4.png"></image>
 					<text>日捐</text>
 				</view>
 			</view>
@@ -71,7 +85,7 @@
 
 			<!-- 爱心捐购 -->
 			<view class="f-header m-t" @click="navToHotProudctListPage()">
-				<image src="/static/icon_hot_product.png"></image>
+				<image src="/static/index/tt2.png"></image>
 				<view class="tit-box">
 					<text class="tit">爱心捐购</text>
 					<text class="tit2">大家都赞不绝口的</text>
@@ -114,7 +128,7 @@
 		data() {
 			return {
 				titleNViewBackground: '',
-				titleNViewBackgroundList: ['rgb(203, 87, 60)', 'rgb(205, 215, 218)'],
+				titleNViewBackgroundList: ['#ffd4ce', '#d9f0ea', '#e0f7dd'],
 				swiperCurrent: 0,
 				swiperLength: 0,
 				carouselList: [],
@@ -510,8 +524,8 @@
 
 		image {
 			flex-shrink: 0;
-			width: 80upx;
-			height: 80upx;
+			width: 60upx;
+			height: 60upx;
 			margin-right: 20upx;
 		}
 
@@ -803,7 +817,7 @@
 				width: 60upx;
 				height: 60upx;
 				margin-right: 20upx;
-				background-image: url(/static/icon_home_brand.png);
+				background-image: url(/static/index/tt1.png);
 				background-size: contain;
 			}
 
@@ -827,11 +841,16 @@
 		background: #fff;
 
 		.cate-item {
+			width:150upx;
+			padding:16upx 32upx;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			font-size: $font-sm + 2upx;
 			color: $font-color-dark;
+		}
+		.cate-item:hover,.cate-item:active{
+			background: radial-gradient(#ddd 0%,#fff 70%);
 		}
 
 		/* 原图标颜色太深,不想改图了,所以加了透明度 */

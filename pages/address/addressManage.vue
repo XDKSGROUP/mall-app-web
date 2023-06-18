@@ -12,18 +12,17 @@
 			<text class="tit">邮政编码</text>
 			<input class="input" type="number" v-model="addressData.postCode" placeholder="收货人邮政编码" placeholder-class="placeholder" />
 		</view>
-		<view class="row b-b">
+		<!-- <view class="row b-b">
 			<text class="tit">所在区域</text>
 			<text @click="chooseLocation" class="input">
 				{{addressData.province}} {{addressData.city}} {{addressData.region}}
 			</text>
 			<text class="yticon icon-shouhuodizhi" @click="chooseLocation"></text>
-		</view>
+		</view> -->
 		<view class="row b-b">
 			<text class="tit">详细地址</text>
 			<input class="input" type="text" v-model="addressData.detailAddress" placeholder="详细地址" placeholder-class="placeholder" />
 		</view>
-
 		<view class="row default-row">
 			<text class="tit">设为默认</text>
 			<switch :checked="addressData.defaultStatus==1" color="#fa436a" @change="switchChange" />
@@ -106,10 +105,10 @@
 					this.$api.msg('请输入正确的手机号码');
 					return;
 				}
-				if (!data.province) {
-					this.$api.msg('请在地图选择所在位置');
-					return;
-				}
+				// if (!data.province) {
+				// 	this.$api.msg('请在地图选择所在位置');
+				// 	return;
+				// }
 				if (!data.detailAddress) {
 					this.$api.msg('请填写详细地址信息');
 					return;

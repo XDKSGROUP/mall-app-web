@@ -1,31 +1,33 @@
 <template>
 	<view class="container">
-		<view class="main">
-			<view class="empty" v-if="info.list.length<=0">
-				暂无信息
+		<!-- <view class="fixtop">
+			<view class="search">
+				<input class="input" type="text" v-model="form.name" placeholder="输入项目名称" @confirm="loadData()" />
 			</view>
-			<view class="list" v-if="info.list.length>0">
-				<view v-for="(item, index) in info.list" :key="index" class="li" @click="navToDetailPage(item)">
-					<view class="img">
-						<image :src="item.pic" mode="aspectFill"></image>
-					</view>
-					<view class="info">
-						<text class="title"
-							:title="item.name">{{item.name.length>38?item.name.substring(0,38)+"...":item.name}}</text>
-						<text class="intro">早在2017年,腾讯就针对此发布了相关了应对机制,其在以往的“上线项目由公募机构认领,腾讯公益平台审核上线”流程之间,又新增一项报备流程——即项目还需由公募机构统一在民政部“慈...</text>
-					</view>
+		</view> -->
+
+		<view class="list">
+			<view v-for="(item, index) in list" :key="index" class="li" @click="gotoDetail(item)">
+				<view class="img">
+					<image :src="item.pic.replace(/^\s+/,'')" mode="aspectFill"></image>
+				</view>
+				<view class="txt">
+					<text class="title clamp">{{item.name}}</text>
+					<text class="title2">{{item.info}}</text>
+					<text class="price">￥{{item.raisedMoney}}/{{item.targetMoney}}</text>
 				</view>
 			</view>
+			<view class="tc">
+				<uni-load-more :status="loadingType"></uni-load-more>
+			</view>
 		</view>
-		<uni-load-more :status="info.loadingType"></uni-load-more>
 	</view>
 </template>
 
 <script>
 	import {
-		fetchContent,
-		fetchRecommendProductList
-	} from '@/api/home.js';
+		getProjectsAttention,
+	} from '@/api/me.js';
 	import {
 		formatDate
 	} from '@/utils/date';
@@ -33,18 +35,18 @@
 
 	export default {
 		components: {
-			uniLoadMore
+			uniLoadMore,
 		},
 		data() {
 			return {
-				info: {
-					list: [],
-					prms: {
-						pageNum: 1,
-						pageSize: 4
-					},
-					loadingType: 'more'
-				}
+				list: [], //列表数据
+				form: { //查询参数
+					categoryId: undefined,
+					name: undefined,
+					pageNum: 1,
+					pageSize: 5
+				},
+				loadingType: 'more'
 			};
 		},
 		onLoad() {
@@ -52,82 +54,124 @@
 		},
 		//下拉刷新
 		onPullDownRefresh() {
-			this.info.prms.pageNum = 1;
 			this.loadData();
+			uni.stopPullDownRefresh();
 		},
 		//加载更多
 		onReachBottom() {
-			this.nextData();
-		},
-		computed: {
-
-		},
-		filters: {
-
+			this.loadData(1);
 		},
 		methods: {
-			/** 加载数据 */
-			async loadData() {
-				const me = this,
-					info = me.info;
-				fetchRecommendProductList(info.prms).then(response => {
-					info.list = response.data;
-					uni.stopPullDownRefresh();
-				})
+			getMenuWidth() {
+				return uni.upx2px(this.menus.length * 188);
 			},
-			/** 加载下一页 */
-			async nextData() {
-				const me = this,
-					info = me.info;
-				info.prms.pageNum++;
-				info.loadingType = 'loading';
-				fetchRecommendProductList(info.prms).then(response => {
-					let newlist = response.data;
-					if (response.data.length === 0) {
-						//没有更多了
-						info.prms.pageNum--;
-						info.loadingType = 'nomore';
-					} else {
-						info.list = info.list.concat(newlist);
-						info.loadingType = 'more';
+			changeMenu(s1, s2) {
+				const me = this;
+				me.menusIndex.s1 = s1;
+				me.menusIndex.s2 = s2;
+				me.menusIndex.lst2.splice(0, me.menusIndex.lst2.length);
+				const mainMenu = me.menus[s1];
+				me.form.categoryId = mainMenu.id;
+				me.menusIndex.lst2.push(...me.menus[s1].lst);
+				me.loadData();
+			},
+			/**
+			 * 加载数据
+			 */
+			loadData(isAppend) {
+				const me = this;
+				if (isAppend) {
+					me.form.pageNum++;
+				} else {
+					me.form.pageNum = 1;
+				}
+				getProjectsAttention(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
 					}
-				})
+					const list = res.data.list;
+					me.loadingType = list.length < me.form.pageSize ? 'nomore' : 'more';
+					if (isAppend) {
+						if (list.length == 0) {
+							return;
+						}
+					} else {
+						me.list.splice(0, me.list.length);
+					}
+					//加入列表
+					me.list.push(...list);
+				});
 			},
-			/** 详情页 */
-			navToDetailPage(item) {
+			//详情页
+			gotoDetail(item) {
 				let id = item.id;
 				uni.navigateTo({
 					url: `/pages/project/detail?id=${id}`
 				})
 			},
-		}
+			//跳转到列表页
+			gotoList() {
+				uni.navigateTo({
+					url: `/pages/project/list`
+				})
+			},
+		},
 	}
 </script>
 
 <style lang="scss">
-	.container {
-		width: 720upx;
-		margin: 20upx auto 0;
-		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
+	page {
+		background: #fff;
 	}
 
-	.empty {
-		padding: 50upx;
-		text-align: center;
-		font-size: 50upx;
+	.container {
+		margin: 0 0 120upx;
+		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
+		position: relative;
+	}
+
+	.fixtop {
+		width: 100%;
+		padding: 20upx 0;
+		background: #f5f5f5;
+		z-index: 5;
+		position: fixed;
+	}
+
+	.search {
+		width: 100%;
+		padding: 0 80upx;
+
+
+		.input {
+			flex: 1;
+			height: 56upx;
+			line-height: 56upx;
+			text-align: center;
+			font-size: 28upx;
+			color: $font-color-base;
+			border-radius: 20px;
+			background: rgba(255, 255, 255, .6);
+		}
 	}
 
 	.list {
+		// padding: 130upx 30upx 120upx;
+		padding: 30upx 30upx 120upx;
+		background: #fff;
 		display: flex;
 		flex-wrap: wrap;
-		padding: 0 20upx;
 
 		.li {
-			width: 100%;
-			padding-bottom: 40upx;
-			border-bottom: 1px solid #fefefe;
 			display: flex;
 			flex-direction: row;
+			width: 100%;
+			padding-top: 40upx;
+		}
+
+		.li:first-child {
+			padding-top: 0upx;
 		}
 
 		.img {
@@ -143,23 +187,17 @@
 			}
 		}
 
-		.info {
-			width: 70%;
-			display: flex;
-			flex-direction: column;
-			padding-left: 40upx;
-		}
-
 		.title {
 			font-size: $font-lg;
 			color: $font-color-dark;
-			line-height: 50upx;
+			line-height: 80upx;
 		}
 
-		.date {
+		.title2 {
 			font-size: $font-sm;
 			color: $font-color-light;
 			line-height: 40upx;
+			height: 80upx;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			display: block;
@@ -168,6 +206,21 @@
 		.price {
 			font-size: $font-lg;
 			color: $uni-color-primary;
+			line-height: 80upx;
+		}
+
+		.txt {
+			width: 70%;
+			display: flex;
+			flex-direction: column;
+			padding-left: 40upx;
+		}
+
+		.tc {
+			width: 100%;
+			line-height: 90upx;
+			justify-content: center;
+
 		}
 	}
 </style>

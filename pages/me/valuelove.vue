@@ -1,245 +1,396 @@
 <template>
 	<view class="container">
-		<view class="info mt_20">
+		<view v-if="isSearch" class="searchpage">
 			<view class="li">
-				<view class="label">剩余爱心值</view>
-				<view class="input">
-					1500颗
+				<view class="f">交易时间</view>
+				<view class="v">
+					<view class="input">
+						<picker mode="date" :value="form.createTimeStart" :start="limits.createTimeMin"
+							:end="limits.createTimeMax" @change="setPicker(form,'createTimeStart',arguments)">
+							<view class="pickerin">
+								<input placeholder="起始交易时间" :value="form.createTimeStart" />
+								<uni-icons type="bottom" size="10"></uni-icons>
+							</view>
+						</picker>
+					</view>
+					<view class="sep"></view>
+					<view class="input">
+						<picker mode="date" :value="form.createTimeEnd"
+							:start="form.createTimeStart||limits.createTimeMin" :end="limits.createTimeMax"
+							@change="setPicker(form,'createTimeEnd',arguments)">
+							<view class="pickerin">
+								<input placeholder="结束交易时间" :value="form.createTimeEnd" />
+								<uni-icons type="bottom" size="10"></uni-icons>
+							</view>
+						</picker>
+					</view>
+				</view>
+			</view>
+			<view class="li">
+				<view class="f">交易类型</view>
+				<view class="v mb_20">
+					<CheckListBox :list="enums.enumTradeType" v-model="form.source" :colNum="4">
+					</CheckListBox>
+				</view>
+			</view>
+			<view class="li">
+				<view class="f">变动金额</view>
+				<view class="v">
+					<input class="input" v-model="form.changeMoneyStart" placeholder="最小金额" />
+					<view class="sep"></view>
+					<input class="input" v-model="form.changeMoneyEnd" placeholder="最大金额" />
+				</view>
+			</view>
+			<!-- <view class="li">
+				<view class="f">交易对方</view>
+				<view class="v">
+					<input class="input max" v-model="form.username" placeholder="对方帐号" />
+				</view>
+			</view> -->
+			<view class="btns">
+				<view class="reset" @click="reset()">重置</view>
+				<view class="confirm" @click="search()">确定</view>
+			</view>
+		</view>
+		<view v-if="!isSearch" class="listpage">
+			<view class="search">
+				<view class="lasttime" v-for="it in enums.enumLastTimeType"
+					:class="it.value==form.createTimeType?'s':''" @click="clickLastTime(it)">{{it.name}}
+				</view>
+				<view class="filter" @click="search()">
+					<view>筛选</view>
+					<uni-icons type="bottom" size="10"></uni-icons>
+				</view>
+			</view>
+			<view class="list">
+				<view class="li" v-for="it in list">
+					<view class="act">
+						<view class="l">{{getSource(it.source)}}</view>
+						<view class="r">{{it.changeMoney}}</view>
+					</view>
+					<view class="dt">
+						<view class="l">{{rtnDateTimeToStr(it.createTime)}}</view>
+						<view class="r">余额：{{it.afterMoney}}</view>
+					</view>
+				</view>
+				<view class="empty" v-if="list.length==0">
+					暂无信息
 				</view>
 			</view>
 		</view>
-		<view class="search">
-			<view class="li">
-				<view class="label">起始时间：</view>
-				<view class="input">
-					<picker mode="date" :value="info.prms.startTime" :start="'1900-01-01'" :end="info.prms.endTime"
-						@change="setStartTime">
-						<input class="input" type="text" v-model="info.prms.startTime" placeholder="请选择起始时间"
-							readyonly="readyonly" />
-					</picker>
-				</view>
-			</view>
-			<view class="li">
-				<view class="label">结束时间：</view>
-				<view class="input">
-					<picker mode="date" :value="info.prms.endTime" :start="info.prms.startTime" :end="'2100-01-01'"
-						@change="setEndTime">
-						<input class="input" type="text" v-model="info.prms.endTime" placeholder="请选择结束时间"
-							readyonly="readyonly" />
-					</picker>
-				</view>
-			</view>
-		</view>
-		<view class="list" v-if="info.list.length>0">
-			<view class="empty" v-if="info.list.length<=0">
-				暂无信息
-			</view>
-			<view class="cont">
-				<view v-for="(item, index) in info.list" :key="index" class="li" @click="navToDetailPage(item)">
-					<text class="price">购买：{{item.price}} 颗</text>
-					<text
-						class="date">{{item.promotionStartTime?item.promotionStartTime.replace(/T(\d+\:\d+\:\d+).*$/," $1"):"暂无时间"}}</text>
-				</view>
-			</view>
-		</view>
-		<uni-load-more :status="info.loadingType"></uni-load-more>
 	</view>
 </template>
 
 <script>
 	import {
-		fetchContent,
-		fetchRecommendProductList
-	} from '@/api/home.js';
+		uniIcons
+	} from '@dcloudio/uni-ui';
 	import {
-		formatDate
-	} from '@/utils/date';
-	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+		setPicker,
+		getLastWeekStartTime,
+		getLastMonthStartTime,
+		getLast3MonthStartTime,
+		rtnDateTimeToStr,
+	} from '@/utils/com.js';
+	import {
+		enumTradeType,
+		enumLastTimeType
+	} from '@/utils/enums.js';
+	import CheckListBox from '@/components/l/CheckListBox.vue';
+	import {
+		getListChangeMoneys
+	} from '@/api/me.js';
 
 	export default {
 		components: {
-			uniLoadMore
+			uniIcons,
+			CheckListBox
 		},
 		data() {
 			return {
-				info: {
-					list: [],
-					prms: {
-						startTime: undefined,
-						endTime: undefined,
-						pageNum: 1,
-						pageSize: 13
-					},
-					loadingType: 'more'
-				}
+				isSearch: false,
+				enums: {
+					enumTradeType,
+					enumLastTimeType
+				},
+				limits: {
+					createTimeMin: '2020-01-01',
+					createTimeMax: '2100-01-01',
+				},
+				form: {
+					type: 0, //爱心
+					createTimeType: 1,
+					createTimeStart: undefined,
+					createTimeEnd: undefined,
+					source: [],
+					changeMoneyStart: undefined,
+					changeMoneyEnd: undefined,
+					username: undefined,
+					pageNum: 1,
+					pageSize: 15,
+				},
+				list: [],
 			};
 		},
-		onLoad() {
+		onLoad(option) {
 			this.loadData();
+			this.formReset = Object.assign({}, this.form);
 		},
 		//下拉刷新
 		onPullDownRefresh() {
-			this.info.prms.pageNum = 1;
 			this.loadData();
+			uni.stopPullDownRefresh();
 		},
 		//加载更多
 		onReachBottom() {
-			this.nextData();
-		},
-		computed: {
-
-		},
-		filters: {
-
+			this.loadData(1);
 		},
 		methods: {
-			/** 加载数据 */
-			async loadData() {
-				const me = this,
-					info = me.info;
-				fetchRecommendProductList(info.prms).then(response => {
-					info.list = response.data;
-					uni.stopPullDownRefresh();
-				})
+			rtnDateTimeToStr,
+			setPicker,
+			getSource(source) {
+				const name = enumTradeType.find(t => t.value == source)?.name || "-";
+				return name;
 			},
-			/** 加载下一页 */
-			async nextData() {
-				const me = this,
-					info = me.info;
-				info.prms.pageNum++;
-				info.loadingType = 'loading';
-				fetchRecommendProductList(info.prms).then(response => {
-					let newlist = response.data;
-					if (response.data.length === 0) {
-						//没有更多了
-						info.prms.pageNum--;
-						info.loadingType = 'nomore';
-					} else {
-						info.list = info.list.concat(newlist);
-						info.loadingType = 'more';
+			loadData(isAppend) {
+				const me = this;
+				if (isAppend) {
+					me.form.pageNum++;
+				} else {
+					me.form.pageNum = 1;
+				}
+				getListChangeMoneys(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
 					}
+
+					if (!isAppend) me.list.splice(0, this.list.length);
+					me.list.push(...res.data.list);
+				});
+			},
+			/** 切换搜索页 */
+			search(isOk) {
+				const me = this;
+				isOk = isOk === undefined ? !me.isSearch : isOk;
+				me.isSearch = isOk;
+				if (me.form.createTimeEnd) {
+					me.form.createTimeEnd = isOk ? me.form.createTimeEnd.replace(/ .*$/, "") : me.form.createTimeEnd +
+						" 23:59:59";
+				}
+				if (!isOk) me.loadData();
+			},
+			reset() {
+				Object.assign(this.form, this.formReset);
+				this.search();
+			},
+			clickLastTime(item) {
+				const me = this;
+				me.form.createTimeType = item.value;
+				me.form.createTimeEnd = undefined;
+				switch (item.value) {
+					case 1:
+						me.form.createTimeStart = getLastWeekStartTime();
+						break;
+					case 2:
+						me.form.createTimeStart = getLastMonthStartTime();
+						break;
+					case 3:
+						me.form.createTimeStart = getLast3MonthStartTime();
+						break;
+				}
+				me.loadData();
+			},
+			/** 详情页 */
+			navToDetailPage(item) {
+				let id = item.id;
+				uni.navigateTo({
+					url: `/pages/me/valuecontributedetail?id=${id}`
 				})
 			},
-			/** 设置起始时间 */
-			async setStartTime(e) {
-				this.info.prms.startTime = e.detail.value;
-			},
-			/** 设置结束时间 */
-			async setEndTime(e) {
-				this.info.prms.endTime = e.detail.value;
-			}
-		},
+		}
 	}
 </script>
 
 <style lang="scss">
 	.container {
-		width: 720upx;
-		margin: 20upx auto;
-		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
-	}
+		height: calc(100vh - 83upx);
 
-	.mt20 {
-		margin-top: 20upx;
-	}
+		.searchpage {
+			height: 100%;
+			padding-top: 30upx;
+			position: relative;
 
-	.mt_20 {
-		margin-top: -20upx;
-	}
+			.li {
+				padding: 16upx 40upx;
+				display: flex;
+				flex-direction: column;
 
-	.info {
-		width: 750upx;
-		line-height: 50upx;
-		margin-left: -15upx;
-		background: #fff;
-		position: relative;
+				.f {
+					line-height: 70upx;
+					font-weight: 700;
+				}
 
-		.li {
-			padding: 20upx;
-			display: flex;
-			align-items: center;
-			flex-wrap: wrap;
-			border-bottom: 1px solid #ddd;
+				.v {
+					line-height: 54upx;
+					font-size: 23upx;
+					display: flex;
+					flex-wrap: wrap;
+					align-items: flex-start;
+					justify-content: space-between;
+
+					.sep {
+						height: 27upx;
+						line-height: 0;
+						margin: 0 40upx;
+						flex: 1;
+						border-bottom: 1px solid #ccc;
+					}
+
+					.input {
+						height: 56upx;
+						padding: 0 20upx;
+						font-size: 23upx;
+						border: 1px solid #ccc;
+						border-radius: 10upx;
+						display: flex;
+
+						input {
+							width: 220upx;
+							height: 50upx;
+							line-height: 50upx;
+							font-size: 23upx;
+						}
+					}
+
+					.pickerin {
+						display: flex;
+					}
+
+					.button {
+						width: 23%;
+						height: 56upx;
+						margin-bottom: 20upx;
+						text-align: center;
+						font-size: 23upx;
+						color: #333;
+						background-color: #f5f5f5;
+						border-radius: 10upx;
+					}
+
+					.button.s {
+						color: #fff;
+						background-color: #f15d6b;
+					}
+				}
+
+				.mb_20 {
+					margin-bottom: -20upx;
+				}
+
+				.max {
+					width: 100%;
+				}
+			}
+
+			.btns {
+				width: 100%;
+				line-height: 56upx;
+				text-align: center;
+				bottom: 50upx;
+				position: absolute;
+				display: flex;
+
+				.reset {
+					width: 50%;
+					color: #333;
+					background-color: #fff;
+					border: 1upx solid #ccc;
+				}
+
+				.confirm {
+					width: 50%;
+					color: #fff;
+					background-color: #f15d6b;
+				}
+			}
 		}
 
-		.label {
-			width: 30%;
-			padding: 0 20upx;
-			font-size: 30upx;
-			color: $font-color-dark;
-			flex-shrink: 0;
-		}
+		.listpage {
+			.search {
+				height: 100upx;
+				background-color: #f5f5f5;
+				display: flex;
+				justify-content: space-evenly;
 
-		.input {
-			width: 65%;
-			font-size: 30upx;
-			color: $font-color-dark;
-		}
-	}
+				>view {
+					width: 20%;
+					height: 56upx;
+					line-height: 56upx;
+					margin: 22upx 0;
+					font-size: 23upx;
+					text-align: center;
+					background: #fff;
+					border-radius: 10upx;
+				}
 
-	.search {
-		width: 750upx;
-		line-height: 50upx;
-		margin-left: -15upx;
-		background: linear-gradient(0deg, #eee, transparent);
-		box-shadow: 0upx 0upx 15upx #ddd;
+				.filter {
+					display: flex;
+					justify-content: space-around;
+				}
 
-		.li {
-			padding: 20upx;
-			display: flex;
-			align-items: center;
-			flex-wrap: wrap;
-			border-bottom: 1px solid #ddd;
-		}
+				.s {
+					color: #fff;
+					background: #f15d6b;
+				}
+			}
 
-		.label {
-			width: 30%;
-			padding: 0 20upx;
-			font-size: 30upx;
-			color: $font-color-dark;
-			flex-shrink: 0;
-		}
+			.list {
+				width: 690upx;
+				margin: 0 auto;
 
-		.input {
-			width: 65%;
-			font-size: 30upx;
-			color: $font-color-dark;
-		}
-	}
+				.li {
+					height: 118upx;
+					border-bottom: 1upx solid #eee;
+					display: flex;
+					flex-direction: column;
+					justify-content: space-evenly;
 
-	.list {
-		display: flex;
-		flex-wrap: wrap;
+					.act {
+						font-size: 27upx;
+						display: flex;
+						justify-content: space-between;
 
-		.empty {
-			padding: 50upx;
-			text-align: center;
-			font-size: 50upx;
-		}
+						.l {
+							color: #333;
+						}
 
-		.cont {
-			padding: 0 20upx;
-			display: flex;
-			flex-wrap: wrap;
-		}
+						.r {
+							color: #f15d6b
+						}
+					}
 
-		.li {
-			width: 100%;
-			line-height: 100upx;
-			border-bottom: 1px solid #fafafa;
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-		}
+					.dt {
+						font-size: 23upx;
+						color: #aaa;
+						display: flex;
+						justify-content: space-between;
 
-		.price {
-			font-size: $font-lg;
-			color: $font-color-dark;
-		}
+						.l {}
 
-		.date {
-			font-size: $font-base;
-			color: $font-color-light;
+						.r {}
+					}
+				}
+
+				.li:last-child {
+					border: 0;
+				}
+
+				.empty {
+					font-size: 30upx;
+					line-height: 130upx;
+					text-align: center;
+				}
+			}
 		}
 	}
 </style>

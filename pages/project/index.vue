@@ -1,16 +1,15 @@
 <template>
 	<view class="container">
-		<!-- 小程序头部兼容 -->
-		<!-- #ifdef MP -->
-		<view class="mp-search-box">
-			<input class="ser-input" type="text" value="输入关键字搜索" disabled />
-		</view>
-		<!-- #endif -->
+		<view class="fixtop">
+			<!-- 搜索 -->
+			<view class="search">
+				<input class="input" type="text" v-model="form.name" placeholder="输入项目名称" @confirm="loadData()" />
+			</view>
 
-		<view class="main">
-			<!-- 头部功能区 -->
+			<!-- 主菜单 -->
 			<movable-area class="menu">
-				<movable-view direction="all" :inertia="true" damping="1" friction="0.2" class="init">
+				<movable-view direction="all" :inertia="true" damping="1" friction="0.2" class="init"
+					:style="{width:getMenuWidth()+'px'}">
 					<view class="cont">
 						<view class="li" v-for="(it,key) of menus" :key="key" :class="menusIndex.s1===key?'s':''"
 							@click="changeMenu(key,0)">
@@ -20,311 +19,185 @@
 					</view>
 				</movable-view>
 			</movable-area>
-			<!-- 推荐选择 -->
-			<view class="commend">
-				<view class="li" v-for="(it,key) of menusIndex.lst2" :key="key" :class="menusIndex.s2===key?'s':''" @click="changeMenu(menusIndex.s1,key)">
+		</view>
+		<!-- 子菜单 -->
+		<!-- <view class="commend">
+				<view class="li" v-for="(it,key) of menusIndex.lst2" :key="key" :class="menusIndex.s2===key?'s':''"
+					@click="changeMenu(menusIndex.s1,key)">
 					<text>{{it.name}}</text>
 				</view>
-			</view>
-			<!-- 列表信息楼层 -->
-			<view class="f-header m-t" @click="navToHotProudctListPage()">
-				<image src="/static/project/lb1.png"></image>
-				<view class="tit-box">
-					<text class="tit">项目信息</text>
-					<text class="tit2">和爱心用户一起做好事吧~</text>
-				</view>
-				<text class="yticon icon-you"></text>
-			</view>
+			</view> -->
 
-			<view class="hot-section">
-				<view v-for="(item, index) in hotProductList" :key="index" class="guess-item"
-					@click="navToDetailPage(item)">
-					<view class="image-wrapper">
-						<image :src="item.pic" mode="aspectFill"></image>
-					</view>
-					<view class="txt">
-						<text class="title clamp">{{item.name}}</text>
-						<text class="title2">{{item.subTitle}}</text>
-						<text class="price">￥{{item.price}}</text>
-					</view>
+		<view class="list">
+			<view v-for="(item, index) in list" :key="index" class="li" @click="gotoDetail(item)">
+				<view class="img">
+					<image :src="item.pic.replace(/^\s+/,'')" mode="aspectFill"></image>
 				</view>
+				<view class="txt">
+					<text class="title clamp">{{item.name}}</text>
+					<text class="title2">{{item.info}}</text>
+					<text class="price">￥{{item.raisedMoney}}/{{item.targetMoney}}</text>
+				</view>
+			</view>
+			<view class="tc">
+				<uni-load-more :status="loadingType"></uni-load-more>
 			</view>
 		</view>
-		<uni-load-more :status="loadingType"></uni-load-more>
 	</view>
 </template>
 
 <script>
 	import {
-		fetchContent,
-		fetchRecommendProductList
-	} from '@/api/home.js';
+		getListClass,
+		getList,
+	} from '@/api/project.js';
 	import {
 		formatDate
 	} from '@/utils/date';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-	import test from '@/components/drag/test.vue';
 
 	export default {
 		components: {
 			uniLoadMore,
-			test
 		},
 		data() {
 			return {
-				menusIndex: {
+				menusIndex: { //选中主菜单
 					s1: 0,
 					s2: 0,
 					lst2: []
 				},
-				menus: [],
-				titleNViewBackground: '',
-				titleNViewBackgroundList: ['rgb(203, 87, 60)', 'rgb(205, 215, 218)'],
-				swiperCurrent: 0,
-				swiperLength: 0,
-				carouselList: [],
-				goodsList: [],
-				advertiseList: [],
-				brandList: [],
-				homeFlashPromotion: [],
-				newProductList: [],
-				hotProductList: [],
-				recommendProductList: [],
-				recommendParams: {
+				menus: [], //主菜单
+				list: [], //列表数据
+				form: { //查询参数
+					categoryId: undefined,
+					name: undefined,
 					pageNum: 1,
-					pageSize: 4
+					pageSize: 5
 				},
 				loadingType: 'more'
 			};
 		},
 		onLoad() {
 			this.loadMenus();
-			this.loadData();
 		},
 		//下拉刷新
 		onPullDownRefresh() {
-			this.recommendParams.pageNum = 1;
 			this.loadData();
+			uni.stopPullDownRefresh();
 		},
 		//加载更多
 		onReachBottom() {
-			this.recommendParams.pageNum++;
-			this.loadingType = 'loading';
-			fetchRecommendProductList(this.recommendParams).then(response => {
-				let addProductList = response.data;
-				if (response.data.length === 0) {
-					//没有更多了
-					this.recommendParams.pageNum--;
-					this.loadingType = 'nomore';
-				} else {
-					this.recommendProductList = this.recommendProductList.concat(addProductList);
-					this.loadingType = 'more';
-				}
-			})
-		},
-		computed: {
-			cutDownTime() {
-				let endTime = new Date(this.homeFlashPromotion.endTime);
-				let endDateTime = new Date();
-				let startDateTime = new Date();
-				endDateTime.setHours(endTime.getHours());
-				endDateTime.setMinutes(endTime.getMinutes());
-				endDateTime.setSeconds(endTime.getSeconds());
-				let offsetTime = (endDateTime.getTime() - startDateTime.getTime());
-				let endHour = Math.floor(offsetTime / (60 * 60 * 1000));
-				let offsetMinute = offsetTime % (60 * 60 * 1000);
-				let endMinute = Math.floor(offsetMinute / (60 * 1000));
-				let offsetSecond = offsetTime % (60 * 1000);
-				let endSecond = Math.floor(offsetSecond / 1000);
-				return {
-					endHour: endHour,
-					endMinute: endMinute,
-					endSecond: endSecond
-				}
-			}
-		},
-		filters: {
-			formatTime(time) {
-				if (time == null || time === '') {
-					return 'N/A';
-				}
-				let date = new Date(time);
-				return formatDate(date, 'hh:mm:ss')
-			},
+			this.loadData(1);
 		},
 		methods: {
+			getMenuWidth() {
+				return uni.upx2px(this.menus.length * 188);
+			},
 			loadMenus() {
-				const menus = [{
-					name: "教育助学",
-					img: "/static/project/mu1.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, {
-					name: "乡村振兴",
-					img: "/static/project/mu2.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, {
-					name: "医疗救助",
-					img: "/static/project/mu3.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, {
-					name: "灾害救援",
-					img: "/static/project/mu4.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, {
-					name: "自然保护",
-					img: "/static/project/mu5.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, {
-					name: "关怀倡导",
-					img: "/static/project/mu6.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, {
-					name: "一对一",
-					img: "/static/project/mu7.png",
-					lst: [{
-						name: "精选项目"
-					}, {
-						name: "最近项目"
-					}]
-				}, ];
-				this.menus.push(...menus);
-				this.menusIndex.lst2.push(...menus[0].lst);
+				const me = this;
+				getListClass({}).then(res => {
+					if (!res.data || !res.data.length) {
+						return;
+					}
+					const its = res.data.map(it => {
+						return {
+							id: it.id,
+							img: "/static/project/mu" + it.id + ".png",
+							name: it.name,
+							lst: [{
+								name: "精选项目"
+							}, {
+								name: "最近项目"
+							}]
+						};
+					});
+					its.splice(its.length - 1, 1);
+					me.menus.push(...its);
+					me.menusIndex.lst2.push(...me.menus[0].lst);
+					me.changeMenu(0, 0);
+				});
 			},
 			changeMenu(s1, s2) {
 				const me = this;
 				me.menusIndex.s1 = s1;
 				me.menusIndex.s2 = s2;
 				me.menusIndex.lst2.splice(0, me.menusIndex.lst2.length);
+				const mainMenu = me.menus[s1];
+				me.form.categoryId = mainMenu.id;
 				me.menusIndex.lst2.push(...me.menus[s1].lst);
+				me.loadData();
 			},
-			
 			/**
 			 * 加载数据
 			 */
-			async loadData() {
-				fetchContent().then(response => {
-					console.log("onLoad", response.data);
-					this.advertiseList = response.data.advertiseList;
-					this.swiperLength = this.advertiseList.length;
-					this.titleNViewBackground = this.titleNViewBackgroundList[0];
-					this.brandList = response.data.brandList;
-					this.homeFlashPromotion = response.data.homeFlashPromotion;
-					this.newProductList = response.data.newProductList;
-					this.hotProductList = response.data.hotProductList;
-					fetchRecommendProductList(this.recommendParams).then(response => {
-						this.recommendProductList = response.data;
-						uni.stopPullDownRefresh();
-					})
+			loadData(isAppend) {
+				const me = this;
+				if (isAppend) {
+					me.form.pageNum++;
+				} else {
+					me.form.pageNum = 1;
+				}
+				getList(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
+					}
+					const list = res.data.list;
+					me.loadingType = list.length < me.form.pageSize ? 'nomore' : 'more';
+					if (isAppend) {
+						if (list.length == 0) {
+							return;
+						}
+					} else {
+						me.list.splice(0, me.list.length);
+					}
+					//加入列表
+					me.list.push(...list);
 				});
 			},
-			//轮播图切换修改背景色
-			swiperChange(e) {
-				const index = e.detail.current;
-				this.swiperCurrent = index;
-				let changeIndex = index % this.titleNViewBackgroundList.length;
-				this.titleNViewBackground = this.titleNViewBackgroundList[changeIndex];
-			},
-			//商品详情页
-			navToDetailPage(item) {
+			//详情页
+			gotoDetail(item) {
 				let id = item.id;
 				uni.navigateTo({
 					url: `/pages/project/detail?id=${id}`
 				})
 			},
-			//广告详情页
-			navToAdvertisePage(item) {
-				let id = item.id;
-				console.log("navToAdvertisePage", item)
-			},
-			//品牌详情页
-			navToBrandDetailPage(item) {
-				let id = item.id;
+			//跳转到列表页
+			gotoList() {
 				uni.navigateTo({
-					url: `/pages/brand/brandDetail?id=${id}`
-				})
-			},
-			//推荐品牌列表页
-			navToRecommendBrandPage() {
-				uni.navigateTo({
-					url: `/pages/brand/list`
-				})
-			},
-			//新鲜好物列表页
-			navToNewProudctListPage() {
-				uni.navigateTo({
-					url: `/pages/product/newProductList`
-				})
-			},
-			//人气推荐列表页
-			navToHotProudctListPage() {
-				uni.navigateTo({
-					url: `/pages/product/hotProductList`
+					url: `/pages/project/list`
 				})
 			},
 		},
-		// #ifndef MP
-		// 标题栏input搜索框点击
-		onNavigationBarSearchInputClicked: async function(e) {
-			this.$api.msg('点击了搜索框');
-		},
-		//点击导航栏 buttons 时触发
-		onNavigationBarButtonTap(e) {
-			const index = e.index;
-			if (index === 0) {
-				this.$api.msg('点击了扫描');
-			} else if (index === 1) {
-				// #ifdef APP-PLUS
-				const pages = getCurrentPages();
-				const page = pages[pages.length - 1];
-				const currentWebview = page.$getAppWebview();
-				currentWebview.hideTitleNViewButtonRedDot({
-					index
-				});
-				// #endif
-				uni.navigateTo({
-					url: '/pages/notice/notice'
-				})
-			}
-		}
-		// #endif
 	}
 </script>
 
 <style lang="scss">
-	/* #ifdef MP */
-	.mp-search-box {
-		position: absolute;
-		left: 0;
-		top: 30upx;
-		z-index: 9999;
+	page {
+		background: #fff;
+	}
+
+	.container {
+		margin: 0 0 120upx;
+		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
+		position: relative;
+	}
+
+	.fixtop {
+		width: 100%;
+		padding: 20upx 0 0;
+		background: #f5f5f5;
+		z-index: 5;
+		position: fixed;
+	}
+
+	.search {
 		width: 100%;
 		padding: 0 80upx;
 
-		.ser-input {
+
+		.input {
 			flex: 1;
 			height: 56upx;
 			line-height: 56upx;
@@ -336,270 +209,101 @@
 		}
 	}
 
-	page {
-		.cate-section {
-			position: relative;
-			z-index: 5;
-			border-radius: 16upx 16upx 0 0;
-			margin-top: -20upx;
-		}
-
-		.carousel-section {
-			padding: 0;
-
-			.titleNview-placing {
-				padding-top: 0;
-				height: 0;
-			}
-
-			.carousel {
-				.carousel-item {
-					padding: 0;
-				}
-			}
-
-			.swiper-dots {
-				left: 45upx;
-				bottom: 40upx;
-			}
-		}
-	}
-
-	/* #endif */
-
-
-	page {
-		background: #f5f5f5;
-	}
-
-	.m-t {
-		margin-top: 16upx;
-	}
-
-	/* 头部 轮播图 */
-	.carousel-section {
-		position: relative;
-		padding-top: 10px;
-
-		.titleNview-placing {
-			height: var(--status-bar-height);
-			padding-top: 44px;
-			box-sizing: content-box;
-		}
-
-		.titleNview-background {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 426upx;
-			transition: .4s;
-		}
-	}
-
-	.carousel {
+	.menu {
 		width: 100%;
-		height: 350upx;
+		height: 188upx;
+		margin-bottom: -1upx;
+		overflow: hidden;
 
-		.carousel-item {
-			width: 100%;
-			height: 100%;
-			padding: 0 28upx;
-			overflow: hidden;
-		}
-
-		image {
-			width: 100%;
-			height: 100%;
-			border-radius: 10upx;
-		}
-	}
-
-	.swiper-dots {
-		display: flex;
-		position: absolute;
-		left: 60upx;
-		bottom: 15upx;
-		width: 72upx;
-		height: 36upx;
-		background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTMyIDc5LjE1OTI4NCwgMjAxNi8wNC8xOS0xMzoxMzo0MCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OTk4MzlBNjE0NjU1MTFFOUExNjRFQ0I3RTQ0NEExQjMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OTk4MzlBNjA0NjU1MTFFOUExNjRFQ0I3RTQ0NEExQjMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6Q0E3RUNERkE0NjExMTFFOTg5NzI4MTM2Rjg0OUQwOEUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Q0E3RUNERkI0NjExMTFFOTg5NzI4MTM2Rjg0OUQwOEUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4Gh5BPAAACTUlEQVR42uzcQW7jQAwFUdN306l1uWwNww5kqdsmm6/2MwtVCp8CosQtP9vg/2+/gY+DRAMBgqnjIp2PaCxCLLldpPARRIiFj1yBbMV+cHZh9PURRLQNhY8kgWyL/WDtwujjI8hoE8rKLqb5CDJaRMJHokC6yKgSCR9JAukmokIknCQJpLOIrJFwMsBJELFcKHwM9BFkLBMKFxNcBCHlQ+FhoocgpVwwnv0Xn30QBJGMC0QcaBVJiAMiec/dcwKuL4j1QMsVCXFAJE4s4NQA3K/8Y6DzO4g40P7UcmIBJxbEesCKWBDg8wWxHrAiFgT4fEGsB/CwIhYE+AeBAAdPLOcV8HRmWRDAiQVcO7GcV8CLM8uCAE4sQCDAlHcQ7x+ABQEEAggEEAggEEAggEAAgQACASAQQCCAQACBAAIBBAIIBBAIIBBAIABe4e9iAe/xd7EAJxYgEGDeO4j3EODp/cOCAE4sYMyJ5cwCHs4rCwI4sYBxJ5YzC84rCwKcXxArAuthQYDzC2JF0H49LAhwYUGsCFqvx5EF2T07dMaJBetx4cRyaqFtHJ8EIhK0i8OJBQxcECuCVutxJhCRoE0cZwMRyRcFefa/ffZBVPogePihhyCnbBhcfMFFEFM+DD4m+ghSlgmDkwlOgpAl4+BkkJMgZdk4+EgaSCcpVX7bmY9kgXQQU+1TgE0c+QJZUUz1b2T4SBbIKmJW+3iMj2SBVBWz+leVfCQLpIqYbp8b85EskIxyfIOfK5Sf+wiCRJEsllQ+oqEkQfBxmD8BBgA5hVjXyrBNUQAAAABJRU5ErkJggg==);
-		background-size: 100% 100%;
-
-		.num {
-			width: 36upx;
-			height: 36upx;
-			border-radius: 50px;
-			font-size: 24upx;
-			color: #fff;
-			text-align: center;
-			line-height: 36upx;
-		}
-
-		.sign {
-			position: absolute;
-			top: 0;
-			left: 50%;
-			line-height: 36upx;
-			font-size: 12upx;
-			color: #fff;
-			transform: translateX(-50%);
-		}
-	}
-
-	.ad-1 {
-		width: 100%;
-		height: 210upx;
-		padding: 10upx 0;
-		background: #fff;
-
-		image {
-			width: 100%;
+		>.init {
 			height: 100%;
 		}
-	}
 
-	/* 秒杀专区 */
-	.seckill-section {
-		padding: 4upx 30upx 24upx;
-		background: #fff;
-
-		.s-header {
+		/* 分类 */
+		.cont {
+			height: 100%;
+			border-bottom: 1upx #eee solid;
+			background-color: #f6f6f5;
 			display: flex;
+			justify-content: space-around;
 			align-items: center;
-			height: 92upx;
-			line-height: 1;
+			flex-wrap: wrap;
 
-			.s-img {
-				width: 140upx;
-				height: 30upx;
-			}
-
-			.tip {
-				font-size: $font-base;
-				color: $font-color-light;
-				margin: 0 20upx 0 40upx;
-			}
-
-			.timer {
-				display: inline-block;
-				width: 40upx;
-				height: 36upx;
+			.li {
+				width: 188upx;
+				height: 188upx;
+				padding: 20px 0 0;
 				text-align: center;
-				line-height: 36upx;
-				margin-right: 14upx;
-				font-size: $font-sm+2upx;
-				color: #fff;
-				border-radius: 2px;
-				background: rgba(0, 0, 0, .8);
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				font-size: $font-sm + 2upx;
+				color: $font-color-dark;
 			}
 
-			.icon-you {
-				font-size: $font-lg;
-				color: $font-color-light;
-				flex: 1;
-				text-align: right;
+			.li.s {
+				background-image: linear-gradient(rgba(255, 255, 255, 0.06) 20%, #fff 90%);
+				z-index: 10;
+				position: relative;
 			}
-		}
 
-		.floor-list {
-			white-space: nowrap;
-		}
-
-		.scoll-wrapper {
-			display: flex;
-			align-items: flex-start;
-		}
-
-		.floor-item {
-			width: 300upx;
-			margin-right: 20upx;
-			font-size: $font-sm+2upx;
-			color: $font-color-dark;
-			line-height: 1.8;
-
+			/* 原图标颜色太深,不想改图了,所以加了透明度 */
 			image {
-				width: 300upx;
-				height: 300upx;
-				border-radius: 6upx;
+				width: 88upx;
+				height: 88upx;
+				border-radius: 50%;
+				opacity: .7;
+				box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
 			}
 
-			.price {
-				color: $uni-color-primary;
+			text {
+				height: 60upx;
+				line-height: 60upx;
 			}
 		}
 
-		.title2 {
-			font-size: $font-sm;
-			color: $font-color-light;
-			line-height: 40upx;
-		}
-	}
-
-	.f-header {
-		display: flex;
-		align-items: center;
-		height: 140upx;
-		padding: 6upx 30upx 8upx;
-		background: #fff;
-
-		image {
-			flex-shrink: 0;
-			width: 80upx;
-			height: 80upx;
-			margin-right: 20upx;
-		}
-
-		.tit-box {
-			flex: 1;
+		.commend {
+			padding: 0 20px 20px;
+			font-size: 26upx;
+			background-color: #fff;
 			display: flex;
-			flex-direction: column;
-		}
 
-		.tit {
-			font-size: $font-lg +2upx;
-			color: #font-color-dark;
-			line-height: 1.3;
-		}
+			.li {
+				margin-right: 20upx;
+				padding: 10upx 30upx;
+				border: 1upx solid #ccc;
+				border-radius: 40upx;
+			}
 
-		.tit2 {
-			font-size: $font-sm;
-			color: $font-color-light;
-		}
+			.li:last-child {
+				margin-right: 0upx;
+			}
 
-		.icon-you {
-			font-size: $font-lg +2upx;
-			color: $font-color-light;
-		}
-
-		.timer {
-			display: inline-block;
-			width: 40upx;
-			height: 36upx;
-			text-align: center;
-			line-height: 36upx;
-			margin-right: 14upx;
-			font-size: $font-sm+2upx;
-			color: #fff;
-			border-radius: 2px;
-			background: rgba(0, 0, 0, .8);
+			.s {
+				color: #ee0000;
+				border: 1upx #ee0000 solid;
+			}
 		}
 	}
 
-	
-	.hot-section {
+	.list {
+		padding: 298upx 30upx 120upx;
+		background: #fff;
 		display: flex;
 		flex-wrap: wrap;
-		padding: 0 30upx;
-		background: #fff;
 
-		.guess-item {
+		.li {
 			display: flex;
 			flex-direction: row;
 			width: 100%;
-			padding-bottom: 40upx;
+			padding-top: 40upx;
 		}
 
-		.image-wrapper {
+		.li:first-child {
+			padding-top: 0upx;
+		}
+
+		.img {
 			width: 30%;
 			height: 250upx;
 			border-radius: 3px;
@@ -640,94 +344,12 @@
 			flex-direction: column;
 			padding-left: 40upx;
 		}
-	}
 
-	.container {
-		padding: 20upx 0 0;
-		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
-	}
-
-	.main {
-		width: 700upx;
-		margin: 0 auto;
-
-		.mt {
-			margin-top: 20upx;
-		}
-
-		.menu {
+		.tc {
 			width: 100%;
-			height: 188upx;
-			overflow: hidden;
+			line-height: 90upx;
+			justify-content: center;
 
-			>.init {
-				width: 1330upx;
-				height: 100%;
-			}
-
-			/* 分类 */
-			.cont {
-				height: 100%;
-				border-bottom: 1upx #eee solid;
-				background-color: #f6f6f5;
-				display: flex;
-				justify-content: space-around;
-				align-items: center;
-				flex-wrap: wrap;
-
-				.li {
-					width: 190upx;
-					height: 189upx;
-					padding: 20px 0 0;
-					text-align: center;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					font-size: $font-sm + 2upx;
-					color: $font-color-dark;
-				}
-
-				.li.s {
-					position: relative;
-					background-image: linear-gradient(rgba(255, 255, 255, 0.06) 20%, #fff 90%);
-				}
-
-				/* 原图标颜色太深,不想改图了,所以加了透明度 */
-				image {
-					width: 88upx;
-					height: 88upx;
-					border-radius: 50%;
-					opacity: .7;
-					box-shadow: 4upx 4upx 20upx rgba(250, 67, 106, 0.3);
-				}
-				text{
-					height:60upx;
-					line-height: 60upx;
-				}
-			}
-		}
-
-		.commend {
-			padding: 20upx;
-			font-size: 26upx;
-			background-color: #fff;
-			display: flex;
-
-			.li {
-				margin-right: 20upx;
-				padding: 10upx 30upx;
-				border: 1upx solid #ccc;
-				border-radius: 40upx;
-			}
-
-			.li:last-child {
-				margin-right: 0upx;
-			}
-
-			.s {
-				color: #ee0000;
-				border: 1upx #ee0000 solid;
-			}
 		}
 	}
 </style>

@@ -1,56 +1,46 @@
 <template>
 	<view class="content b-t">
-		<view class="list b-b" v-for="(item, index) in addressList" :key="index" @click="selectBankCard(item)">
+		<view class="list b-b" v-for="(item, index) in list" :key="index" @click="add('edit', item)">
 			<view class="wrapper">
 				<view class="address-box">
 					<text v-if="item.defaultStatus==1" class="tag">默认</text>
-					<text class="address">{{item.province}} {{item.city}} {{item.region}} {{item.detailAddress}}</text>
+					<text class="address">{{item.bankName}} {{item.branchName}}</text>
 				</view>
 				<view class="u-box">
-					<text class="name">{{item.name}}</text>
-					<text class="mobile">{{item.phoneNumber}}</text>
+					<text class="name">{{item.cardholder}}</text>
+					<text class="mobile">{{item.bankCardNumber}}</text>
 				</view>
 			</view>
-			<text class="yticon icon-bianji" @click.stop="selectBankCard('edit', item)"></text>
-			<text class="yticon icon-iconfontshanchu1" @click.stop="handleDeleteAddress(item.id)"></text>
+			<text class="yticon icon-bianji" @click.stop="add('edit', item)"></text>
+			<text class="yticon icon-iconfontshanchu1" @click.stop="del(item.id)"></text>
 		</view>
 
-		<button class="add-btn" @click="addBankCard('add')">新增银行卡</button>
+		<button class="add-btn" @click="add('add')">新增银行卡</button>
 	</view>
 </template>
 
 <script>
 	import {
-		fetchAddressList,
-		deleteAddress
-	} from '@/api/address.js';
+		getListBankCard,
+		delBankCard,
+		setBankCard
+	} from '@/api/me.js';
+	
 	export default {
 		data() {
 			return {
 				source: 0,
-				addressList: []
+				list: []
 			}
 		},
 		onLoad(option) {
-			console.log(option.source);
 			this.source = option.source;
 			this.loadData();
 		},
 		methods: {
 			async loadData() {
-				fetchAddressList().then(response => {
-					this.addressList = response.data;
-				});
-			},
-			//选择地址
-			selectBankCard(item) {
-				uni.navigateTo({
-					url: `/pages/me/bankcardedit?id=${item.id}`
-				});
-			},
-			addBankCard(item){
-				uni.navigateTo({
-					url: `/pages/me/bankcardedit`
+				getListBankCard().then(res => {
+					this.list = res.data;
 				});
 			},
 			//选择地址
@@ -61,26 +51,27 @@
 					uni.navigateBack()
 				}
 			},
-			addAddress(type, item) {
+			add(type, item) {
+				console.log(item);
 				if (type == 'edit') {
 					uni.navigateTo({
-						url: `/pages/address/addressManage?type=${type}&id=${item.id}`
+						url: `/pages/me/bankcardedit?type=${type}&id=${item.id}`
 					})
 				} else {
 					uni.navigateTo({
-						url: `/pages/address/addressManage?type=${type}`
+						url: `/pages/me/bankcardedit?type=${type}`
 					})
 				}
 			},
-			//处理删除地址
-			handleDeleteAddress(id){
+			//处理删除银行卡
+			del(id){
 				let superThis = this;
 				uni.showModal({
 				    title: '提示',
-				    content: '是否要删除该地址',
+				    content: '是否要删除该银行卡',
 				    success: function (res) {
 				        if (res.confirm) {
-				            deleteAddress(id).then(response=>{
+				            delBankCard({id:id}).then(res=>{
 								superThis.loadData();
 							});
 				        } else if (res.cancel) {
@@ -92,7 +83,7 @@
 			//添加或修改成功之后回调
 			refreshList(data, type) {
 				//添加或修改后事件，这里直接在最前面添加了一条数据，实际应用中直接刷新地址列表即可
-				// this.addressList.unshift(data);
+				// this.list.unshift(data);
 				this.loadData();
 				console.log(data, type);
 			}

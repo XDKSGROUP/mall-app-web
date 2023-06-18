@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="row b-b">
 			<text class="tit">原密码</text>
-			<input class="input" type="password" v-model="form.srcPassword" placeholder="输入原支付密码" placeholder-class="placeholder" />
+			<input class="input" type="password" v-model="form.oldPassword" placeholder="输入原支付密码" placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b">
 			<text class="tit">新密码</text>
@@ -19,72 +19,50 @@
 
 <script>
 	import {
-		addAddress,
-		updateAddress,
-		fetchAddressDetail
-	} from '@/api/address.js';
+		setPayPassword2
+	} from '@/api/me.js';
 
 	export default {
 		data() {
 			return {
 				form: {
-					srcPassword: '',
+					oldPassword: '',
 					password: '',
 					password2: ''
 				}
 			}
 		},
 		onLoad(option) {
-			let title = '支付密码';
-			uni.setNavigationBarTitle({
-				title
-			});
+			
 		},
 		methods: {
-			setBirthday(e){
-				this.form.birthday=e.detail.value;
-			},
-			setSex(e){
-				this.form.sex=this.sexs[e.detail.value];
-			},
 			//提交
 			confirm() {
-				let data = this.addressData;
-				if (!data.name) {
-					this.$api.msg('请填写收货人姓名');
+				let data = this.form;
+				if (data.password != data.password2) {
+					this.$api.msg('两次密码不一致');
 					return;
 				}
-				if (!/(^1[3|4|5|7|8][0-9]{9}$)/.test(data.phoneNumber)) {
-					this.$api.msg('请输入正确的手机号码');
-					return;
-				}
-				if (!data.province) {
-					this.$api.msg('请在地图选择所在位置');
-					return;
-				}
-				if (!data.detailAddress) {
-					this.$api.msg('请填写详细地址信息');
-					return;
-				}
-				if (this.manageType == 'edit') {
-					updateAddress(this.addressData).then(response => {
-						//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
-						this.$api.prePage().refreshList(data, this.manageType);
-						this.$api.msg("地址修改成功！");
-						setTimeout(() => {
-							uni.navigateBack()
-						}, 800)
+				setPayPassword2(data).then(res => {
+					if (res.code != 200) {
+						uni.showToast({
+							title: res.message,
+							duration: 1000
+						});
+						return;
+					}
+					uni.showToast({
+						title: '修改成功',
+						icon: 'none',
+						mask: true,
+						duration: 1000
 					});
-				} else {
-					addAddress(this.addressData).then(response => {
-						//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
-						this.$api.prePage().refreshList(data, this.manageType);
-						this.$api.msg("地址添加成功！");
-						setTimeout(() => {
-							uni.navigateBack()
-						}, 800)
-					});
-				}
+					setTimeout(() => {
+						uni.navigateTo({
+							url:"/pages/set/set"
+						})
+					}, 1500)
+				});
 			},
 		}
 	}

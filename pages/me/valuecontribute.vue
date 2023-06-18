@@ -29,7 +29,7 @@
 			<view class="li">
 				<view class="f">交易类型</view>
 				<view class="v mb_20">
-					<CheckListBox :list="enums.enumTradeType" v-model:checks="form.sourceTypes" :colNum="4">
+					<CheckListBox :list="enums.enumTradeType" v-model="form.source" :colNum="4">
 					</CheckListBox>
 				</view>
 			</view>
@@ -41,37 +41,40 @@
 					<input class="input" v-model="form.changeMoneyEnd" placeholder="最大金额" />
 				</view>
 			</view>
-			<view class="li">
+			<!-- <view class="li">
 				<view class="f">交易对方</view>
 				<view class="v">
 					<input class="input max" v-model="form.username" placeholder="对方帐号" />
 				</view>
-			</view>
+			</view> -->
 			<view class="btns">
-				<view class="reset">重置</view>
-				<view class="confirm" @click="clickSearch()">确定</view>
+				<view class="reset" @click="reset()">重置</view>
+				<view class="confirm" @click="search()">确定</view>
 			</view>
 		</view>
 		<view v-if="!isSearch" class="listpage">
 			<view class="search">
 				<view class="lasttime" v-for="it in enums.enumLastTimeType"
-					:class="it.value==form.createTimeType?'s':''" @click="form.createTimeType=it.value">{{it.name}}
+					:class="it.value==form.createTimeType?'s':''" @click="clickLastTime(it)">{{it.name}}
 				</view>
-				<view class="filter" @click="clickSearch()">
+				<view class="filter" @click="search()">
 					<view>筛选</view>
 					<uni-icons type="bottom" size="10"></uni-icons>
 				</view>
 			</view>
 			<view class="list">
-				<view class="li" v-for="num in 9" @click="navToDetailPage({id:1})">
+				<view class="li" v-for="it in list">
 					<view class="act">
-						<view class="l">转入</view>
-						<view class="r">+78,657.67</view>
+						<view class="l">{{getSource(it.source)}}</view>
+						<view class="r">{{it.changeMoney}}</view>
 					</view>
 					<view class="dt">
-						<view class="l">2023-06-11 07:45:35</view>
-						<view class="r">余额：898,687.47</view>
+						<view class="l">{{rtnDateTimeToStr(it.createTime)}}</view>
+						<view class="r">余额：{{it.afterMoney}}</view>
 					</view>
+				</view>
+				<view class="empty" v-if="list.length==0">
+					暂无信息
 				</view>
 			</view>
 		</view>
@@ -87,12 +90,16 @@
 		getLastWeekStartTime,
 		getLastMonthStartTime,
 		getLast3MonthStartTime,
+		rtnDateTimeToStr,
 	} from '@/utils/com.js';
 	import {
 		enumTradeType,
 		enumLastTimeType
 	} from '@/utils/enums.js';
 	import CheckListBox from '@/components/l/CheckListBox.vue';
+	import {
+		getListChangeMoneys
+	} from '@/api/me.js';
 
 	export default {
 		components: {
@@ -111,23 +118,58 @@
 					createTimeMax: '2100-01-01',
 				},
 				form: {
+					type: 1, //贡献值
 					createTimeType: 1,
 					createTimeStart: undefined,
 					createTimeEnd: undefined,
-					sourceTypes: [],
+					source: [],
 					changeMoneyStart: undefined,
 					changeMoneyEnd: undefined,
 					username: undefined,
+					pageNum: 1,
+					pageSize: 15,
 				},
+				list: [],
 			};
 		},
 		onLoad(option) {
-
+			this.loadData();
+			this.formReset = Object.assign({}, this.form);
+		},
+		//下拉刷新
+		onPullDownRefresh() {
+			this.loadData();
+			uni.stopPullDownRefresh();
+		},
+		//加载更多
+		onReachBottom() {
+			this.loadData(1);
 		},
 		methods: {
+			rtnDateTimeToStr,
 			setPicker,
+			getSource(source) {
+				const name = enumTradeType.find(t => t.value == source)?.name || "-";
+				return name;
+			},
+			loadData(isAppend) {
+				const me = this;
+				if (isAppend) {
+					me.form.pageNum++;
+				} else {
+					me.form.pageNum = 1;
+				}
+				getListChangeMoneys(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+					}
+
+					if (!isAppend) me.list.splice(0, this.list.length);
+					me.list.push(...res.data.list);
+				});
+			},
 			/** 切换搜索页 */
-			clickSearch(isOk) {
+			search(isOk) {
 				const me = this;
 				isOk = isOk === undefined ? !me.isSearch : isOk;
 				me.isSearch = isOk;
@@ -135,9 +177,15 @@
 					me.form.createTimeEnd = isOk ? me.form.createTimeEnd.replace(/ .*$/, "") : me.form.createTimeEnd +
 						" 23:59:59";
 				}
+				if (!isOk) me.loadData();
+			},
+			reset() {
+				Object.assign(this.form, this.formReset);
+				this.search();
 			},
 			clickLastTime(item) {
 				const me = this;
+				me.form.createTimeType = item.value;
 				me.form.createTimeEnd = undefined;
 				switch (item.value) {
 					case 1:
@@ -150,6 +198,7 @@
 						me.form.createTimeStart = getLast3MonthStartTime();
 						break;
 				}
+				me.loadData();
 			},
 			/** 详情页 */
 			navToDetailPage(item) {
@@ -334,6 +383,12 @@
 
 				.li:last-child {
 					border: 0;
+				}
+
+				.empty {
+					font-size: 30upx;
+					line-height: 130upx;
+					text-align: center;
 				}
 			}
 		}

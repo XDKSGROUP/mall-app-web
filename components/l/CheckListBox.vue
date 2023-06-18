@@ -26,7 +26,7 @@
 				type: Array,
 				default: () => []
 			},
-			checks: {
+			value: {
 				type: Array,
 				default: () => []
 			}
@@ -34,10 +34,10 @@
 		computed: {
 			checkList: {
 				get() {
-					return this.checks;
+					return this.value;
 				},
 				set(val) {
-					this.$emit('update:checks', val);
+					this.$emit('input', val);
 				}
 			}
 		},

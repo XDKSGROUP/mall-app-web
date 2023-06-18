@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view class="left-bottom-sign"></view>
-		<view class="back-btn yticon icon-zuojiantou-up" @click="navBack"></view>
+		<view class="back-btn yticon icon-zuojiantou-up" @click="gotoHome"></view>
 		<view class="right-top-sign"></view>
 		<!-- 设置白色背景防止软键盘把下部绝对定位元素顶上来盖住输入框等 -->
 		<view class="wrapper">
@@ -12,23 +12,22 @@
 			<view class="input-content">
 				<view class="input-item">
 					<text class="tit">用户名</text>
-					<input type="text" v-model="username" placeholder="请输入用户名" maxlength="11"/>
+					<input type="text" v-model="username" placeholder="请输入用户名" maxlength="11" />
 				</view>
 				<view class="input-item">
 					<text class="tit">密码</text>
-					<input type="text" v-model="password" placeholder="8-18位不含特殊字符的数字、字母组合" placeholder-class="input-empty" maxlength="20"
-					 password @confirm="toLogin" />
+					<input type="text" v-model="password" placeholder="8-18位不含特殊字符的数字、字母组合"
+						placeholder-class="input-empty" maxlength="20" password @confirm="loginIn" />
 				</view>
 			</view>
-			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
-			<button class="confirm-btn2" @click="toRegist" >获取体验账号</button>
-			<view class="forget-section" @click="toRegist">
+			<button class="confirm-btn" @click="loginIn" :disabled="logining">登录</button>
+			<view class="forget-section" @click="gotoForgotpassword">
 				忘记密码?
 			</view>
 		</view>
 		<view class="register-section">
 			还没有账号?
-			<text @click="toRegist">马上注册</text>
+			<text @click="gotoRegister">马上注册</text>
 		</view>
 	</view>
 </template>
@@ -38,7 +37,8 @@
 		mapMutations
 	} from 'vuex';
 	import {
-		memberLogin,memberInfo
+		memberLogin,
+		memberInfo
 	} from '@/api/member.js';
 	export default {
 		data() {
@@ -54,28 +54,38 @@
 		},
 		methods: {
 			...mapMutations(['login']),
-			navBack() {
-				uni.navigateBack();
+			gotoHome() {
+				uni.switchTab({
+					url: '/pages/index/index'
+				});
 			},
-			toRegist() {
-				uni.navigateTo({url:'/pages/public/register'});
+			gotoRegister() {
+				uni.navigateTo({
+					url: '/pages/public/register'
+				});
 			},
-			async toLogin() {
-				this.logining = true;
+			gotoForgotpassword() {
+				uni.navigateTo({
+					url: '/pages/public/forgotpassword'
+				});
+			},
+			async loginIn() {
+				const me=this;
+				me.logining = true;
 				memberLogin({
-					username: this.username,
-					password: this.password
+					username: me.username,
+					password: me.password
 				}).then(response => {
-					let token = response.data.tokenHead+response.data.token;
-					uni.setStorageSync('token',token);
-					uni.setStorageSync('username',this.username);
-					uni.setStorageSync('password',this.password);
-					memberInfo().then(response=>{
-						this.login(response.data);
-						uni.navigateBack();
+					let token = response.data.tokenHead + response.data.token;
+					uni.setStorageSync('token', token);
+					uni.setStorageSync('username', me.username);
+					uni.setStorageSync('password', me.password);
+					memberInfo().then(response => {
+						me.login(response.data);
+						me.gotoHome();
 					});
 				}).catch(() => {
-					this.logining = false;
+					me.logining = false;
 				});
 			},
 		},
@@ -217,7 +227,7 @@
 			border-radius: 100px;
 		}
 	}
-	
+
 	.confirm-btn2 {
 		width: 630upx;
 		height: 76upx;
@@ -227,7 +237,7 @@
 		background: $uni-color-primary;
 		color: #fff;
 		font-size: $font-lg;
-	
+
 		&:after {
 			border-radius: 100px;
 		}

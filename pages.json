@@ -41,40 +41,8 @@
 		{
 			"path": "pages/project/index",
 			"style": {
-				// #ifdef MP 
 				"navigationBarTitleText": "发现项目",
-				//"navigationStyle": "custom",
-				// #endif 
-				"enablePullDownRefresh": true,
-				"app-plus": {
-					"titleNView": {
-						//"type": "transparent",
-						"searchInput": {
-							"backgroundColor": "rgba(231, 231, 231,.7)",
-							"borderRadius": "16px",
-							"placeholder": "请输入项目名",
-							"disabled": true,
-							"placeholderColor": "#606266"
-						},
-						"buttons": [{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue60d",
-								"fontSize": "26",
-								"color": "#fff",
-								"float": "left",
-								"background": "rgba(0,0,0,0)"
-							},
-							{
-								"fontSrc": "/static/yticon.ttf",
-								"text": "\ue744",
-								"fontSize": "27",
-								"color": "#fff",
-								"background": "rgba(0,0,0,0)",
-								"redDot": true
-							}
-						]
-					}
-				}
+				"enablePullDownRefresh": false
 			}
 		},
 		{
@@ -136,7 +104,7 @@
 			}
 		},
 		{
-			"path": "pages/set/set",
+			"path": "pages/me/set",
 			"style": {
 				"navigationBarTitleText": "设置"
 			}
@@ -173,7 +141,17 @@
 				}
 			}
 		}, {
-			"path": "pages/user/user",
+			"path": "pages/public/forgotpassword",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false,
+					"animationType": "slide-in-bottom"
+				}
+			}
+		}, {
+			"path": "pages/me/info",
 			"style": {
 				"navigationBarTitleText": "我的",
 				// #ifdef MP
@@ -451,6 +429,104 @@
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "团队值"
 			}
+		},
+		{
+			"path": "pages/me/recharge",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "爱心申购"
+			}
+		},
+		{
+			"path": "pages/me/rechargelist",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "申购列表"
+			}
+		},
+		{
+			"path": "pages/me/movelove",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "爱心传递"
+			}
+		},
+		{
+			"path": "pages/me/movelovelist",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "爱心传递记录"
+			}
+		},
+		{
+			"path": "pages/me/movecontribute",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "贡献传递"
+			}
+		},
+		{
+			"path": "pages/me/movecontributelist",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "贡献传递记录"
+			}
+		},
+		{
+			"path": "pages/me/withdrawallove",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "爱心提现"
+			}
+		},
+		{
+			"path": "pages/me/withdrawallovelist",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "爱心提现记录"
+			}
+		},
+		{
+			"path": "pages/me/withdrawalcontribute",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "贡献提现"
+			}
+		},
+		{
+			"path": "pages/me/withdrawalcontributelist",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "贡献提现记录"
+			}
+		},
+		{
+			"path": "pages/me/contactus",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "联系客服"
+			}
+		},
+		{
+			"path": "pages/help/list",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "帮助中心"
+			}
+		},
+		{
+			"path": "pages/me/aboutus",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "关于我们"
+			}
+		},
+		{
+			"path": "pages/me/valueteam",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "义工系统"
+			}
 		}
 	],
 	"globalStyle": {
@@ -478,7 +554,7 @@
 				"text": "发现项目"
 			},
 			{
-				"pagePath": "pages/user/user",
+				"pagePath": "pages/me/info",
 				"iconPath": "static/tabbar/tab-my.png",
 				"selectedIconPath": "static/tabbar/tab-my-current.png",
 				"text": "我的"

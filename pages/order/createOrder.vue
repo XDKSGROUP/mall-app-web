@@ -190,7 +190,7 @@
 			async loadData() {
 				generateConfirmOrder(JSON.stringify(this.cartIds)).then(response => {
 					this.memberReceiveAddressList = response.data.memberReceiveAddressList;
-					this.currentAddress = this.getDefaultAddress();
+					this.currentAddress = this.getDefaultAddress()||{};
 					this.cartPromotionItemList = response.data.cartPromotionItemList;
 					this.couponList = [];
 					for (let item of response.data.couponHistoryDetailList) {

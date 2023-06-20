@@ -7,18 +7,18 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">身份证号码</text>
-			<input class="input" type="text" v-model="form.idCard" placeholder="输入身份证号码"
+			<input class="input" type="text" v-model="form.identificationNumber" placeholder="输入身份证号码"
 				placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b row2">
 			<text class="tit">身份证正面</text>
 			<view class="link" @click="selectFile(1)">上传照片</view>
-			<image :src="form.idCardPhoto1"></image>
+			<image :src="form.idCardFront"></image>
 		</view>
 		<view class="row b-b row2">
 			<text class="tit">身份证反面</text>
 			<view class="link" @click="selectFile(2)">上传照片</view>
-			<image :src="form.idCardPhoto2"></image>
+			<image :src="form.idCardBack"></image>
 		</view>
 
 		<button class="add-btn" @click="confirm">提交</button>
@@ -27,19 +27,20 @@
 
 <script>
 	import {
-		addAddress,
-		updateAddress,
-		fetchAddressDetail
-	} from '@/api/address.js';
+		uploadFile
+	} from "@/api/file.js"
+	import {
+		setRealnameAuth
+	} from '@/api/me.js';
 
 	export default {
 		data() {
 			return {
 				form: {
 					realName: '',
-					idCard: '',
-					idCardPhoto1: '',
-					idCardPhoto2: '',
+					identificationNumber: '',
+					idCardFront: '',
+					idCardBack: '',
 				}
 			}
 		},
@@ -50,56 +51,46 @@
 			});
 		},
 		methods: {
-			selectFile(num) {
-				const me=this;
-				uni.chooseImage({
-					count: 1, //默认9
-					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['album'], //从相册选择
-					success: function(res) {
-						me.form["idCardPhoto"+num]=res.tempFilePaths[0];
-						console.log(JSON.stringify(res));
-					}
-				})
+			async selectFile(num) {
+				const me = this;
+				const res = await uploadFile();
+				if (!res.success) {
+					me.$api.msg(res.message);
+					return;
+				}
+				me.form["idCard"+(num==1?"Front":"Back")]=res.data;
 			},
 			//提交
 			confirm() {
-				let data = this.addressData;
-				if (!data.name) {
-					this.$api.msg('请填写收货人姓名');
+				const me=this,form=me.form;
+				if (!form.realName) {
+					me.$api.msg('请填写真实姓名');
 					return;
 				}
-				if (!/(^1[3|4|5|7|8][0-9]{9}$)/.test(data.phoneNumber)) {
-					this.$api.msg('请输入正确的手机号码');
+				if (!form.identificationNumber) {
+					me.$api.msg('请填写身份证号码');
 					return;
 				}
-				if (!data.province) {
-					this.$api.msg('请在地图选择所在位置');
+				if (!form.idCardFront) {
+					me.$api.msg('请上传身份证正面照片');
 					return;
 				}
-				if (!data.detailAddress) {
-					this.$api.msg('请填写详细地址信息');
+				if (!form.idCardBack) {
+					me.$api.msg('请上传身份证反面照片');
 					return;
 				}
-				if (this.manageType == 'edit') {
-					updateAddress(this.addressData).then(response => {
-						//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
-						this.$api.prePage().refreshList(data, this.manageType);
-						this.$api.msg("地址修改成功！");
-						setTimeout(() => {
-							uni.navigateBack()
-						}, 800)
-					});
-				} else {
-					addAddress(this.addressData).then(response => {
-						//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
-						this.$api.prePage().refreshList(data, this.manageType);
-						this.$api.msg("地址添加成功！");
-						setTimeout(() => {
-							uni.navigateBack()
-						}, 800)
-					});
-				}
+				setRealnameAuth(form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
+					}
+					me.$api.msg('提交成功');
+					setTimeout(() => {
+						uni.switchTab({
+							url: "/pages/me/info"
+						})
+					}, 1500)
+				});
 			},
 		}
 	}

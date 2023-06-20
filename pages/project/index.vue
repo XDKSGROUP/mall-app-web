@@ -78,7 +78,8 @@
 				loadingType: 'more'
 			};
 		},
-		onLoad() {
+		onLoad(options) {
+			if(options.id)this.menusIndex.s1=parseInt(options.id);
 			this.loadMenus();
 		},
 		//下拉刷新
@@ -114,8 +115,7 @@
 					});
 					its.splice(its.length - 1, 1);
 					me.menus.push(...its);
-					me.menusIndex.lst2.push(...me.menus[0].lst);
-					me.changeMenu(0, 0);
+					me.changeMenu(me.menusIndex.s1, 0);
 				});
 			},
 			changeMenu(s1, s2) {

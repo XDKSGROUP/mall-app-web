@@ -9,13 +9,13 @@
 			<text class="tit">性别</text>
 			<picker :value="form.gender" @change="setSex" :range="sexs">
 				<input class="input" type="text" v-model="form.genderName" placeholder="选择性别"
-					placeholder-class="placeholder" readyonly="readyonly" />
+					placeholder-class="placeholder" readyonly @focus="hideKeyboard()" />
 			</picker>
 		</view>
 		<view class="row b-b">
 			<text class="tit">生日</text>
 			<picker mode="date" :value="form.birthday" :start="'1900-01-01'" :end="'2100-01-01'" @change="setBirthday">
-				<input class="input" type="text" v-model="form.birthday" placeholder="选择生日" readyonly="readyonly"
+				<input class="input" type="text" v-model="form.birthday" placeholder="选择生日" @focus="hideKeyboard()" readyonly
 					placeholder-class="placeholder" />
 			</picker>
 		</view>
@@ -98,6 +98,9 @@
 						})
 					}, 1500)
 				});
+			},
+			hideKeyboard(){
+				uni.hideKeyboard();
 			},
 		}
 	}

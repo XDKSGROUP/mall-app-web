@@ -216,3 +216,11 @@ export function getProjectsAttention(params) {
 		data: params
 	})
 }
+//实名认证
+export function setRealnameAuth(params) {
+	return request({
+		method: 'POST',
+		url: '/sso/certificationApply',
+		params: params
+	})
+}

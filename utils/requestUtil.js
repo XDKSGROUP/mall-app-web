@@ -4,12 +4,12 @@ const http = new Request()
 
 http.setConfig((config) => {
 	/* 设置全局配置 */
-	config.baseUrl = 'http://192.168.124.88:8085' /* 根域名不同 */
-	//config.baseUrl = 'http://mall.tooljoin.com:8085' /* 根域名不同 */
+	config.baseUrl = process.env.NODE_ENV == "development" ? 'http://192.168.124.88:8085' :
+		'http://mall.tooljoin.com:8085';
 	config.header = {
 		...config.header
-	}
-	return config
+	};
+	return config;
 })
 
 /**
@@ -39,7 +39,6 @@ http.interceptor.request((config, cancel) => {
 	  cancel('token 不存在') // 接收一个参数，会传给catch((err) => {}) err.errMsg === 'token 不存在'
 	}
 	*/
-	console.log(config)
 	return config
 })
 

@@ -44,11 +44,11 @@
 				</scroll-view>
 			</view>
 		</view>
-
 	</view>
 </template>
 
 <script>
+	import {getObjByDefinedValues} from "@/utils/com.js"
 	import {
 		searchProductList,
 		fetchCategoryTreeList
@@ -69,7 +69,8 @@
 				cateList: [],
 				productList: [],
 				searchParam: {
-					productCategoryId: null,
+					keyword:"",
+					productCategoryId: undefined,
 					pageNum: 1,
 					pageSize: 6,
 					sort: 0
@@ -78,19 +79,22 @@
 		},
 
 		onLoad(options) {
+			const me=this;
 			// #ifdef H5
-			this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight + 'px';
+			me.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight + 'px';
 			// #endif
-			this.searchParam.productCategoryId = options.sid;
-			this.loadCateList(options.fid, options.sid);
-			this.loadData();
+			options.keyword&&(me.searchParam.keyword=options.keyword);
+			options.sid&&(me.searchParam.productCategoryId = options.sid);
+			me.loadCateList(options.fid, options.sid);
+			me.loadData();
 		},
 		onPageScroll(e) {
+			const me=this;
 			//兼容iOS端下拉时顶部漂移
 			if (e.scrollTop >= 0) {
-				this.headerPosition = "fixed";
+				me.headerPosition = "fixed";
 			} else {
-				this.headerPosition = "absolute";
+				me.headerPosition = "absolute";
 			}
 		},
 		//下拉刷新
@@ -138,7 +142,7 @@
 						this.searchParam.sort = 4;
 					}
 				}
-				searchProductList(this.searchParam).then(response => {
+				searchProductList(getObjByDefinedValues(this.searchParam)).then(response => {
 					let productList = response.data.list;
 					if (response.data.list.length === 0) {
 						//没有更多了

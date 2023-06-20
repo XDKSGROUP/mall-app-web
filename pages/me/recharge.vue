@@ -4,7 +4,8 @@
 			<view class="row b-b">
 				<view class="tit">申购金额</view>
 				<input class="input" type="text" v-model="form.rechargeMoney" placeholder="输入金额"
-					placeholder-class="placeholder" @input="o=>form.rechargeMoney=o.detail.value.replace(/[^\d]/g,'')" />
+					placeholder-class="placeholder"
+					@input="o=>form.rechargeMoney=o.detail.value.replace(/[^\d]/g,'')" />
 			</view>
 			<view class="row b-b row2">
 				<view class="tit">截图</view>
@@ -20,6 +21,9 @@
 </template>
 
 <script>
+	import {
+		uploadFile
+	} from "@/api/file.js"
 	import {
 		addRecharge
 	} from '@/api/me.js';
@@ -39,20 +43,19 @@
 
 		},
 		methods: {
-			gotoList(){
-				uni.navigateTo({url:'/pages/me/rechargelist'});
+			gotoList() {
+				uni.navigateTo({
+					url: '/pages/me/rechargelist'
+				});
 			},
-			selectFile() {
+			async selectFile() {
 				const me = this;
-				uni.chooseImage({
-					count: 1, //默认9
-					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['album'], //从相册选择
-					success: function(res) {
-						me.form["rechargePic"] = res.tempFilePaths[0];
-						console.log(JSON.stringify(res));
-					}
-				})
+				const res = await uploadFile();
+				if (!res.success) {
+					me.$api.msg(res.message);
+					return;
+				}
+				me.form.rechargePic=res.data;
 			},
 			//提交
 			confirm() {

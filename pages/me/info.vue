@@ -136,7 +136,7 @@
 	import {
 		mapState
 	} from 'vuex';
-	
+
 	let startY = 0,
 		moveY = 0,
 		pageAtTop = true;
@@ -146,7 +146,7 @@
 		},
 		data() {
 			return {
-				achievementType:0,//成就类型
+				achievementType: 0, //成就类型
 				coverTransform: 'translateY(0px)',
 				coverTransition: '0s',
 				moving: false,
@@ -505,12 +505,12 @@
 			color: $font-color-dark;
 		}
 
-		image{
-			width:40upx;
-			height:40upx;
+		image {
+			width: 40upx;
+			height: 40upx;
 			margin-bottom: 20upx;
 		}
-		
-		
+
+
 	}
 </style>

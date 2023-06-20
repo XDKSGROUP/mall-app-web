@@ -4,17 +4,15 @@
 			"style": {
 				// #ifdef MP 
 				"navigationBarTitleText": "Mall商城",
-				//"navigationStyle": "custom",
 				// #endif 
 				"enablePullDownRefresh": true,
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent",
 						"searchInput": {
-							"backgroundColor": "rgba(231, 231, 231,.7)",
+							"backgroundColor": "rgba(255, 255, 255,.2)",
 							"borderRadius": "16px",
 							"placeholder": "请输入商品 如：手机",
-							"disabled": true,
 							"placeholderColor": "#606266"
 						},
 						"buttons": [{
@@ -522,7 +520,7 @@
 			}
 		},
 		{
-			"path": "pages/me/valueteam",
+			"path": "pages/help/volunteer",
 			"style": {
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "义工系统"

@@ -43,19 +43,19 @@
 		<view class="main">
 			<!-- 菜单 -->
 			<view class="cate-section mt">
-				<view class="cate-item s">
+				<view class="cate-item s" @click="goto('/pages/product/list?sid=59')">
 					<image src="/static/index/mu1.png"></image>
 					<text>爱心</text>
 				</view>
-				<view class="cate-item">
+				<view class="cate-item" @click="goto('/pages/product/list?sid=60')">
 					<image src="/static/index/mu2.png"></image>
 					<text>公益</text>
 				</view>
-				<view class="cate-item">
+				<view class="cate-item" @click="goto('/pages/product/list?sid=61')">
 					<image src="/static/index/mu3.png"></image>
 					<text>慈善</text>
 				</view>
-				<view class="cate-item">
+				<view class="cate-item" @click="gotos('/pages/project/index?id=2')">
 					<image src="/static/index/mu4.png"></image>
 					<text>日捐</text>
 				</view>
@@ -65,7 +65,7 @@
 			<view class="notice mt">
 				<view class="icon"></view>
 				<veiw class="cont">
-					<view class="li">恭喜平台开台大吉！</view>
+					<view class="li">恭喜平台开业大吉！</view>
 				</veiw>
 			</view>
 
@@ -84,7 +84,7 @@
 			</view>
 
 			<!-- 爱心捐购 -->
-			<view class="f-header m-t" @click="navToHotProudctListPage()">
+			<view class="f-header m-t" @click="goto('/pages/product/list?sid=59')">
 				<image src="/static/index/tt2.png"></image>
 				<view class="tit-box">
 					<text class="tit">爱心捐购</text>
@@ -151,24 +151,11 @@
 		},
 		//下拉刷新
 		onPullDownRefresh() {
-			this.recommendParams.pageNum = 1;
-			this.loadData();
+			uni.stopPullDownRefresh();
 		},
 		//加载更多
 		onReachBottom() {
-			this.recommendParams.pageNum++;
-			this.loadingType = 'loading';
-			fetchRecommendProductList(this.recommendParams).then(response => {
-				let addProductList = response.data;
-				if (response.data.length === 0) {
-					//没有更多了
-					this.recommendParams.pageNum--;
-					this.loadingType = 'nomore';
-				} else {
-					this.recommendProductList = this.recommendProductList.concat(addProductList);
-					this.loadingType = 'more';
-				}
-			})
+
 		},
 		computed: {
 			cutDownTime() {
@@ -239,42 +226,31 @@
 				let id = item.id;
 				console.log("navToAdvertisePage", item)
 			},
-			//品牌详情页
-			navToBrandDetailPage(item) {
-				let id = item.id;
+			goto(url) {
 				uni.navigateTo({
-					url: `/pages/brand/brandDetail?id=${id}`
+					url: url
 				})
 			},
-			//推荐品牌列表页
-			navToRecommendBrandPage() {
-				uni.navigateTo({
-					url: `/pages/brand/list`
+			gotos(url) {
+				uni.reLaunch({
+					url: url
 				})
-			},
-			//新鲜好物列表页
-			navToNewProudctListPage() {
-				uni.navigateTo({
-					url: `/pages/product/newProductList`
-				})
-			},
-			//人气推荐列表页
-			navToHotProudctListPage() {
-				uni.navigateTo({
-					url: `/pages/product/hotProductList`
-				})
-			},
+			}
 		},
 		// #ifndef MP
-		// 标题栏input搜索框点击
-		onNavigationBarSearchInputClicked: async function(e) {
-			this.$api.msg('点击了搜索框');
+		onNavigationBarSearchInputConfirmed: async function(e) {
+			const keyword=e.text;
+			uni.navigateTo({
+				url: "/pages/product/list?keyword="+keyword
+			})
 		},
 		//点击导航栏 buttons 时触发
 		onNavigationBarButtonTap(e) {
 			const index = e.index;
 			if (index === 0) {
-				this.$api.msg('点击了扫描');
+				uni.navigateTo({
+					url: "/pages/me/invite"
+				})
 			} else if (index === 1) {
 				// #ifdef APP-PLUS
 				const pages = getCurrentPages();
@@ -766,6 +742,7 @@
 	}
 
 	.container {
+		padding-bottom: 140upx;
 		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
 	}
 
@@ -841,16 +818,18 @@
 		background: #fff;
 
 		.cate-item {
-			width:150upx;
-			padding:16upx 32upx;
+			width: 150upx;
+			padding: 16upx 32upx;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
 			font-size: $font-sm + 2upx;
 			color: $font-color-dark;
 		}
-		.cate-item:hover,.cate-item:active{
-			background: radial-gradient(#ddd 0%,#fff 70%);
+
+		.cate-item:hover,
+		.cate-item:active {
+			background: radial-gradient(#ddd 0%, #fff 70%);
 		}
 
 		/* 原图标颜色太深,不想改图了,所以加了透明度 */

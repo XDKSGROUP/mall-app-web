@@ -8,6 +8,9 @@
 </template>
 
 <script>
+	import {
+		getImageSize
+	} from "@/utils/com.js"
 	import UQRCode from 'uqrcodejs';
 	import {
 		mapState
@@ -21,12 +24,15 @@
 					height: 0,
 					canvasW: 0,
 					canvasH: 0,
-
 				}
 			};
 		},
 		computed: {
 			...mapState(['hasLogin', 'userInfo'])
+		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
 		},
 		onLoad(option) {
 			const me = this,
@@ -49,7 +55,7 @@
 		methods: {
 			/**t:起始位置顶部;l:起始位置左侧；w:显示区域宽度;h:显示区域高度;fs:字体大小;text:文本内容;xp:横向对齐比例;yp:纵向对齐比例*/
 			getXY(l, t, w, h, fs, text, xp, yp) {
-				text=text.toString();
+				text = text.toString();
 				const tlen = text.length;
 				//计算半角字符数
 				const tlens = text.replace(/[\u0391-\uFFE5]/g, "").length;
@@ -65,7 +71,7 @@
 					y
 				};
 			},
-			loadInfo: function() {
+			loadInfo: async function() {
 				const me = this,
 					info = me.info,
 					w = info.canvasW,
@@ -82,7 +88,8 @@
 
 				//文字板块
 				//固定顶部值
-				let textLeft = uni.upx2px(280),textTop = 150;
+				let textLeft = uni.upx2px(280),
+					textTop = 150;
 				// 昵称
 				let t = me.userInfo.nickname || "-",
 					f = 18,
@@ -93,7 +100,7 @@
 				// 称号
 				t = me.userInfo.title || "公民",
 					f = 18,
-					p = me.getXY(textLeft, uni.upx2px(textTop+54), uni.upx2px(460), uni.upx2px(44), f, t, 0, 0.5);
+					p = me.getXY(textLeft, uni.upx2px(textTop + 54), uni.upx2px(460), uni.upx2px(44), f, t, 0, 0.5);
 				ctx.setFontSize(f); // setFontSize() 设置字体字号
 				ctx.setFillStyle('#fff'); // setFillStyle() 设置字体颜色
 				ctx.fillText(t, p.x, p.y);
@@ -126,9 +133,10 @@
 				ctx.fillText(t, p.x, p.y); // （文字，x，y）
 
 				// 头像板块
-				let photoUrl = me.userInfo.icon || "/static/me/user-head.jpg",
-					photoWidth = 375,
-					photoHeight = 250,
+				let photoUrl = me.userInfo.icon || "/static/me/user-head.jpg";
+				let img = await getImageSize(photoUrl);
+				let photoWidth = img.width || 300,
+					photoHeight = img.height || 300,
 					photoFixX = 0,
 					photoFixY = 0,
 					photoMin = 0;

@@ -35,18 +35,59 @@ export function getLast3MonthStartTime() {
 export function getLastStartTime(num) {
 	let now = new Date();
 	let dt = new Date(now.setDate(now.getDate() - num + 1));
-	const month=dt.getMonth() + 1;
-	dt = dt.getFullYear() + "-" + (month<10?"0":"")+month + "-" + (dt.getDate());
+	const month = dt.getMonth() + 1;
+	dt = dt.getFullYear() + "-" + (month < 10 ? "0" : "") + month + "-" + (dt.getDate());
 	return dt;
 }
 
 /**转换返回日期时间*/
 export function rtnDateTimeToStr(dt) {
-	const dtm=(dt||"").replace(/\.\d+\+\d+\:\d+$/,"").replace("T"," ");
+	const dtm = (dt || "").replace(/\.\d+\+\d+\:\d+$/, "").replace("T", " ");
 	return dtm;
 }
 /**转换返回日期*/
 export function rtnDateToStr(dt) {
-	const dtm=(dt||"").replace(/\s+\d+\:\d+\:\d+$|T\d+\:\d+\:\d+\.\d+\+\d+\:\d+$/,"");
+	const dtm = (dt || "").replace(/\s+\d+\:\d+\:\d+$|T\d+\:\d+\:\d+\.\d+\+\d+\:\d+$/, "");
 	return dtm;
+}
+/**返回属性带值的新对象*/
+export function getObjByDefinedValues(obj) {
+	const rtn = {};
+	for (let n in obj) {
+		const t = obj[n];
+		if (t === undefined || t === null) continue;
+		rtn[n] = t;
+	}
+	return rtn;
+}
+/**返回错误信息*/
+export function getError(msg) {
+	return {
+		success: false,
+		message: msg
+	};
+}
+/**返回结果信息*/
+export function getResult(data) {
+	return {
+		success: true,
+		data: data
+	};
+}
+/**获取图片宽高*/
+export async function getImageSize(src) {
+	if (!src) {
+		resolve(getError("图片不能为空"));
+	}
+	return new Promise((resolve, reject) => {
+		uni.getImageInfo({
+			src: src,
+			success: (image) => {
+				resolve(image);
+			},
+			fail(err) {
+				reject(getError(err.message))
+			}
+		});
+	});
 }

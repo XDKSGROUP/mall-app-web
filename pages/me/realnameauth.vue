@@ -44,6 +44,10 @@
 				}
 			}
 		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
+		},
 		onLoad(option) {
 			let title = '实名认证';
 			uni.setNavigationBarTitle({

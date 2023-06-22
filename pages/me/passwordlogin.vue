@@ -35,6 +35,10 @@
 				}
 			}
 		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
+		},
 		onLoad(option) {
 			let title = '登录密码';
 			uni.setNavigationBarTitle({
@@ -65,7 +69,7 @@
 					});
 					setTimeout(() => {
 						uni.navigateTo({
-							url:"/pages/set/set"
+							url:"/pages/me/set"
 						})
 					}, 1500)
 				});

@@ -1,24 +1,68 @@
 <template>
 	<view class="container">
-		<!-- <view class="fixtop">
+		<view v-if="isSearch" class="searchpage">
+			<view class="li">
+				<view class="f">交易时间</view>
+				<view class="v">
+					<view class="input">
+						<picker mode="date" :value="form.donationTimeStart" :start="limits.createTimeMin"
+							:end="limits.createTimeMax" @change="setDataTimePicker(form,'donationTimeStart',arguments)">
+							<view class="pickerin">
+								<input placeholder="起始交易时间" :value="form.donationTimeStart" />
+								<uni-icons type="bottom" size="10"></uni-icons>
+							</view>
+						</picker>
+					</view>
+					<view class="sep"></view>
+					<view class="input">
+						<picker mode="date" :value="form.donationTimeEnd"
+							:start="form.donationTimeStart||limits.createTimeMin" :end="limits.createTimeMax"
+							@change="setDataTimePicker(form,'donationTimeEnd',arguments)">
+							<view class="pickerin">
+								<input placeholder="结束交易时间" :value="form.donationTimeEnd" />
+								<uni-icons type="bottom" size="10"></uni-icons>
+							</view>
+						</picker>
+					</view>
+				</view>
+			</view>
+			<view class="li">
+				<view class="f">变动金额</view>
+				<view class="v">
+					<input class="input" v-model="form.moneyStart" placeholder="最小金额" />
+					<view class="sep"></view>
+					<input class="input" v-model="form.moneyEnd" placeholder="最大金额" />
+				</view>
+			</view>
+			<view class="btns">
+				<view class="reset" @click="reset()">重置</view>
+				<view class="confirm" @click="search()">确定</view>
+			</view>
+		</view>
+		<view v-if="!isSearch" class="listpage">
 			<view class="search">
-				<input class="input" type="text" v-model="form.name" placeholder="输入项目名称" @confirm="loadData()" />
-			</view>
-		</view> -->
-
-		<view class="list">
-			<view v-for="(item, index) in list" :key="index" class="li" @click="gotoDetail(item)">
-				<view class="img">
-					<image :src="item.pic.replace(/^\s+/,'')" mode="aspectFill"></image>
+				<view class="lasttime" v-for="it in enums.enumLastTimeType" :key="it.value"
+					:class="it.value===form.createTimeType?'s':''" @click="clickLastTime(it)">{{it.name}}
 				</view>
-				<view class="txt">
-					<text class="title clamp">{{item.name}}</text>
-					<text class="title2">{{item.info}}</text>
-					<text class="price">￥{{item.raisedMoney}}/{{item.targetMoney}}</text>
+				<view class="filter" @click="search()">
+					<view>筛选</view>
+					<uni-icons type="bottom" size="10"></uni-icons>
 				</view>
 			</view>
-			<view class="tc">
-				<uni-load-more :status="loadingType"></uni-load-more>
+			<view class="list">
+				<view class="li" v-for="it in list">
+					<view class="act">
+						<view class="l">编号：{{it.number}}</view>
+						<view class="r">{{it.donationAmount}}</view>
+					</view>
+					<view class="dt">
+						<view class="l">{{rtnDateTimeToStr(it.donationTime)}}</view>
+						<view class="r">{{getMoneyType(it.donationType)}}</view>
+					</view>
+				</view>
+				<view class="empty" v-if="list.length==0">
+					暂无信息
+				</view>
 			</view>
 		</view>
 	</view>
@@ -26,31 +70,49 @@
 
 <script>
 	import {
-		getProjectsAttention,
-	} from '@/api/me.js';
+		setPicker,
+		getLastWeekStartTime,
+		getLastMonthStartTime,
+		getLast3MonthStartTime,
+		rtnDateTimeToStr,
+	} from '@/utils/com.js';
 	import {
-		formatDate
-	} from '@/utils/date';
-	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+		enumMoneyType,
+		enumLastTimeType,
+	} from '@/utils/enums.js';
+	import {
+		getProjectsContribute
+	} from '@/api/me.js';
 
 	export default {
 		components: {
-			uniLoadMore,
 		},
 		data() {
 			return {
-				list: [], //列表数据
-				form: { //查询参数
-					categoryId: undefined,
-					name: undefined,
-					pageNum: 1,
-					pageSize: 5
+				isSearch: false,
+				enums: {
+					enumLastTimeType,
 				},
-				loadingType: 'more'
+				limits: {
+					createTimeMin: '2020-01-01',
+					createTimeMax: '2100-01-01',
+				},
+				form: {
+					type: 1, //贡献值
+					createTimeType: 1,
+					donationTimeStart: getLastWeekStartTime(),
+					donationTimeEnd: undefined,
+					moneyStart: undefined,
+					moneyEnd: undefined,
+					pageNum: 1,
+					pageSize: 15,
+				},
+				list: [],
 			};
 		},
-		onLoad() {
+		onLoad(option) {
 			this.loadData();
+			this.formReset=Object.assign({},this.form);
 		},
 		//下拉刷新
 		onPullDownRefresh() {
@@ -62,22 +124,15 @@
 			this.loadData(1);
 		},
 		methods: {
-			getMenuWidth() {
-				return uni.upx2px(this.menus.length * 188);
+			rtnDateTimeToStr,
+			setDataTimePicker(obj, name, args, enums) {
+				this.form.createTimeType = undefined;
+				setPicker(obj, name, args, enums);
 			},
-			changeMenu(s1, s2) {
-				const me = this;
-				me.menusIndex.s1 = s1;
-				me.menusIndex.s2 = s2;
-				me.menusIndex.lst2.splice(0, me.menusIndex.lst2.length);
-				const mainMenu = me.menus[s1];
-				me.form.categoryId = mainMenu.id;
-				me.menusIndex.lst2.push(...me.menus[s1].lst);
-				me.loadData();
+			getMoneyType(id) {
+				const name = enumMoneyType.find(t => t.value == id)?.name || "-";
+				return name;
 			},
-			/**
-			 * 加载数据
-			 */
 			loadData(isAppend) {
 				const me = this;
 				if (isAppend) {
@@ -85,142 +140,239 @@
 				} else {
 					me.form.pageNum = 1;
 				}
-				getProjectsAttention(me.form).then(res => {
+				getProjectsContribute(me.form).then(res => {
 					if (res.code != 200) {
 						me.$api.msg(res.message);
 						return;
 					}
-					const list = res.data.list;
-					me.loadingType = list.length < me.form.pageSize ? 'nomore' : 'more';
-					if (isAppend) {
-						if (list.length == 0) {
-							return;
-						}
-					} else {
-						me.list.splice(0, me.list.length);
-					}
-					//加入列表
-					me.list.push(...list);
+
+					if (!isAppend) me.list.splice(0, this.list.length);
+					me.list.push(...res.data.list);
 				});
 			},
-			//详情页
-			gotoDetail(item) {
+			/** 切换搜索页 */
+			search(isOk) {
+				const me = this;
+				isOk = isOk === undefined ? !me.isSearch : isOk;
+				me.isSearch = isOk;
+				if (me.form.donationTimeEnd) {
+					me.form.donationTimeEnd = isOk ? me.form.donationTimeEnd.replace(/ .*$/, "") : me.form.donationTimeEnd +
+						" 23:59:59";
+				}
+				if (!isOk) me.loadData();
+			},
+			reset(){
+				Object.assign(this.form,this.formReset);
+				this.search(); 
+			},
+			clickLastTime(item) {
+				const me = this;
+				me.form.createTimeType = item.value;
+				me.form.donationTimeEnd = undefined;
+				switch (item.value) {
+					case 1:
+						me.form.donationTimeStart = getLastWeekStartTime();
+						break;
+					case 2:
+						me.form.donationTimeStart = getLastMonthStartTime();
+						break;
+					case 3:
+						me.form.donationTimeStart = getLast3MonthStartTime();
+						break;
+				}
+				me.loadData();
+			},
+			/** 详情页 */
+			navToDetailPage(item) {
 				let id = item.id;
 				uni.navigateTo({
-					url: `/pages/project/detail?id=${id}`
+					url: `/pages/me/valuecontributedetail?id=${id}`
 				})
 			},
-			//跳转到列表页
-			gotoList() {
-				uni.navigateTo({
-					url: `/pages/project/list`
-				})
-			},
-		},
+		}
 	}
 </script>
 
-<style lang="scss">
-	page {
-		background: #fff;
-	}
-
+<style scoped lang="scss">
 	.container {
-		margin: 0 0 120upx;
-		background: linear-gradient(rgba(255, 255, 255, .06) 20%, #fff 30%);
-		position: relative;
-	}
+		height: calc(100vh - 83upx);
 
-	.fixtop {
-		width: 100%;
-		padding: 20upx 0;
-		background: #f5f5f5;
-		z-index: 5;
-		position: fixed;
-	}
+		.searchpage {
+			height: 100%;
+			padding-top: 30upx;
+			position: relative;
 
-	.search {
-		width: 100%;
-		padding: 0 80upx;
+			.li {
+				padding: 16upx 40upx;
+				display: flex;
+				flex-direction: column;
 
+				.f {
+					line-height: 70upx;
+					font-weight: 700;
+				}
 
-		.input {
-			flex: 1;
-			height: 56upx;
-			line-height: 56upx;
-			text-align: center;
-			font-size: 28upx;
-			color: $font-color-base;
-			border-radius: 20px;
-			background: rgba(255, 255, 255, .6);
-		}
-	}
+				.v {
+					line-height: 54upx;
+					font-size: 23upx;
+					display: flex;
+					flex-wrap: wrap;
+					align-items: flex-start;
+					justify-content: space-between;
 
-	.list {
-		// padding: 130upx 30upx 120upx;
-		padding: 30upx 30upx 120upx;
-		background: #fff;
-		display: flex;
-		flex-wrap: wrap;
+					.sep {
+						height: 27upx;
+						line-height: 0;
+						margin: 0 40upx;
+						flex: 1;
+						border-bottom: 1px solid #ccc;
+					}
 
-		.li {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
-			padding-top: 40upx;
-		}
+					.input {
+						height: 56upx;
+						padding: 0 20upx;
+						font-size: 23upx;
+						border: 1px solid #ccc;
+						border-radius: 10upx;
+						display: flex;
 
-		.li:first-child {
-			padding-top: 0upx;
-		}
+						input {
+							width: 220upx;
+							height: 50upx;
+							line-height: 50upx;
+							font-size: 23upx;
+						}
+					}
 
-		.img {
-			width: 30%;
-			height: 250upx;
-			border-radius: 3px;
-			overflow: hidden;
+					.pickerin {
+						display: flex;
+					}
 
-			image {
+					.button {
+						width: 23%;
+						height: 56upx;
+						margin-bottom: 20upx;
+						text-align: center;
+						font-size: 23upx;
+						color: #333;
+						background-color: #f5f5f5;
+						border-radius: 10upx;
+					}
+
+					.button.s {
+						color: #fff;
+						background-color: #f15d6b;
+					}
+				}
+
+				.mb_20 {
+					margin-bottom: -20upx;
+				}
+
+				.max {
+					width: 100%;
+				}
+			}
+
+			.btns {
 				width: 100%;
-				height: 100%;
-				opacity: 1;
+				line-height: 56upx;
+				text-align: center;
+				bottom: 50upx;
+				position: absolute;
+				display: flex;
+
+				.reset {
+					width: 50%;
+					color: #333;
+					background-color: #fff;
+					border: 1upx solid #ccc;
+				}
+
+				.confirm {
+					width: 50%;
+					color: #fff;
+					background-color: #f15d6b;
+				}
 			}
 		}
 
-		.title {
-			font-size: $font-lg;
-			color: $font-color-dark;
-			line-height: 80upx;
-		}
+		.listpage {
+			.search {
+				height: 100upx;
+				background-color: #f5f5f5;
+				display: flex;
+				justify-content: space-evenly;
 
-		.title2 {
-			font-size: $font-sm;
-			color: $font-color-light;
-			line-height: 40upx;
-			height: 80upx;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			display: block;
-		}
+				>view {
+					width: 20%;
+					height: 56upx;
+					line-height: 56upx;
+					margin: 22upx 0;
+					font-size: 23upx;
+					text-align: center;
+					background: #fff;
+					border-radius: 10upx;
+				}
 
-		.price {
-			font-size: $font-lg;
-			color: $uni-color-primary;
-			line-height: 80upx;
-		}
+				.filter {
+					display: flex;
+					justify-content: space-around;
+				}
 
-		.txt {
-			width: 70%;
-			display: flex;
-			flex-direction: column;
-			padding-left: 40upx;
-		}
+				.s {
+					color: #fff;
+					background: #f15d6b;
+				}
+			}
 
-		.tc {
-			width: 100%;
-			line-height: 90upx;
-			justify-content: center;
+			.list {
+				width: 690upx;
+				margin: 0 auto;
 
+				.li {
+					height: 118upx;
+					border-bottom: 1upx solid #eee;
+					display: flex;
+					flex-direction: column;
+					justify-content: space-evenly;
+
+					.act {
+						font-size: 27upx;
+						display: flex;
+						justify-content: space-between;
+
+						.l {
+							color: #333;
+						}
+
+						.r {
+							color: #f15d6b
+						}
+					}
+
+					.dt {
+						font-size: 23upx;
+						color: #aaa;
+						display: flex;
+						justify-content: space-between;
+
+						.l {}
+
+						.r {}
+					}
+				}
+
+				.li:last-child {
+					border: 0;
+				}
+
+				.empty {
+					font-size: 30upx;
+					line-height: 130upx;
+					text-align: center;
+				}
+			}
 		}
 	}
 </style>

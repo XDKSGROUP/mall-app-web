@@ -65,6 +65,7 @@
 				getInviteList(me.form).then(res => {
 					if (res.code != 200) {
 						me.$api.msg(res.message);
+						return;
 					}
 					if (!isAppend) me.list.splice(0, this.list.length);
 					me.list.push(...res.data.list);

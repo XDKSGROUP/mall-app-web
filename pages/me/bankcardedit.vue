@@ -49,13 +49,16 @@
 				}
 			}
 		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
+		},
 		onLoad(option) {
 			const me = this;
 			let title = '新增银行卡';
 			if (option.type === 'edit') {
 				title = '编辑银行卡'
 				getBankCard(option).then(res => {
-					console.log(res)
 					this.form = res.data;
 				});
 			}

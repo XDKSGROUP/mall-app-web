@@ -37,6 +37,9 @@
 		mapMutations
 	} from 'vuex';
 	import {
+		getTeamValue
+	} from "@/api/me.js"
+	import {
 		memberLogin,
 		memberInfo
 	} from '@/api/member.js';
@@ -70,18 +73,20 @@
 				});
 			},
 			async loginIn() {
-				const me=this;
+				const me = this;
 				me.logining = true;
 				memberLogin({
 					username: me.username,
 					password: me.password
-				}).then(response => {
+				}).then(async response => {
 					let token = response.data.tokenHead + response.data.token;
 					uni.setStorageSync('token', token);
 					uni.setStorageSync('username', me.username);
 					uni.setStorageSync('password', me.password);
-					memberInfo().then(response => {
-						me.login(response.data);
+					const rst = await getTeamValue();
+					memberInfo().then(res => {
+						res.data.teamValue=rst.data;
+						me.login(res.data);
 						me.gotoHome();
 					});
 				}).catch(() => {

@@ -38,15 +38,12 @@ export async function uploadFile() {
 						success: res => {
 							if (res.statusCode == '200') {
 								resolve(getResult(formData.host+"/"+formData.key));
-								console.log(res);
 							} else {
 								reject(getError(res.message));
-								console.log(res);
 							}
 						}
 					});
 				}).catch(err => {
-					console.log(err)
 					reject(getError(err.message));
 				});
 			}

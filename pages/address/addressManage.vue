@@ -80,7 +80,7 @@
 			},
 			//将地址转化为省市区
 			covertAdderss(address) {
-				console.log("covertAdderss", address);
+				//console.log("covertAdderss", address);
 				if (address.indexOf("省") != -1) {
 					this.addressData.province = address.substr(0, address.indexOf("省") + 1);
 					address = address.replace(this.addressData.province, "");

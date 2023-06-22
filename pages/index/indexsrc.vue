@@ -259,7 +259,6 @@
 			 */
 			async loadData() {
 				fetchContent().then(response => {
-					console.log("onLoad", response.data);
 					this.advertiseList = response.data.advertiseList;
 					this.swiperLength = this.advertiseList.length;
 					this.titleNViewBackground = this.titleNViewBackgroundList[0];
@@ -290,7 +289,6 @@
 			//广告详情页
 			navToAdvertisePage(item) {
 				let id = item.id;
-				console.log("navToAdvertisePage",item)
 			},
 			//品牌详情页
 			navToBrandDetailPage(item) {

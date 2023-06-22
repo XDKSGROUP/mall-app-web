@@ -38,7 +38,7 @@ export function setLoginPassword2(params) {
 	});
 }
 
-//更新交易密码2
+//更新交易密码
 export function setPayPassword(params) {
 	return request({
 		method: 'POST',
@@ -50,7 +50,7 @@ export function setPayPassword(params) {
 export function setPayPassword2(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/updatePassword2',
+		url: '/sso/updatePaymentPassword2',
 		params: params
 	});
 }
@@ -216,11 +216,27 @@ export function getProjectsAttention(params) {
 		data: params
 	})
 }
+//获取项目捐献列表
+export function getProjectsContribute(params) {
+	return request({
+		method: 'POST',
+		url: '/projectOrder/list',
+		data: params
+	})
+}
 //实名认证
 export function setRealnameAuth(params) {
 	return request({
 		method: 'POST',
 		url: '/sso/certificationApply',
+		params: params
+	})
+}
+//获取团队值
+export function getTeamValue(params) {
+	return request({
+		method: 'POST',
+		url: '/member/info/getCountPoint',
 		params: params
 	})
 }

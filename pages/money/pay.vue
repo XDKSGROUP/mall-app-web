@@ -6,15 +6,34 @@
 		</view>
 
 		<view class="pay-type-list">
-
-			<view class="type-item b-b" @click="changePayType(2)">
+			<view class="type-item b-b" @click="changePayType(3)">
+				<uni-icons type="heart-filled" size="30" color="#fa436a" class="icon"></uni-icons>
+				<view class="con">
+					<text class="tit">爱心值支付</text>
+				</view>
+				<label class="radio">
+					<radio value="" color="#fa436a" :checked='form.payType == 3' />
+					</radio>
+				</label>
+			</view>
+			<view class="type-item b-b" @click="changePayType(4)">
+				<uni-icons type="flag-filled" size="30" color="#36cb59" class="icon"></uni-icons>
+				<view class="con">
+					<text class="tit">贡献值支付</text>
+				</view>
+				<label class="radio">
+					<radio value="" color="#fa436a" :checked='form.payType == 4' />
+					</radio>
+				</label>
+			</view>
+			<!--<view class="type-item b-b" @click="changePayType(2)">
 				<text class="icon yticon icon-weixinzhifu"></text>
 				<view class="con">
 					<text class="tit">微信支付</text>
 					<text>推荐使用微信支付</text>
 				</view>
 				<label class="radio">
-					<radio value="" color="#fa436a" :checked='payType == 2' />
+					<radio value="" color="#fa436a" :checked='form.payType == 2' />
 					</radio>
 				</label>
 			</view>
@@ -24,46 +43,71 @@
 					<text class="tit">支付宝支付</text>
 				</view>
 				<label class="radio">
-					<radio value="" color="#fa436a" :checked='payType == 1' />
+					<radio value="" color="#fa436a" :checked='form.payType == 1' />
 					</radio>
 				</label>
-			</view>
+			</view>-->
 		</view>
 
-		<text class="mix-btn" @click="confirm">确认支付</text>
+		<text class="mix-btn" @click="showPassword">确认支付</text>
+
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog mode="" title="支付确认" :before-close="true" @confirm="confirm" @close="hidePassword">
+				<input type="password" v-model="form.paymentPassword" placeholder="请输入6位数支付密码" maxlength="6"
+					class="placeholder" />
+			</uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
 <script>
 	import {
 		fetchOrderDetail,
-		payOrderSuccess
+		payOrderProduct
 	} from '@/api/order.js';
 	export default {
 		data() {
 			return {
-				orderId: null,
-				payType: 2,
+				form: {
+					orderId: undefined,
+					payType: 4,
+					paymentPassword: undefined,
+				},
 				orderInfo: {}
 			};
 		},
 		onLoad(options) {
-			this.orderId = options.orderId;
-			fetchOrderDetail(this.orderId).then(response => {
+			const me = this,
+				form = me.form;
+			form.orderId = options.orderId;
+			fetchOrderDetail(form.orderId).then(response => {
 				this.orderInfo = response.data;
 			});
 		},
 		methods: {
+			//显示密码框
+			showPassword() {
+				this.$refs.popup.open();
+			},
+			hidePassword() {
+				this.$refs.popup.close();
+			},
 			//选择支付方式
 			changePayType(type) {
-				this.payType = type;
+				this.form.payType = type;
 			},
 			//确认支付
 			confirm: async function() {
-				payOrderSuccess({
-					orderId: this.orderId,
-					payType: this.payType
-				}).then(response => {
+				const me = this;
+				if(!me.form.paymentPassword){
+					me.$api.msg(`请输入支付密码`);
+					return;
+				}
+				payOrderProduct(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
+					}
 					uni.redirectTo({
 						url: '/pages/money/paySuccess'
 					})
@@ -119,10 +163,6 @@
 		.icon {
 			width: 100upx;
 			font-size: 52upx;
-		}
-
-		.icon-erjiye-yucunkuan {
-			color: #fe8e2e;
 		}
 
 		.icon-weixinzhifu {

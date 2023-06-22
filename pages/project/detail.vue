@@ -70,9 +70,48 @@
 			</view>
 			<view class="auto"></view>
 			<view class="action-btn-group">
-				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即捐赠</button>
+				<button type="primary" class=" action-btn no-border buy-now-btn" @click="showPassword">立即捐赠</button>
 			</view>
 		</view>
+
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog title="确认捐献" :before-close="true" @confirm="confirm" @close="hidePassword">
+				<view class="contribute">
+					<view class="li">
+						<view class="label">金额：</view>
+						<view class="val">
+							<input type="text" v-model="payForm.donationAmount" placeholder="请输入金额" class="input" />
+						</view>
+					</view>
+					<view class="li">
+						<view class="label">支付方式：</view>
+						<view class="val">
+							<view class="ti" @click="changePayType(0)">
+								<radio value="" color="#fa436a" :checked='payForm.donationType == 0' />
+								</radio>
+								<uni-icons type="heart-filled" size="26" color="#fa436a" class="icon"></uni-icons>
+								<view class="con">
+									<text class="tit">爱心值支付</text>
+								</view>
+							</view>
+							<view class="ti" @click="changePayType(1)">
+								<radio value="" color="#fa436a" :checked='payForm.donationType == 1' />
+								</radio>
+								<uni-icons type="flag-filled" size="26" color="#36cb59" class="icon"></uni-icons>
+								<text class="tit">贡献值支付</text>
+							</view>
+						</view>
+					</view>
+					<view class="li">
+						<view class="label">支付密码：</view>
+						<view class="val">
+							<input type="password" v-model="payForm.paymentPassword" placeholder="请输入6位数支付密码"
+								maxlength="6" class="input" />
+						</view>
+					</view>
+				</view>
+			</uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
 
@@ -91,7 +130,10 @@
 	import {
 		formatDate
 	} from '@/utils/date';
-
+	import {
+		payOrderProject
+	} from '@/api/order.js';
+	
 	export default {
 		data() {
 			return {
@@ -109,12 +151,18 @@
 					donationsNumber: undefined, //捐赠人次
 					followersNumber: undefined, //收藏数
 				},
+				payForm: {
+					projectId: undefined,
+					donationAmount: undefined,
+					donationType: 1,
+				},
 				favorite: false,
 			};
 		},
 		async onLoad(options) {
 			const me = this;
 			me.form.id = options.id;
+			me.payForm.projectId = options.id;
 			me.loadData();
 			me.loadAttention();
 		},
@@ -131,6 +179,40 @@
 			},
 		},
 		methods: {
+			//显示密码框
+			showPassword() {
+				this.$refs.popup.open();
+			},
+			//隐藏密码框
+			hidePassword() {
+				this.$refs.popup.close();
+			},
+			//选择支付方式
+			changePayType(type) {
+				this.payForm.donationType = type;
+			},
+			//确认支付
+			confirm: async function() {
+				const me = this;
+				if (!me.payForm.donationAmount) {
+					me.$api.msg(`请输入捐献金额`);
+					return;
+				}
+				if (!me.payForm.paymentPassword) {
+					me.$api.msg(`请输入支付密码`);
+					return;
+				}
+				payOrderProject(me.payForm).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
+					}
+					uni.redirectTo({
+						url: '/pages/money/paySuccessProject'
+					})
+				});
+			},
+
 			async loadData() {
 				const me = this;
 				getDetail(me.form).then(res => {
@@ -141,18 +223,15 @@
 					Object.assign(me.form, res.data);
 				});
 			},
-			buy(){
-				this.$api.msg("该功能正在开发中...");
-			},
 			//设置关注
 			setAttention() {
 				const me = this;
-				if(me.favorite){
+				if (me.favorite) {
 					me.delAttention();
-				}else{
+				} else {
 					me.addAttention();
 				}
-				me.favorite=!me.favorite;
+				me.favorite = !me.favorite;
 			},
 			//加载关注状态
 			loadAttention() {
@@ -164,7 +243,7 @@
 						me.$api.msg(res.message);
 						return;
 					}
-					me.favorite=res.data.id;
+					me.favorite = res.data.id;
 				});
 			},
 			//添加关注
@@ -473,5 +552,57 @@
 				background: transparent;
 			}
 		}
+	}
+
+
+	.contribute {
+		width: 100%;
+		line-height: 64upx;
+		font-size: 16px;
+
+		.label {
+			width: 170upx;
+			vertical-align: middle;
+		}
+
+		.val {
+			vertical-align: middle;
+			flext: 1;
+		}
+
+		.li {
+			display: flex;
+			padding: 20upx 0;
+		}
+
+
+		.ti {
+			height: 60upx;
+			display: flex;
+			justify-content: space-between;
+			vertical-align: middle;
+			position: relative;
+		}
+
+		radio {
+			display: flex;
+		}
+
+		.icon {
+			width: 100upx;
+			font-size: 40upx;
+		}
+
+		.tit {
+			color: $font-color-dark;
+		}
+
+		/* 损赠金额 */
+		.input {
+			height: 68upx;
+			border: 1px solid #f1f1f1;
+			padding: 0 12upx;
+		}
+
 	}
 </style>

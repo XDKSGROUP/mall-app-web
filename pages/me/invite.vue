@@ -1,6 +1,9 @@
 <template>
 	<view class="container">
-		<div class="img">
+		<view class="error" v-if="message">
+			{{message}}
+		</view>
+		<div class="img" v-if="!message">
 			<canvas canvas-id="img" :style="{width:info.canvasW+'px',height:info.canvasH+'px'}"></canvas>
 			<canvas canvas-id="qrcode" class="qrcode"></canvas>
 		</div>
@@ -19,6 +22,7 @@
 	export default {
 		data() {
 			return {
+				message: "",
 				info: {
 					width: 0,
 					height: 0,
@@ -47,9 +51,12 @@
 			info.height = tinfo.windowHeight;
 			info.canvasW = info.width;
 			info.canvasH = info.width * 1650 / 750;
-
 		},
-		onReady() {
+		onReady() {	
+			if (!this.userInfo.isBuySpecific) {
+				this.message = "请先成为捐献者，才能进行邀请。";
+				return;
+			}
 			this.loadInfo();
 		},
 		methods: {
@@ -114,7 +121,7 @@
 				ctx.setFillStyle('#fff'); // setFillStyle() 设置字体颜色
 				ctx.fillText(t, p.x, p.y);
 				// 荣誉
-				t = "-", f = 12,
+				t = me.userInfo.memberHonorLevelValue || "-", f = 12,
 					p = me.getXY(uni.upx2px(190), textTop, uni.upx2px(184), uni.upx2px(44), f, t, 0.5, 0.5);
 				ctx.setFontSize(f) // 字号
 				ctx.setFillStyle('#fff') // 颜色
@@ -250,6 +257,12 @@
 			top: 670upx;
 			left: 230upx;
 			position: absolute
+		}
+
+		.error {
+			line-height: 200upx;
+			text-align: center;
+			font-size: 36upx;
 		}
 	}
 </style>

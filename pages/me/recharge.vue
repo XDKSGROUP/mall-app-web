@@ -39,6 +39,10 @@
 				}
 			}
 		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
+		},
 		onLoad(option) {
 
 		},

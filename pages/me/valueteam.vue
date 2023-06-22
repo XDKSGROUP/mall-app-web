@@ -2,39 +2,24 @@
 	<view class="content">
 		<view class="order">
 			<!-- 订单列表 -->
-			<view v-for="(item,index) in orderList" :key="index" class="order-item">
-				<view class="i-top b-b">
-					<text class="time" @click="showOrderDetail(item.id)">{{item.createTime | formatDateTime}}</text>
-					<text class="state" :style="{color: '#fa436a'}">{{item.status | formatStatus}}</text>
-					<text v-if="item.status===3||item.status===4" class="del-btn yticon icon-iconfontshanchu1"
-						@click="deleteOrder(item.id)"></text>
+			<view v-for="(item,index) in list" :key="index" class="li">
+				<view class="tt" @click="showOrderDetail(item.id)">
+					<text class="id">编号：{{index+1}}</text>
+					<text class="date">{{item.createTime}}</text>
 				</view>
-				<view class="goods-box-single" v-for="(orderItem, itemIndex) in item.orderItemList" :key="itemIndex">
-					<image class="goods-img" :src="orderItem.productPic" mode="aspectFill"></image>
+				<view class="ct">
+					<image :src="item.icon" mode="aspectFill" class="img"></image>
 					<view class="right">
-						<text class="title clamp">{{orderItem.productName}}</text>
-						<text class="attr-box">{{orderItem.productAttr | formatProductAttr}} x
-							{{orderItem.productQuantity}}</text>
-						<text class="price">{{orderItem.productPrice}}</text>
+						<view class="name">
+							<text>昵称</text><text>{{item.nickname}}</text>
+						</view>
+						<view class="username">
+							<text>用户名</text><text>{{item.username}}</text>
+						</view>
+						<view class="phone">
+							<text>手机</text><text>{{item.phone}}</text>
+						</view>
 					</view>
-				</view>
-
-				<view class="price-box">
-					共
-					<text class="num">{{calcTotalQuantity(item)}}</text>
-					件商品 实付款
-					<text class="price">{{item.payAmount}}</text>
-				</view>
-				<view class="action-box b-t" v-if="item.status == 0">
-					<button class="action-btn" @click="cancelOrder(item.id)">取消订单</button>
-					<button class="action-btn recom" @click="payOrder(item.id)">立即付款</button>
-				</view>
-				<view class="action-box b-t" v-if="item.status == 2">
-					<button class="action-btn">查看物流</button>
-					<button class="action-btn recom" @click="receiveOrder(item.id)">确认收货</button>
-				</view>
-				<view class="action-box b-t" v-if="item.status == 3">
-					<button class="action-btn recom">评价商品</button>
 				</view>
 			</view>
 		</view>
@@ -53,11 +38,12 @@
 					pageNum: 1,
 					pageSize: 15,
 				},
+				list: [],
 
 			}
 		},
 		onLoad(option) {
-
+			this.loadData();
 		},
 		//下拉刷新
 		onPullDownRefresh() {
@@ -79,16 +65,83 @@
 				getInviteList(me.form).then(res => {
 					if (res.code != 200) {
 						me.$api.msg(res.message);
+						return;
 					}
-
 					if (!isAppend) me.list.splice(0, this.list.length);
 					me.list.push(...res.data.list);
 				});
 			},
+			showOrderDetail() {},
+			deleteOrder() {},
+			cancelOrder() {},
+			payOrder() {},
+			receiveOrder() {},
+			calcTotalQuantity() {}
 		}
 	}
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
+	.order {
+		width: 100%;
+	}
 
+	.li {
+		width: 700upx;
+		margin: 0 auto;
+		display: flex;
+		flex-direction: column;
+		background: #fff;
+		margin-top: 16upx;
+
+		.tt {
+			display: flex;
+			align-items: center;
+			height: 80upx;
+			font-size: $font-base;
+			position: relative;
+			border-bottom: 1px solid #eee;
+
+			.id {
+				flex: 1;
+				color: #aaa;
+			}
+
+			.date {
+				color: #aaa;
+			}
+		}
+
+		/* 多条商品 */
+		.ct {
+			height: 160upx;
+			padding: 20upx 0;
+			display: flex;
+			white-space: nowrap;
+
+			.img {
+				width: 120upx;
+				height: 120upx;
+				margin-right: 40upx;
+				display: block;
+			}
+
+			.right {
+				line-height: 44upx;
+				font-size: $font-base;
+				color:#333;
+				flex:1;
+				.username{
+					color:#999;
+				}
+				view{
+					display: flex;
+					justify-content: space-between;
+				}
+				text {
+					display: inline-block;
+				}
+			}
+		}
+	}
 </style>

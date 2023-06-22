@@ -32,6 +32,10 @@
 				}
 			}
 		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
+		},
 		onLoad(option) {
 			
 		},
@@ -59,7 +63,7 @@
 					});
 					setTimeout(() => {
 						uni.navigateTo({
-							url:"/pages/set/set"
+							url:"/pages/me/set"
 						})
 					}, 1500)
 				});

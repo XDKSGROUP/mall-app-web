@@ -78,7 +78,7 @@
 		</view>
 
 		<!-- 评价 -->
-		<view class="eva-section">
+		<!-- <view class="eva-section">
 			<view class="e-header">
 				<text class="tit">评价</text>
 				<text>(86)</text>
@@ -86,7 +86,8 @@
 				<text class="yticon icon-you"></text>
 			</view>
 			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg" mode="aspectFill"></image>
+				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg"
+					mode="aspectFill"></image>
 				<view class="right">
 					<text class="name">Leo yo</text>
 					<text class="con">商品收到了，79元两件，质量不错，试了一下有点瘦，但是加个外罩很漂亮，我很喜欢</text>
@@ -96,7 +97,7 @@
 					</view>
 				</view>
 			</view>
-		</view>
+		</view> -->
 
 		<!-- 品牌信息 -->
 		<view class="brand-info">
@@ -123,21 +124,23 @@
 
 		<!-- 底部操作菜单 -->
 		<view class="page-bottom">
-			<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
-				<text class="yticon icon-xiatubiao--copy"></text>
-				<text>首页</text>
-			</navigator>
-			<navigator url="/pages/cart/cart" open-type="navigate" class="p-b-btn">
-				<text class="yticon icon-gouwuche"></text>
-				<text>购物车</text>
-			</navigator>
-			<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
-				<text class="yticon icon-shoucang"></text>
-				<text>收藏</text>
+			<view class="left">
+				<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
+					<text class="yticon icon-xiatubiao--copy"></text>
+					<text>首页</text>
+				</navigator>
+				<navigator url="/pages/cart/cart" open-type="navigate" class="p-b-btn">
+					<text class="yticon icon-gouwuche"></text>
+					<text>购物车</text>
+				</navigator>
+				<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
+					<text class="yticon icon-shoucang"></text>
+					<text>收藏</text>
+				</view>
 			</view>
 
 			<view class="action-btn-group">
-				<button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button>
+				<!-- <button type="primary" class=" action-btn no-border buy-now-btn" @click="buy">立即购买</button> -->
 				<button type="primary" class=" action-btn no-border add-cart-btn" @click="addToCart">加入购物车</button>
 			</view>
 		</view>
@@ -164,8 +167,9 @@
 				<view v-for="(item,index) in specList" :key="index" class="attr-list">
 					<text>{{item.name}}</text>
 					<view class="item-list">
-						<text v-for="(childItem, childIndex) in specChildList" v-if="childItem.pid === item.id" :key="childIndex" class="tit"
-						 :class="{selected: childItem.selected}" @click="selectSpec(childIndex, childItem.pid)">
+						<text v-for="(childItem, childIndex) in specChildList" v-if="childItem.pid === item.id"
+							:key="childIndex" class="tit" :class="{selected: childItem.selected}"
+							@click="selectSpec(childIndex, childItem.pid)">
 							{{childItem.name}}
 						</text>
 					</view>
@@ -366,10 +370,10 @@
 			toggleCoupon(type) {
 				fetchProductCouponList(this.product.id).then(response => {
 					this.couponList = response.data;
-					if(this.couponList==null||this.couponList.length==0){
+					if (this.couponList == null || this.couponList.length == 0) {
 						uni.showToast({
-							title:"暂无可领优惠券",
-							icon:"none"
+							title: "暂无可领优惠券",
+							icon: "none"
 						})
 						return;
 					}
@@ -654,6 +658,7 @@
 					productSkuId: productSkuStock.id,
 					productSn: this.product.productSn,
 					productSubTitle: this.product.subTitle,
+					isSpecific: this.product.isSpecific,
 					quantity: 1
 				};
 				addCartItem(cartItem).then(response => {
@@ -697,7 +702,7 @@
 				}
 			},
 			//跳转到品牌详情页
-			navToBrandDetail(){
+			navToBrandDetail() {
 				let id = this.brand.id;
 				uni.navigateTo({
 					url: `/pages/brand/brandDetail?id=${id}`
@@ -1219,13 +1224,17 @@
 		bottom: 30upx;
 		z-index: 95;
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
 		align-items: center;
 		width: 690upx;
 		height: 100upx;
 		background: rgba(255, 255, 255, .9);
 		box-shadow: 0 0 20upx 0 rgba(0, 0, 0, .5);
 		border-radius: 16upx;
+
+		.left {
+			display: flex;
+		}
 
 		.p-b-btn {
 			display: flex;
@@ -1266,7 +1275,7 @@
 			box-shadow: 0 20upx 40upx -16upx #fa436a;
 			box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
 			background: linear-gradient(to right, #ffac30, #fa436a, #F56C6C);
-			margin-left: 20upx;
+			margin-right: 20upx;
 			position: relative;
 
 			&:after {
@@ -1469,14 +1478,14 @@
 			font-size: $font-base + 2upx;
 			color: $font-color-dark;
 			position: relative;
-		
+
 			text {
 				padding: 0 20upx;
 				background: #fff;
 				position: relative;
 				z-index: 1;
 			}
-		
+
 			&:after {
 				position: absolute;
 				left: 50%;

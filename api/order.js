@@ -24,17 +24,6 @@ export function fetchOrderList(params) {
 	})
 }
 
-export function payOrderSuccess(data) {
-	return request({
-		method: 'POST',
-		url: '/order/paySuccess',
-		header: {
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-		},
-		data: data
-	})
-}
-
 export function fetchOrderDetail(orderId) {
 	return request({
 		method: 'GET',
@@ -71,6 +60,34 @@ export function deleteUserOrder(data) {
 		header: {
 			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
 		},
+		data: data
+	})
+}
+/**支付订单*/
+export function payOrderSuccess(data) {
+	return request({
+		method: 'POST',
+		url: '/order/paySuccess',
+		header: {
+			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+		},
+		data: data
+	})
+}
+/**支付产品订单（等同于payOrderSuccess）*/
+export function payOrderProduct(data) {
+	return request({
+		method: 'POST',
+		url: '/order/payOrder',
+		data: data
+	})
+}
+
+/**支付项目订单*/
+export function payOrderProject(data) {
+	return request({
+		method: 'POST',
+		url: '/projectOrder/createOrder',
 		data: data
 	})
 }

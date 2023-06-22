@@ -33,6 +33,10 @@
 				list: []
 			}
 		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
+		},
 		onLoad(option) {
 			this.source = option.source;
 			this.loadData();
@@ -52,7 +56,6 @@
 				}
 			},
 			add(type, item) {
-				console.log(item);
 				if (type == 'edit') {
 					uni.navigateTo({
 						url: `/pages/me/bankcardedit?type=${type}&id=${item.id}`

@@ -76,7 +76,7 @@
 		},
 		//下拉刷新
 		onPullDownRefresh() {
-
+			uni.stopPullDownRefresh();
 		},
 		//加载更多
 		onReachBottom() {

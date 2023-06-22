@@ -5,7 +5,7 @@
 				// #ifdef MP 
 				"navigationBarTitleText": "Mall商城",
 				// #endif 
-				"enablePullDownRefresh": true,
+				"enablePullDownRefresh": false,
 				"app-plus": {
 					"titleNView": {
 						"type": "transparent",
@@ -221,7 +221,14 @@
 			"style": {
 				"navigationBarTitleText": "支付成功"
 			}
-		}, {
+		},
+		{
+			"path": "pages/money/paySuccessProject",
+			"style": {
+				"navigationBarTitleText": "捐献成功"
+			}
+		},
+		{
 			"path": "pages/notice/notice",
 			"style": {
 				"navigationBarTitleText": "通知"

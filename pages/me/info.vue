@@ -8,8 +8,8 @@
 				</view>
 				<view class="info-box">
 					<view class="username">{{userInfo.nickname || '平安建设基金会'}}</view>
-					<view class="job">{{userInfo.title||"公民"}}</view>
-					<view class="lv">P{{userInfo.memberLevelId}}</view>
+					<view class="job">{{userInfo.memberLevelName||"公民"}}</view>
+					<view class="lv">{{userInfo.memberHonorLevelName||"P0"}}</view>
 				</view>
 			</view>
 		</view>
@@ -84,9 +84,9 @@
 					<view class="li" :class="achievementType==0?'s':''" @click="achievementType=0">
 						<text>公益成就({{userInfo.publicWelfareAchievement||0}}/20)</text>
 					</view>
-					<view class="li" :class="achievementType==1?'s':''" @click="achievementType=1">
+					<!-- <view class="li" :class="achievementType==1?'s':''" @click="achievementType=1">
 						<text>慈善成就({{userInfo.charityAchievement||0}}/20)</text>
-					</view>
+					</view> -->
 				</view>
 				<view class="cont" v-if="achievementType==0">
 					<view class="li" v-for="num in (userInfo.publicWelfareAchievement||0)">
@@ -152,6 +152,10 @@
 				moving: false,
 				couponCount: null
 			}
+		},
+		//下拉刷新
+		onPullDownRefresh() {
+			uni.stopPullDownRefresh();
 		},
 		onLoad() {},
 		onShow() {},

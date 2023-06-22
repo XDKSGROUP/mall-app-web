@@ -83,9 +83,6 @@
 
 <script>
 	import {
-		uniIcons
-	} from '@dcloudio/uni-ui';
-	import {
 		setPicker,
 		getLastWeekStartTime,
 		getLastMonthStartTime,
@@ -103,7 +100,6 @@
 
 	export default {
 		components: {
-			uniIcons,
 			CheckListBox
 		},
 		data() {
@@ -162,6 +158,7 @@
 				getListChangeMoneys(me.form).then(res => {
 					if (res.code != 200) {
 						me.$api.msg(res.message);
+						return;
 					}
 
 					if (!isAppend) me.list.splice(0, this.list.length);

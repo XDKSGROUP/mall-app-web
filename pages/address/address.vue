@@ -32,7 +32,7 @@
 			}
 		},
 		onLoad(option) {
-			console.log(option.source);
+			//console.log(option.source);
 			this.source = option.source;
 			this.loadData();
 		},
@@ -73,7 +73,7 @@
 								superThis.loadData();
 							});
 				        } else if (res.cancel) {
-				            console.log('用户点击取消');
+				            //console.log('用户点击取消');
 				        }
 				    }
 				});
@@ -83,7 +83,7 @@
 				//添加或修改后事件，这里直接在最前面添加了一条数据，实际应用中直接刷新地址列表即可
 				// this.addressList.unshift(data);
 				this.loadData();
-				console.log(data, type);
+				//console.log(data, type);
 			}
 		}
 	}

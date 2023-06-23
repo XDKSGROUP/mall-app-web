@@ -1,5 +1,11 @@
 <template>
 	<view class="content">
+		<view class="info" v-if="form.realNameStatus===2">
+			申请已驳回，原因：{{form.certificationRejectReason}}
+		</view>
+		<view class="success" v-if="form.realNameStatus===3">
+			通过审核
+		</view>
 		<view class="row b-b">
 			<text class="tit">真实姓名</text>
 			<input class="input" type="text" v-model="form.realName" placeholder="输入真实姓名"
@@ -12,16 +18,17 @@
 		</view>
 		<view class="row b-b row2">
 			<text class="tit">身份证正面</text>
-			<view class="link" @click="selectFile(1)">上传照片</view>
+			<view class="link" @click="selectFile(1)" v-if="form.realNameStatus!==1&&form.realNameStatus!==3">上传照片</view>
 			<image :src="form.idCardFront"></image>
 		</view>
 		<view class="row b-b row2">
 			<text class="tit">身份证反面</text>
-			<view class="link" @click="selectFile(2)">上传照片</view>
+			<view class="link" @click="selectFile(2)" v-if="form.realNameStatus!==1&&form.realNameStatus!==3">上传照片</view>
 			<image :src="form.idCardBack"></image>
 		</view>
 
-		<button class="add-btn" @click="confirm">提交</button>
+		<button class="add-btn" v-if="form.realNameStatus!==3"
+			@click="confirm">{{form.realNameStatus===1?"审核中":"提交"}}</button>
 	</view>
 </template>
 
@@ -30,6 +37,7 @@
 		uploadFile
 	} from "@/api/file.js"
 	import {
+		getMeInfo,
 		setRealnameAuth
 	} from '@/api/me.js';
 
@@ -41,6 +49,7 @@
 					identificationNumber: '',
 					idCardFront: '',
 					idCardBack: '',
+					realNameStatus: 0,
 				}
 			}
 		},
@@ -48,11 +57,16 @@
 		onPullDownRefresh() {
 			uni.stopPullDownRefresh();
 		},
-		onLoad(option) {
+		async onLoad(option) {
+			const me = this;
 			let title = '实名认证';
 			uni.setNavigationBarTitle({
 				title
 			});
+			const rst = await getMeInfo();
+			if (rst.data) {
+				Object.assign(me.form, rst.data);
+			}
 		},
 		methods: {
 			async selectFile(num) {
@@ -62,11 +76,16 @@
 					me.$api.msg(res.message);
 					return;
 				}
-				me.form["idCard"+(num==1?"Front":"Back")]=res.data;
+				me.form["idCard" + (num == 1 ? "Front" : "Back")] = res.data;
 			},
 			//提交
 			confirm() {
-				const me=this,form=me.form;
+				const me = this,
+					form = me.form;
+				if (form.realNameStatus === 1) {
+					me.$api.msg('正在审核中...无法提交');
+					return;
+				}
 				if (!form.realName) {
 					me.$api.msg('请填写真实姓名');
 					return;
@@ -126,15 +145,15 @@
 			font-size: 30upx;
 			color: $font-color-dark;
 		}
-		
-		.link{
-			color:royalblue;
+
+		.link {
+			color: royalblue;
 		}
-		
-		image{
-			width:180upx;
-			height:180upx;
-			margin-left:20upx;	
+
+		image {
+			width: 180upx;
+			height: 180upx;
+			margin-left: 20upx;
 		}
 
 		.icon-shouhuodizhi {
@@ -142,9 +161,9 @@
 			color: $font-color-light;
 		}
 	}
-		
-	.row2{
-		height:200upx;
+
+	.row2 {
+		height: 200upx;
 	}
 
 	.default-row {
@@ -171,5 +190,20 @@
 		background-color: $base-color;
 		border-radius: 10upx;
 		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
+	}
+
+	.info {
+		padding: 30upx 30upx;
+		margin-bottom: 15upx;
+		color: #cc0000;
+		background: #fff;
+	}
+	
+	.success{
+		padding: 30upx 30upx;
+		margin-bottom: 15upx;
+		text-align: center;
+		color: green;
+		background: #fff;
 	}
 </style>

@@ -15,9 +15,8 @@
 					</view>
 					<view class="sep"></view>
 					<view class="input">
-						<picker mode="date" :value="form.applyTimeEnd"
-							:start="form.applyTimeStart||limits.applyTimeMin" :end="limits.applyTimeMax"
-							@change="setDataTimePicker(form,'applyTimeEnd',arguments)">
+						<picker mode="date" :value="form.applyTimeEnd" :start="form.applyTimeStart||limits.applyTimeMin"
+							:end="limits.applyTimeMax" @change="setDataTimePicker(form,'applyTimeEnd',arguments)">
 							<view class="pickerin">
 								<input placeholder="结束交易时间" :value="form.applyTimeEnd" />
 								<uni-icons type="bottom" size="10"></uni-icons>
@@ -57,7 +56,10 @@
 					</view>
 					<view class="dt">
 						<view class="l">{{rtnDateTimeToStr(it.applyTime)}}</view>
-						<view class="r">状态：{{getStatus(it.status)}}</view>
+						<view class="r">状态：{{getStatus(it.status,it.auditStatus)}}</view>
+					</view>
+					<view class="dt" v-if="it.auditStatus==2">
+						原因：{{it.auditReason}}
 					</view>
 				</view>
 				<view class="empty" v-if="list.length==0">
@@ -79,6 +81,7 @@
 	import {
 		enumLastTimeType,
 		enumWithdrawalStatus,
+		enumAuthStatus,
 	} from '@/utils/enums.js';
 	import InputNumber from '@/components/l/InputNumber.vue';
 	import {
@@ -114,7 +117,7 @@
 		},
 		onLoad(option) {
 			this.loadData();
-			this.formReset=Object.assign({},this.form);
+			this.formReset = Object.assign({}, this.form);
 		},
 		//下拉刷新
 		onPullDownRefresh() {
@@ -131,9 +134,14 @@
 				this.form.applyTimeType = undefined;
 				setPicker(obj, name, args, enums);
 			},
-			getStatus(status) {
-				const name = enumWithdrawalStatus.find(t => t.value == status)?.name || "-";
-				return name;
+			getStatus(status, auditStatus) {
+				const statusName = enumWithdrawalStatus.find(t => t.value === status)?.name || "-";
+				const authStatusName = enumAuthStatus.find(t => t.value === auditStatus)?.name || "-";
+				if (status === 0) {
+					return authStatusName;
+				} else {
+					return statusName;
+				}
 			},
 			loadData(isAppend) {
 				const me = this;
@@ -162,9 +170,9 @@
 				}
 				if (!isOk) me.loadData();
 			},
-			reset(){
-				Object.assign(this.form,this.formReset);
-				this.search(); 
+			reset() {
+				Object.assign(this.form, this.formReset);
+				this.search();
 			},
 			clickLastTime(item) {
 				const me = this;
@@ -332,7 +340,8 @@
 				margin: 0 auto;
 
 				.li {
-					height: 118upx;
+					line-height:44upx;
+					padding: 20upx 0;
 					border-bottom: 1upx solid #eee;
 					display: flex;
 					flex-direction: column;

@@ -56,7 +56,10 @@
 					</view>
 					<view class="dt">
 						<view class="l">{{rtnDateTimeToStr(it.applyTime)}}</view>
-						<view class="r">状态：{{getStatus(it.status)}}</view>
+						<view class="r">状态：{{getStatus(it.status,it.auditStatus)}}</view>
+					</view>
+					<view class="dt" v-if="it.auditStatus==2">
+						原因：{{it.auditReason}}
 					</view>
 				</view>
 				<view class="empty" v-if="list.length==0">
@@ -78,6 +81,7 @@
 	import {
 		enumLastTimeType,
 		enumWithdrawalStatus,
+		enumAuthStatus,
 	} from '@/utils/enums.js';
 	import InputNumber from '@/components/l/InputNumber.vue';
 	import {
@@ -130,9 +134,14 @@
 				this.form.applyTimeType = undefined;
 				setPicker(obj, name, args, enums);
 			},
-			getStatus(status) {
-				const name = enumWithdrawalStatus.find(t => t.value == status)?.name || "-";
-				return name;
+			getStatus(status, auditStatus) {
+				const statusName = enumWithdrawalStatus.find(t => t.value === status)?.name || "-";
+				const authStatusName = enumAuthStatus.find(t => t.value === auditStatus)?.name || "-";
+				if (status === 0) {
+					return authStatusName;
+				} else {
+					return statusName;
+				}
 			},
 			loadData(isAppend) {
 				const me = this;

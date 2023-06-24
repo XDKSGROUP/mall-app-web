@@ -31,13 +31,14 @@
 		</view>
 		<uni-load-more :status="loadingType"></uni-load-more>
 
-		<view class="cate-mask" :class="cateMaskState===0 ? 'none' : cateMaskState===1 ? 'show' : ''" @click="toggleCateMask">
+		<view class="cate-mask" :class="cateMaskState===0 ? 'none' : cateMaskState===1 ? 'show' : ''"
+			@click="toggleCateMask">
 			<view class="cate-content" @click.stop.prevent="stopPrevent" @touchmove.stop.prevent="stopPrevent">
 				<scroll-view scroll-y class="cate-list">
 					<view v-for="item in cateList" :key="item.id">
 						<view class="cate-item b-b two">{{item.name}}</view>
-						<view v-for="tItem in item.children" :key="tItem.id" class="cate-item b-b" :class="{active: tItem.id==searchParam.productCategoryId}"
-						 @click="changeCate(tItem)">
+						<view v-for="tItem in item.children" :key="tItem.id" class="cate-item b-b"
+							:class="{active: tItem.id==searchParam.productCategoryId}" @click="changeCate(tItem)">
 							{{tItem.name}}
 						</view>
 					</view>
@@ -48,7 +49,9 @@
 </template>
 
 <script>
-	import {getObjByDefinedValues} from "@/utils/com.js"
+	import {
+		getObjByDefinedValues
+	} from "@/utils/com.js"
 	import {
 		searchProductList,
 		fetchCategoryTreeList
@@ -69,7 +72,7 @@
 				cateList: [],
 				productList: [],
 				searchParam: {
-					keyword:"",
+					keyword: "",
 					productCategoryId: undefined,
 					pageNum: 1,
 					pageSize: 6,
@@ -79,17 +82,19 @@
 		},
 
 		onLoad(options) {
-			const me=this;
-			// #ifdef H5
-			me.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight + 'px';
-			// #endif
-			options.keyword&&(me.searchParam.keyword=options.keyword);
-			options.sid&&(me.searchParam.productCategoryId = options.sid);
+			const me = this;
+			uni.getSystemInfo({
+				success: (res) => {
+					me.headerTop = res.windowTop + 'px';
+				}
+			});
+			options.keyword && (me.searchParam.keyword = options.keyword);
+			options.sid && (me.searchParam.productCategoryId = options.sid);
 			me.loadCateList(options.fid, options.sid);
 			me.loadData();
 		},
 		onPageScroll(e) {
-			const me=this;
+			const me = this;
 			//兼容iOS端下拉时顶部漂移
 			if (e.scrollTop >= 0) {
 				me.headerPosition = "fixed";
@@ -126,11 +131,11 @@
 				}
 
 				if (type === 'refresh') {
-					this.searchParam.pageNum=1;
+					this.searchParam.pageNum = 1;
 					this.productList = [];
 				}
-				if(this.filterIndex==0){
-					this.searchParam.sort=0;
+				if (this.filterIndex == 0) {
+					this.searchParam.sort = 0;
 				}
 				if (this.filterIndex === 1) {
 					this.searchParam.sort = 2;

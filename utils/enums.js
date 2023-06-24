@@ -50,6 +50,13 @@ export const enumWithdrawalStatus = [{
 	name: "已作废",
 	value: 2
 }];
+export const enumAuthStatus = [{
+  name: "已申请", value: 0
+}, {
+  name: "待打款", value: 1
+}, {
+  name: "已驳回", value: 2
+}];
 export const enumMoneyType = [{
 	name: "爱心值",
 	value: 0

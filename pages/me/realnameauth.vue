@@ -18,12 +18,14 @@
 		</view>
 		<view class="row b-b row2">
 			<text class="tit">身份证正面</text>
-			<view class="link" @click="selectFile(1)" v-if="form.realNameStatus!==1&&form.realNameStatus!==3">上传照片</view>
+			<view class="link" @click="selectFile(1)" v-if="form.realNameStatus!==1&&form.realNameStatus!==3">上传照片
+			</view>
 			<image :src="form.idCardFront"></image>
 		</view>
 		<view class="row b-b row2">
 			<text class="tit">身份证反面</text>
-			<view class="link" @click="selectFile(2)" v-if="form.realNameStatus!==1&&form.realNameStatus!==3">上传照片</view>
+			<view class="link" @click="selectFile(2)" v-if="form.realNameStatus!==1&&form.realNameStatus!==3">上传照片
+			</view>
 			<image :src="form.idCardBack"></image>
 		</view>
 
@@ -63,9 +65,9 @@
 			uni.setNavigationBarTitle({
 				title
 			});
+			const rst = await getMeInfo();
 			if (rst.data) {
 				Object.assign(me.form, rst.data);
-				console.log(me.form)
 			}
 		},
 		methods: {
@@ -198,8 +200,8 @@
 		color: #cc0000;
 		background: #fff;
 	}
-	
-	.success{
+
+	.success {
 		padding: 30upx 30upx;
 		margin-bottom: 15upx;
 		text-align: center;

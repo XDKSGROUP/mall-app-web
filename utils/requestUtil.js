@@ -46,11 +46,6 @@ http.interceptor.response((response) => {
 	/* 请求之后拦截器 */
 	const res = response.data;
 	if (res.code !== 200) {
-		//提示错误信息
-		uni.showToast({
-			title: res.message,
-			duration: 1500
-		})
 		//401未登录处理
 		if (res.code === 401) {
 			uni.showModal({
@@ -69,6 +64,11 @@ http.interceptor.response((response) => {
 				}
 			});
 		}
+		//提示错误信息
+		// uni.showToast({
+		// 	title: res.message,
+		// 	duration: 1500
+		// })		
 		return Promise.reject(response);
 	} else {
 		return response.data;

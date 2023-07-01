@@ -22,19 +22,19 @@
 
 			<view class="tj-sction">
 				<view class="tj-item" @click="navTo('/pages/me/valuelove')">
-					<text class="num">{{userInfo.integral || '暂无'}}</text>
+					<text class="num">{{userInfo.integral || '0'}}</text>
 					<text>爱心值</text>
 				</view>
 				<view class="tj-item" @click="navTo('/pages/me/valuecontribute')">
-					<text class="num">{{userInfo.money || '暂无'}}</text>
+					<text class="num">{{userInfo.money || '0'}}</text>
 					<text>贡献值</text>
 				</view>
 				<view class="tj-item" @click="navTo('/pages/me/valuenetwork')">
-					<text class="num">{{userInfo.networkValue || '暂无'}}</text>
+					<text class="num">{{userInfo.networkValue || '0'}}</text>
 					<text>人脉值</text>
 				</view>
 				<view class="tj-item" @click="navTo('/pages/me/valueteam')">
-					<text class="num">{{userInfo.teamValue || '暂无'}}</text>
+					<text class="num">{{userInfo.teamValue || '0'}}</text>
 					<text>团队值</text>
 				</view>
 			</view>

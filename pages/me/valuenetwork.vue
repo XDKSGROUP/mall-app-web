@@ -1,6 +1,6 @@
 <template>
 	<view class="content">
-		<view class="order">
+		<view class="order" v-if="list.length>0">
 			<!-- 订单列表 -->
 			<view v-for="(item,index) in list" :key="index" class="li">
 				<view class="tt" @click="showOrderDetail(item.id)">
@@ -22,6 +22,9 @@
 					</view>
 				</view>
 			</view>
+		</view>
+		<view class="empty" v-else>
+			暂无信息
 		</view>
 	</view>
 </template>
@@ -86,6 +89,12 @@
 		width: 100%;
 	}
 
+	.empty {
+		font-size: 30upx;
+		line-height: 130upx;
+		text-align: center;
+	}
+
 	.li {
 		width: 700upx;
 		margin: 0 auto;
@@ -129,15 +138,18 @@
 			.right {
 				line-height: 44upx;
 				font-size: $font-base;
-				color:#333;
-				flex:1;
-				.username{
-					color:#999;
+				color: #333;
+				flex: 1;
+
+				.username {
+					color: #999;
 				}
-				view{
+
+				view {
 					display: flex;
 					justify-content: space-between;
 				}
+
 				text {
 					display: inline-block;
 				}

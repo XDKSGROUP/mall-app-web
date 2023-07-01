@@ -12,12 +12,12 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">持卡人</text>
-			<input class="input" type="text" v-model="form.cardholder" @input="changeName('money',arguments)" placeholder="输入持卡人"
+			<input class="input" type="text" v-model="form.cardholder" @input="changeName('cardholder',arguments)" placeholder="输入持卡人"
 				placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b">
 			<text class="tit">银行卡号</text>
-			<input class="input" type="number" v-model="form.bankCardNumber" placeholder="输入银行卡号"
+			<input class="input" type="number" v-model="form.bankCardNumber" @input="changeCard('bankCardNumber',arguments)" placeholder="输入银行卡号"
 				placeholder-class="placeholder" />
 		</view>
 
@@ -73,6 +73,13 @@
 				const newValue = args[0].target.value;
 				me.$nextTick(()=>{
 					me.form[name]=newValue.replace(/[^\u4E00-\u9FA5]/g,"");
+				});
+			},
+			changeCard(name,args) {
+				const me=this;
+				const newValue = args[0].target.value;
+				me.$nextTick(()=>{
+					me.form[name]=newValue.replace(/[^\d]/g,"");
 				});
 			},
 			switchChange(e) {

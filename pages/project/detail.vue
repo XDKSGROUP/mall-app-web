@@ -30,11 +30,7 @@
 			</view>
 			<view class="cont">
 				<view class="li">
-					<!-- <view class="h1">项目提额公示</view>
-					<view class="h2">2023-05-05 由项目工作人员发布</view> -->
-					<view class="text">
-						{{form.progressContent}}
-					</view>
+					<rich-text class="text" :nodes="form.progressContent"></rich-text>
 				</view>
 			</view>
 		</view>
@@ -80,7 +76,8 @@
 					<view class="li">
 						<view class="label">金额：</view>
 						<view class="val">
-							<input type="number" v-model="payForm.donationAmount" @input="changeMoney('donationAmount',arguments)" placeholder="请输入金额" class="input" />
+							<input type="number" v-model="payForm.donationAmount"
+								@input="changeMoney('donationAmount',arguments)" placeholder="请输入金额" class="input" />
 						</view>
 					</view>
 					<view class="li">
@@ -133,7 +130,7 @@
 	import {
 		payOrderProject
 	} from '@/api/order.js';
-	
+
 	export default {
 		data() {
 			return {
@@ -179,11 +176,11 @@
 			},
 		},
 		methods: {
-			changeMoney(name,args) {
-				const me=this;
+			changeMoney(name, args) {
+				const me = this;
 				const newValue = args[0].target.value;
-				me.$nextTick(()=>{
-					me.payForm[name]=newValue.replace(/[^1-9.]/g,"");
+				me.$nextTick(() => {
+					me.payForm[name] = newValue.replace(/[^1-9.]/g, "");
 				});
 			},
 			//显示密码框

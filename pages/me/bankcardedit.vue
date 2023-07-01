@@ -3,7 +3,7 @@
 		<view class="row b-b">
 			<text class="tit">银行名称</text>
 			<input class="input" type="text" v-model="form.bankName" placeholder="输入银行名称"
-				placeholder-class="placeholder" @input="toInput" />
+				placeholder-class="placeholder" @="toInput" />
 		</view>
 		<view class="row b-b">
 			<text class="tit">支行名称</text>
@@ -12,7 +12,7 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">持卡人</text>
-			<input class="input" type="text" v-model="form.cardholder" placeholder="输入持卡人"
+			<input class="input" type="text" v-model="form.cardholder" @input="changeName('money',arguments)" placeholder="输入持卡人"
 				placeholder-class="placeholder" />
 		</view>
 		<view class="row b-b">
@@ -68,17 +68,18 @@
 			})
 		},
 		methods: {
-			toInput() { //arguments
-				return false;
-				const value = arguments[0].target.value;
-				if (/^[^\d]+$/.test(value)) return false;
+			changeName(name,args) {
+				const me=this;
+				const newValue = args[0].target.value;
+				me.$nextTick(()=>{
+					me.form[name]=newValue.replace(/[^\u4E00-\u9FA5]/g,"");
+				});
 			},
 			switchChange(e) {
 				this.form.defaultStatus = e.detail.value ? 1 : 0;
 			},
 			//提交
 			confirm() {
-				debugger
 				let data = this.form;
 				if (this.manageType == 'edit') {
 					setBankCard(this.form).then(res => {

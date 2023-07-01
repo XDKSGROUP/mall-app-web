@@ -3,7 +3,7 @@
 		<view class="row b-b">
 			<text class="tit">银行名称</text>
 			<input class="input" type="text" v-model="form.bankName" placeholder="输入银行名称"
-				placeholder-class="placeholder" />
+				placeholder-class="placeholder" @input="toInput" />
 		</view>
 		<view class="row b-b">
 			<text class="tit">支行名称</text>
@@ -68,6 +68,11 @@
 			})
 		},
 		methods: {
+			toInput() { //arguments
+				return false;
+				const value = arguments[0].target.value;
+				if (/^[^\d]+$/.test(value)) return false;
+			},
 			switchChange(e) {
 				this.form.defaultStatus = e.detail.value ? 1 : 0;
 			},
@@ -110,7 +115,7 @@
 				}
 				setTimeout(() => {
 					uni.navigateTo({
-						url:"/pages/me/bankcard"
+						url: "/pages/me/bankcard"
 					})
 				}, 2000)
 			},

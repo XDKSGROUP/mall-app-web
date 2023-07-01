@@ -1,18 +1,23 @@
 <template>
 	<view class="content">
 		<view class="row b-b">
-			<text class="tit">手机号</text>
-			<input class="input" type="number" v-model="form.telephone" placeholder="输入手机号"
-				placeholder-class="placeholder" />
+			<text class="tit">旧手机号</text>
+			<input class="input" type="number" v-model="form.oldTelephone" placeholder="请输入"
+				placeholder-class="placeholder" :disabled="true" />
 		</view>
 		<view class="row b-b">
-			<text class="tit">登录密码</text>
-			<input class="input" type="password" v-model="form.password" placeholder="输入登录密码"
+			<text class="tit">新手机号</text>
+			<input class="input" type="number" v-model="form.telephone" placeholder="请输入"
 				placeholder-class="placeholder" />
 		</view>
+		<!-- <view class="row b-b">
+			<text class="tit">登录密码</text>
+			<input class="input" type="password" v-model="form.password" placeholder="请输入"
+				placeholder-class="placeholder" />
+		</view> -->
 		<view class="row b-b">
 			<text class="tit">验证码</text>
-			<input class="input" type="number" v-model="form.authCode" placeholder="输入验证码"
+			<input class="input" type="number" v-model="form.authCode" placeholder="请输入"
 				placeholder-class="placeholder" />
 			<view class="link" @click="sendVerifyCode" v-if="time<=0">发送</view>
 			<view class="link" v-if="time>0">剩余{{time}}秒</view>
@@ -27,6 +32,10 @@
 		getVerifyCode,
 		setMobile
 	} from '@/api/me.js';
+	import {
+		mapState,
+		mapMutations
+	} from 'vuex';
 
 	export default {
 		data() {
@@ -34,22 +43,30 @@
 				time: 0,
 				form: {
 					password: '',
+					oldTelephone: "",
 					telephone: '',
 					authCode: ''
 				}
 			}
+		},
+		computed: {
+			...mapState(['userInfo'])
 		},
 		//下拉刷新
 		onPullDownRefresh() {
 			uni.stopPullDownRefresh();
 		},
 		onLoad(option) {
-
+			const me = this;
+			me.form.oldTelephone = me.userInfo.phone;
 		},
 		methods: {
+			...mapMutations(['login']),
 			async sendVerifyCode(e) {
 				const me = this;
-				const res = await getVerifyCode(me.form);
+				const res = await getVerifyCode({
+					telephone: me.form.oldTelephone
+				});
 				if (res.code != 200) {
 					me.$api.msg(res.message);
 					return;
@@ -62,13 +79,10 @@
 			},
 			//提交
 			confirm() {
-				let me=this,data = this.form;
+				let me = this,
+					data = me.form;
 				if (!data.telephone || !/^\d{11}$/.test(data.telephone)) {
 					me.$api.msg(`请输入正确的手机号`);
-					return;
-				}
-				if (!data.password) {
-					me.$api.msg(`请输入登录密码`);
 					return;
 				}
 				setMobile(data).then(res => {
@@ -76,6 +90,8 @@
 						me.$api.msg(res.message);
 						return;
 					}
+					me.userInfo.phone=data.telephone;
+					me.login(me.userInfo);
 					me.$api.msg(`修改成功`);
 					setTimeout(() => {
 						uni.navigateTo({

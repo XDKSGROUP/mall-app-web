@@ -9,7 +9,7 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">爱心值</text>
-			<input class="input" type="number" v-model="form.applyMoney" placeholder="输入爱心值"
+			<input class="input" type="number" v-model="form.applyMoney" @input="changeMoney('applyMoney',arguments)" placeholder="输入爱心值"
 				placeholder-class="placeholder" />
 		</view>
 
@@ -56,6 +56,13 @@
 		},
 		methods: {
 			...mapMutations(['login']),
+			changeMoney(name,args) {
+				const me=this;
+				const newValue = args[0].target.value;
+				me.$nextTick(()=>{
+					me.form[name]=newValue.replace(/[^1-9.]/g,"");
+				});
+			},
 			gotoList() {
 				uni.navigateTo({
 					url: '/pages/me/withdrawallovelist'

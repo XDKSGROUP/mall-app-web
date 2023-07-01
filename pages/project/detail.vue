@@ -80,7 +80,7 @@
 					<view class="li">
 						<view class="label">金额：</view>
 						<view class="val">
-							<input type="text" v-model="payForm.donationAmount" placeholder="请输入金额" class="input" />
+							<input type="number" v-model="payForm.donationAmount" @input="changeMoney('donationAmount',arguments)" placeholder="请输入金额" class="input" />
 						</view>
 					</view>
 					<view class="li">
@@ -179,6 +179,13 @@
 			},
 		},
 		methods: {
+			changeMoney(name,args) {
+				const me=this;
+				const newValue = args[0].target.value;
+				me.$nextTick(()=>{
+					me.payForm[name]=newValue.replace(/[^1-9.]/g,"");
+				});
+			},
 			//显示密码框
 			showPassword() {
 				this.$refs.popup.open();

@@ -12,7 +12,7 @@
 		</view>
 		<view class="row b-b">
 			<text class="tit">贡献值</text>
-			<input class="input" type="number" v-model="form.money" placeholder="输入贡献值"
+			<input class="input" type="number" v-model="form.money" @input="changeMoney('money',arguments)" placeholder="输入贡献值"
 				placeholder-class="placeholder" />
 		</view>
 
@@ -60,6 +60,13 @@
 		},
 		methods: {
 			...mapMutations(['login']),
+			changeMoney(name,args) {
+				const me=this;
+				const newValue = args[0].target.value;
+				me.$nextTick(()=>{
+					me.form[name]=newValue.replace(/[^1-9.]/g,"");
+				});
+			},
 			gotoList() {
 				uni.navigateTo({
 					url: '/pages/me/movecontributelist'

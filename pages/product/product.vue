@@ -129,9 +129,10 @@
 					<text class="yticon icon-xiatubiao--copy"></text>
 					<text>首页</text>
 				</navigator>
-				<navigator url="/pages/cart/cart" open-type="navigate" class="p-b-btn">
+				<navigator url="/pages/cart/cart" open-type="navigate" class="cart p-b-btn">
 					<text class="yticon icon-gouwuche"></text>
 					<text>购物车</text>
+					<text class="cartnum" v-if="cartNum>0">{{cartNum}}</text>
 				</navigator>
 				<view class="p-b-btn" :class="{active: favorite}" @click="toFavorite">
 					<text class="yticon icon-shoucang"></text>
@@ -225,7 +226,8 @@
 		fetchProductDetail
 	} from '@/api/product.js';
 	import {
-		addCartItem
+		addCartItem,
+		getCartNum
 	} from '@/api/cart.js';
 	import {
 		fetchProductCouponList,
@@ -282,6 +284,7 @@
 		},
 		data() {
 			return {
+				cartNum: 0,
 				specClass: 'none',
 				attrClass: 'none',
 				specSelected: [],
@@ -305,6 +308,9 @@
 			let id = options.id;
 			this.shareList = defaultShareList;
 			this.loadData(id);
+		},
+		onShow() {
+			this.loadCartNum();
 		},
 		computed: {
 			...mapState(['hasLogin'])
@@ -342,6 +348,12 @@
 					this.initProductDesc();
 					this.handleReadHistory();
 					this.initProductCollection();
+				});
+			},
+			async loadCartNum() {
+				const me = this;
+				getCartNum().then(res => {
+					me.cartNum = res.data || 0;
 				});
 			},
 			//规格弹窗开关
@@ -645,6 +657,7 @@
 				if (!this.checkForLogin()) {
 					return;
 				}
+				const me = this;
 				let productSkuStock = this.getSkuStock();
 				let cartItem = {
 					price: this.product.price,
@@ -662,6 +675,7 @@
 					quantity: 1
 				};
 				addCartItem(cartItem).then(response => {
+					me.loadCartNum();
 					uni.showToast({
 						title: response.message,
 						duration: 1500
@@ -1497,5 +1511,23 @@
 				border-bottom: 1px solid #ccc;
 			}
 		}
+	}
+
+	.cart {
+		position: relative;
+	}
+
+	.cartnum {
+		width: 40upx;
+		height: 40upx;
+		line-height: 40upx;
+		font-size: 10upx;
+		text-align: center;
+		color: #fff;
+		background-color: #fa436a;
+		position: absolute;
+		top: -10upx;
+		right: -10upx;
+		border-radius: 50%;
 	}
 </style>

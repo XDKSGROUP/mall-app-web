@@ -113,7 +113,7 @@
 							}]
 						};
 					});
-					its.splice(its.length - 1, 1);
+					//its.splice(its.length - 1, 1);
 					me.menus.push(...its);
 					me.changeMenu(me.menusIndex.s1, 0);
 				});

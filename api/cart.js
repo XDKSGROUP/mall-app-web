@@ -37,3 +37,10 @@ export function clearCartList() {
 		url: '/cart/clear'
 	})
 }
+
+export function getCartNum() {
+	return request({
+		method: 'GET',
+		url: '/cart/listCount'
+	})
+}

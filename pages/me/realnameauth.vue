@@ -63,9 +63,9 @@
 			uni.setNavigationBarTitle({
 				title
 			});
-			const rst = await getMeInfo();
 			if (rst.data) {
 				Object.assign(me.form, rst.data);
+				console.log(me.form)
 			}
 		},
 		methods: {

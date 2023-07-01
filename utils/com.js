@@ -91,3 +91,10 @@ export async function getImageSize(src) {
 		});
 	});
 }
+/**返回结果信息*/
+export function tofc(data) {
+	return {
+		success: true,
+		data: data
+	};
+}

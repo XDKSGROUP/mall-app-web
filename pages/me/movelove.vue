@@ -11,8 +11,8 @@
 			<text class="text">{{form.nickname}}</text>
 		</view>
 		<view class="row b-b">
-			<text class="tit">贡献值</text>
-			<input class="input" type="number" v-model="form.money" @input="changeMoney('money',arguments)" placeholder="输入贡献值"
+			<text class="tit">爱心值</text>
+			<input class="input" type="number" v-model="form.money" @input="changeMoney('money',arguments)" placeholder="输入爱心值"
 				placeholder-class="placeholder" />
 		</view>
 
@@ -65,7 +65,7 @@
 				const me=this;
 				const newValue = args[0].target.value;
 				me.$nextTick(()=>{
-					me.form[name]=newValue.replace(/[^1-9.]/g,"");
+					me.form[name]=newValue.replace(/[^0-9.]/g,"");
 				});
 			},
 			gotoList() {
@@ -102,8 +102,12 @@
 					me.$api.msg(`请输入帐号`);
 					return;
 				}
-				if (!me.form.money) {
-					me.$api.msg(`请输入贡献值`);
+				if (me.form.money=="0") {
+					me.$api.msg(`请输入爱心值`);
+					return;
+				}
+				if (parseInt(me.form.money)%100>0) {
+					me.$api.msg(`爱心值必须是100的倍数`);
 					return;
 				}
 				addTransferRecord(me.form).then(res => {

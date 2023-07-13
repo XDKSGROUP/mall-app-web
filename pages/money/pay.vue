@@ -16,7 +16,7 @@
 					</radio>
 				</label>
 			</view>
-			<view class="type-item b-b" @click="changePayType(4)">
+			<view class="type-item b-b" @click="changePayType(4)" v-if="userInfo.isBuySpecific">
 				<uni-icons type="flag-filled" size="30" color="#36cb59" class="icon"></uni-icons>
 				<view class="con">
 					<text class="tit">贡献值支付</text>
@@ -25,6 +25,10 @@
 					<radio value="" color="#fa436a" :checked='form.payType == 4' />
 					</radio>
 				</label>
+			</view>
+			<view class="lastinfo">
+				<view>当前剩余爱心值：{{userInfo.integral}}</view>
+				<view>当前剩余贡献值：{{userInfo.money}}</view>
 			</view>
 			<!--<view class="type-item b-b" @click="changePayType(2)">
 				<text class="icon yticon icon-weixinzhifu"></text>
@@ -65,6 +69,13 @@
 		fetchOrderDetail,
 		payOrderProduct
 	} from '@/api/order.js';
+	import {
+		mapState,
+		mapMutations
+	} from 'vuex';
+	import {
+		getMeInfo,
+	} from '@/api/me.js';
 	export default {
 		data() {
 			return {
@@ -79,12 +90,17 @@
 		onLoad(options) {
 			const me = this,
 				form = me.form;
+			if (!me.userInfo.isBuySpecific) form.payType = 3;
 			form.orderId = options.orderId;
 			fetchOrderDetail(form.orderId).then(response => {
 				this.orderInfo = response.data;
 			});
 		},
+		computed: {
+			...mapState(['userInfo'])
+		},
 		methods: {
+			...mapMutations(['login']),
 			//显示密码框
 			showPassword() {
 				this.$refs.popup.open();
@@ -99,7 +115,7 @@
 			//确认支付
 			confirm: async function() {
 				const me = this;
-				if(!me.form.paymentPassword){
+				if (!me.form.paymentPassword) {
 					me.$api.msg(`请输入支付密码`);
 					return;
 				}
@@ -108,9 +124,13 @@
 						me.$api.msg(res.message);
 						return;
 					}
-					uni.redirectTo({
-						url: '/pages/money/paySuccess'
-					})
+					getMeInfo().then(res => {
+						me.login(res.data);
+						uni.redirectTo({
+							url: '/pages/money/paySuccess'
+						})
+					});
+
 				});
 			},
 		}
@@ -194,11 +214,16 @@
 		justify-content: center;
 		width: 630upx;
 		height: 80upx;
-		margin: 80upx auto 30upx;
+		margin: 30upx auto 30upx;
 		font-size: $font-lg;
 		color: #fff;
 		background-color: $base-color;
 		border-radius: 10upx;
 		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
+	}
+	
+	.lastinfo{
+		margin:10upx 0 0;
+		line-height: 80upx;
 	}
 </style>

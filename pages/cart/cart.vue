@@ -5,7 +5,8 @@
 			<image src="/static/cart/emptyCart.jpg" mode="aspectFit"></image>
 			<view v-if="hasLogin" class="empty-tips">
 				空空如也
-				<navigator class="navigator" v-if="hasLogin" url="../index/index" open-type="switchTab">随便逛逛></navigator>
+				<navigator class="navigator" v-if="hasLogin" url="../index/index" open-type="switchTab">随便逛逛>
+				</navigator>
 			</view>
 			<view v-else class="empty-tips">
 				空空如也
@@ -18,15 +19,17 @@
 				<block v-for="(item, index) in cartList" :key="item.id">
 					<view class="cart-item" :class="{'b-b': index!==cartList.length-1}">
 						<view class="image-wrapper">
-							<image :src="item.productPic" :class="[item.loaded]" mode="aspectFill" lazy-load @load="onImageLoad('cartList', index)"
-							 @error="onImageError('cartList', index)"></image>
-							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.checked}" @click="check('item', index)"></view>
+							<image :src="item.productPic" :class="[item.loaded]" mode="aspectFill" lazy-load
+								@load="onImageLoad('cartList', index)" @error="onImageError('cartList', index)"></image>
+							<view class="yticon icon-xuanzhong2 checkbox" :class="{checked: item.checked}"
+								@click="check('item', index)"></view>
 						</view>
 						<view class="item-right">
 							<text class="clamp title">{{item.productName}}</text>
 							<text class="attr">{{item.spDataStr}}</text>
 							<text class="price">¥{{item.price}}</text>
-							<uni-number-box class="step" :min="1" :max="100" :value="item.quantity" :index="index" @eventChange="numberChange"></uni-number-box>
+							<uni-number-box class="step" :min="1" :max="100" :value="item.quantity" :index="index"
+								@eventChange="numberChange"></uni-number-box>
 						</view>
 						<text class="del-btn yticon icon-fork" @click="handleDeleteCartItem(index)"></text>
 					</view>
@@ -35,7 +38,8 @@
 			<!-- 底部菜单栏 -->
 			<view class="action-section">
 				<view class="checkbox">
-					<image :src="allChecked?'/static/selected.png':'/static/select.png'" mode="aspectFit" @click="check('all')"></image>
+					<image :src="allChecked?'/static/selected.png':'/static/select.png'" mode="aspectFit"
+						@click="check('all')"></image>
 					<view class="clear-btn" :class="{show: allChecked}" @click="clearCart">
 						清空
 					</view>
@@ -75,7 +79,7 @@
 		onLoad() {
 			// this.loadData();
 		},
-		onShow(){
+		onShow() {
 			//页面显示时重新加载购物车
 			this.loadData();
 		},
@@ -94,7 +98,7 @@
 		methods: {
 			//请求数据
 			async loadData() {
-				if(!this.hasLogin){
+				if (!this.hasLogin) {
 					return;
 				}
 				fetchCartList().then(response => {
@@ -102,12 +106,13 @@
 					let cartList = list.map(item => {
 						item.checked = true;
 						item.loaded = "loaded";
-						let spDataArr = JSON.parse(item.productAttr);
+						let spDataArr = item.productAttr ? JSON.parse(item.productAttr) : {};
 						let spDataStr = '';
-						for (let attr of spDataArr) {
-							spDataStr += attr.key;
+						for (let key in spDataArr) {
+							const obj=spDataArr[key];
+							spDataStr += obj.key;
 							spDataStr += ":";
-							spDataStr += attr.value;
+							spDataStr += obj.value;
 							spDataStr += ";";
 						}
 						item.spDataStr = spDataStr;
@@ -147,7 +152,10 @@
 			//数量
 			numberChange(data) {
 				let cartItem = this.cartList[data.index];
-				updateQuantity({id:cartItem.id,quantity:data.number}).then(response=>{
+				updateQuantity({
+					id: cartItem.id,
+					quantity: data.number
+				}).then(response => {
 					cartItem.quantity = data.number;
 					this.calcTotal();
 				});
@@ -157,7 +165,9 @@
 				let list = this.cartList;
 				let row = list[index];
 				let id = row.id;
-				deletCartItem({ids:id}).then(response=>{
+				deletCartItem({
+					ids: id
+				}).then(response => {
 					this.cartList.splice(index, 1);
 					this.calcTotal();
 					uni.hideLoading();
@@ -165,7 +175,7 @@
 			},
 			//清空
 			clearCart() {
-				clearCartList().then(response=>{
+				clearCartList().then(response => {
 					uni.showModal({
 						content: '清空购物车？',
 						success: (e) => {
@@ -204,10 +214,10 @@
 						cartIds.push(item.id);
 					}
 				})
-				if(cartIds.length==0){
+				if (cartIds.length == 0) {
 					uni.showToast({
-						title:'您还未选择要下单的商品！',
-						duration:1000
+						title: '您还未选择要下单的商品！',
+						duration: 1000
 					})
 					return;
 				}

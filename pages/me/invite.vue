@@ -54,7 +54,7 @@
 		},
 		onReady() {	
 			if (!this.userInfo.isBuySpecific) {
-				this.message = "请先成为捐献者，才能进行邀请。";
+				this.message = "请先成为志愿者，才能进行邀请";
 				return;
 			}
 			this.loadInfo();
@@ -105,7 +105,7 @@
 				ctx.setFillStyle('#fff'); // setFillStyle() 设置字体颜色
 				ctx.fillText(t, p.x, p.y);
 				// 称号
-				t = me.userInfo.title || "公民",
+				t = me.userInfo.memberLevelName || "公民",
 					f = 18,
 					p = me.getXY(textLeft, uni.upx2px(textTop + 54), uni.upx2px(460), uni.upx2px(44), f, t, 0, 0.5);
 				ctx.setFontSize(f); // setFontSize() 设置字体字号
@@ -114,26 +114,26 @@
 				//固定顶部值
 				textTop = uni.upx2px(370);
 				// 等级
-				t = me.userInfo.memberLevelId || "-",
+				t = me.userInfo.memberHonorLevelName || "P0",
 					f = 12,
 					p = me.getXY(0, textTop, uni.upx2px(185), uni.upx2px(44), f, t, 0.5, 0.5);
 				ctx.setFontSize(f); // setFontSize() 设置字体字号
 				ctx.setFillStyle('#fff'); // setFillStyle() 设置字体颜色
 				ctx.fillText(t, p.x, p.y);
 				// 荣誉
-				t = me.userInfo.memberHonorLevelValue || "-", f = 12,
+				t = me.userInfo.memberHonorLevelValue || "0", f = 12,
 					p = me.getXY(uni.upx2px(190), textTop, uni.upx2px(184), uni.upx2px(44), f, t, 0.5, 0.5);
 				ctx.setFontSize(f) // 字号
 				ctx.setFillStyle('#fff') // 颜色
 				ctx.fillText(t, p.x, p.y); // （文字，x，y）
 				// 人脉值
-				t = me.userInfo.networkValue || "-", f = 12,
+				t = me.userInfo.networkValue || "0", f = 12,
 					p = me.getXY(uni.upx2px(378), textTop, uni.upx2px(184), uni.upx2px(44), f, t, 0.5, 0.5);
 				ctx.setFontSize(f) // 字号
 				ctx.setFillStyle('#fff') // 颜色
 				ctx.fillText(t, p.x, p.y); // （文字，x，y）
 				// 团队值
-				t = me.userInfo.teamValue || "-", f = 12,
+				t = me.userInfo.teamValue || "0", f = 12,
 					p = me.getXY(uni.upx2px(560), textTop, uni.upx2px(184), uni.upx2px(44), f, t, 0.5, 0.5);
 				ctx.setFontSize(f) // 字号
 				ctx.setFillStyle('#fff') // 颜色
@@ -262,7 +262,7 @@
 		.error {
 			line-height: 200upx;
 			text-align: center;
-			font-size: 36upx;
+			font-size: 50upx;
 		}
 	}
 </style>

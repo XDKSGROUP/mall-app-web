@@ -4,12 +4,15 @@
 			<image class="bg" src="/static/me/normal_bg.jpg"></image>
 			<view class="user-info-box">
 				<view class="portrait-box">
-					<image class="portrait" :src="userInfo.icon || '/static/missing-face.png'"></image>
+					<image class="portrait" :src="userInfo.icon || '/static/me/user-head.png'"></image>
 				</view>
 				<view class="info-box">
-					<view class="username">{{userInfo.nickname || '平安建设基金会'}}</view>
-					<view class="job">{{userInfo.memberLevelName||"公民"}}</view>
-					<view class="lv">{{userInfo.memberHonorLevelName||"P0"}}</view>
+					<view class="username">
+						{{userInfo.nickname&&userInfo.nickname.length>10?userInfo.nickname.substring(0,10)+"...":userInfo.nickname || '平安建设基金会'}}
+					</view>
+					<view class="job">角色：{{userInfo.memberLevelName||"公民"}}</view>
+					<view class="lv">等级：{{userInfo.memberHonorLevelName||"P0"}}</view>
+					<view class="lv">帐号：{{userInfo.username||"***"}}</view>
 				</view>
 			</view>
 		</view>
@@ -21,21 +24,25 @@
 			<image class="arc" src="/static/arc.png"></image>
 
 			<view class="tj-sction">
-				<view class="tj-item" @click="navTo('/pages/me/valuelove')">
-					<text class="num">{{userInfo.integral || '0'}}</text>
-					<text>爱心值</text>
+				<view class="inbox">
+					<view class="tj-item" @click="navTo('/pages/me/valuelove')">
+						<text class="num">{{userInfo.integral || '0'}}</text>
+						<text>爱心值</text>
+					</view>
+					<view class="tj-item" @click="navTo('/pages/me/valuecontribute')">
+						<text class="num">{{userInfo.money || '0'}}</text>
+						<text>贡献值</text>
+					</view>
+					<view class="tj-item" @click="navTo('/pages/me/valuenetwork')">
+						<text class="num">{{userInfo.networkValue || '0'}}</text>
+						<text>人脉值</text>
+					</view>
+					<view class="tj-item" @click="navTo('/pages/me/valueteam')">
+						<text class="num">{{userInfo.teamValue || '0'}}</text>
+						<text>团队值</text>
+					</view>
 				</view>
-				<view class="tj-item" @click="navTo('/pages/me/valuecontribute')">
-					<text class="num">{{userInfo.money || '0'}}</text>
-					<text>贡献值</text>
-				</view>
-				<view class="tj-item" @click="navTo('/pages/me/valuenetwork')">
-					<text class="num">{{userInfo.networkValue || '0'}}</text>
-					<text>人脉值</text>
-				</view>
-				<view class="tj-item" @click="navTo('/pages/me/valueteam')">
-					<text class="num">{{userInfo.teamValue || '0'}}</text>
-					<text>团队值</text>
+				<view @click="refresh()" class="refresh">
 				</view>
 			</view>
 			<!-- 订单 -->
@@ -107,7 +114,7 @@
 			</view>
 			<!-- 菜单 -->
 			<view class="history-section icon">
-				<list-cell icon="icon-shoucang" iconColor="#dd6666" title="爱心申购"
+				<list-cell icon="icon-shoucang" iconColor="#dd6666" title="爱心申购" v-if="userInfo.memberLevelId==5"
 					@eventClick="navTo('/pages/me/recharge')"></list-cell>
 				<list-cell icon="icon-share" iconColor="#ee77cc" title="爱心传递"
 					@eventClick="navTo('/pages/me/movelove')"></list-cell>
@@ -134,8 +141,18 @@
 <script>
 	import listCell from '@/components/mix-list-cell';
 	import {
-		mapState
+		mapState,
+		mapMutations
 	} from 'vuex';
+	import {
+		getUnRead
+	} from '@/api/notice.js';
+	import {
+		setTitleNViewStyle
+	} from '@/utils/extUni.js';
+	import {
+		getMeInfo,
+	} from '@/api/me.js';
 
 	let startY = 0,
 		moveY = 0,
@@ -158,7 +175,9 @@
 			uni.stopPullDownRefresh();
 		},
 		onLoad() {},
-		onShow() {},
+		onShow() {
+			this.loadNotices();
+		},
 		// #ifndef MP
 		onNavigationBarButtonTap(e) {
 			const index = e.index;
@@ -183,7 +202,18 @@
 			...mapState(['hasLogin', 'userInfo'])
 		},
 		methods: {
-
+			async loadNotices() {
+				const me = this;
+				if (!me.userInfo || !me.userInfo.id) return;
+				getUnRead({
+					type: 1
+				}).then(res => {
+					if (res.data) {
+						setTitleNViewStyle(1, true);
+					}
+				})
+			},
+			...mapMutations(['login']),
 			/**
 			 * 统一跳转接口,拦截未登录路由
 			 * navigator标签现在默认没有转场动画，所以用view
@@ -228,12 +258,23 @@
 				}
 			},
 			coverTouchend() {
-				if (this.moving === false) {
+				const me = this;
+				if (me.moving === false) {
 					return;
 				}
-				this.moving = false;
-				this.coverTransition = 'transform 0.3s cubic-bezier(.21,1.93,.53,.64)';
-				this.coverTransform = 'translateY(0px)';
+				me.moving = false;
+				me.coverTransition = 'transform 0.3s cubic-bezier(.21,1.93,.53,.64)';
+				me.coverTransform = 'translateY(0px)';
+				me.refresh();
+			},
+			refresh() {
+				const me = this;
+				getMeInfo().then(res => {
+					me.login(res.data);
+					uni.switchTab({
+						url: "/pages/me/info"
+					})
+				});
 			}
 		}
 	}
@@ -273,6 +314,13 @@
 		align-items: center;
 		position: relative;
 		z-index: 1;
+
+		.portrait-box {
+			width: 130upx;
+			height: 130upx;
+			background-color: #fff;
+			border-radius: 50%;
+		}
 
 		.portrait {
 			width: 130upx;
@@ -369,20 +417,44 @@
 	}
 
 	.tj-sction {
-		@extend %section;
+		background: #fff;
+		border-radius: 5px;
+		overflow: hidden;
+		position: relative;
 
-		.tj-item {
-			@extend %flex-center;
-			flex-direction: column;
-			height: 140upx;
-			font-size: $font-sm;
-			color: #75787d;
+		.inbox {
+			display: flex;
+			justify-content: space-around;
+			align-content: center;
+
+			.tj-item {
+				@extend %flex-center;
+				flex-direction: column;
+				height: 140upx;
+				font-size: $font-sm;
+				color: #75787d;
+			}
+
+			.num {
+				font-size: $font-lg;
+				color: $font-color-dark;
+				margin-bottom: 8upx;
+			}
 		}
 
-		.num {
-			font-size: $font-lg;
-			color: $font-color-dark;
-			margin-bottom: 8upx;
+		.refresh {
+			width: 100%;
+			height: 10px;
+			font-size: 10px;
+			text-align: center;
+			color:#ccc;
+			background-color: rgba(255, 255, 255,0.1);
+			position: absolute;
+			bottom: 0;
+			border-radius: 100% 100% 0 0;
+		}
+		.refresh:active{
+			background-color: rgba(241, 93, 107,0.3);
 		}
 	}
 

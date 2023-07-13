@@ -1,66 +1,168 @@
 <template>
-	<view>
-		<view class="notice-item">
-			<text class="time">11:30</text>
-			<view class="content">
-				<text class="title">新品上市，全场满199减50</text>
-				<view class="img-wrapper">
-					<image class="pic" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1556465765776&di=57bb5ff70dc4f67dcdb856e5d123c9e7&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01fd015aa4d95fa801206d96069229.jpg%401280w_1l_2o_100sh.jpg"></image>
-				</view>
-				<text class="introduce">
-					虽然做了一件好事，但很有可能因此招来他人的无端猜测，例如被质疑是否藏有其他利己动机等，乃至谴责。即便如此，还是要做好事。
-				</text>
-				<view class="bot b-t">
-					<text>查看详情</text>
-					<text class="more-icon yticon icon-you"></text>
-				</view>
-			</view>
+	<view class="container">
+		<view class="tabs">
+			<view class="li" :class="tabIndex==0?'s':''" @click="changeTab(0)">公告</view>
+			<view class="hr"></view>
+			<view class="li" :class="tabIndex==1?'s':''" @click="changeTab(1)">消息</view>
 		</view>
-		<view class="notice-item">
-			<text class="time">昨天 12:30</text>
-			<view class="content">
-				<text class="title">新品上市，全场满199减50</text>
-				<view class="img-wrapper">
-					<image class="pic" src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3761064275,227090144&fm=26&gp=0.jpg"></image>
-					<view class="cover">
-						活动结束
+		<view class="message" :class="tabIndex==0?'':'hide'">
+			<view class="notice-item" v-for="item in list">
+				<text class="time">{{item.publishTime}}</text>
+				<view class="content">
+					<view class="title">
+						<view>{{item.title}}</view>
+						<view class="unread" v-if="!item.memberId"></view>
+					</view>
+					<text class="introduce">
+						{{item.intro}}
+					</text>
+					<view class="bot b-t" @click="navigate('/pages/notice/detail?id='+item.id)">
+						<text>查看详情</text>
+						<text class="more-icon yticon icon-you"></text>
 					</view>
 				</view>
-				<view class="bot b-t">
-					<text>查看详情</text>
-					<text class="more-icon yticon icon-you"></text>
-				</view>
 			</view>
+			<view class="empty" v-if="list.length==0">
+				暂无内容
+			</view>
+			<uni-load-more :status="loadingType"></uni-load-more>
 		</view>
-		<view class="notice-item">
-			<text class="time">2019-07-26 12:30</text>
-			<view class="content">
-				<text class="title">新品上市，全场满199减50</text>
-				<view class="img-wrapper">
-					<image class="pic" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1556465765776&di=57bb5ff70dc4f67dcdb856e5d123c9e7&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01fd015aa4d95fa801206d96069229.jpg%401280w_1l_2o_100sh.jpg"></image>
-					<view class="cover">
-						活动结束
+		<view class="notice" :class="tabIndex==1?'':'hide'">
+			<view class="notice-item" v-for="item in listMsg">
+				<text class="time">{{item.publishTime}}</text>
+				<view class="content">
+					<view class="title">
+						<view>{{item.title}}</view>
+						<view class="unread" v-if="item.status===0"></view>
+					</view>
+					<text class="introduce">
+						{{item.intro}}
+					</text>
+					<view class="bot b-t" @click="navigate('/pages/notice/detailMsg?id='+item.id)">
+						<text>查看详情</text>
+						<text class="more-icon yticon icon-you"></text>
 					</view>
 				</view>
-				<text class="introduce">新品上市全场2折起，新品上市全场2折起，新品上市全场2折起，新品上市全场2折起，新品上市全场2折起</text>
-				<view class="bot b-t">
-					<text>查看详情</text>
-					<text class="more-icon yticon icon-you"></text>
-				</view>
 			</view>
+			<view class="empty" v-if="listMsg.length==0">
+				暂无内容
+			</view>
+			<uni-load-more :status="loadingTypeMsg"></uni-load-more>
 		</view>
 	</view>
 </template>
 
 <script>
+	import {
+		getList,
+	} from '@/api/notice.js';
+	import {
+		getList as getListMsg,
+	} from '@/api/message.js';
 	export default {
 		data() {
 			return {
-
+				tabIndex: 0,
+				loadingType: "more",
+				form: {
+					id: 0,
+					type:1,
+					pageNum: 0,
+					pageSize: 10,
+				},
+				list: [],
+				loadingTypeMsg: "more",
+				formMsg: {
+					id: 0,
+					pageNum: 0,
+					pageSize: 10,
+				},
+				listMsg: [],
 			}
 		},
+		onShow(options) {
+			this.loadData();
+		},
+		//下拉刷新
+		onPullDownRefresh() {
+			this.loadData();
+			uni.stopPullDownRefresh();
+		},
+		//加载更多
+		onReachBottom() {
+			this.loadData(1);
+		},
 		methods: {
-
+			navigate(url) {
+				uni.navigateTo({
+					url: url
+				});
+			},
+			changeTab(num) {
+				this.tabIndex = num;
+				this.loadData();				
+			},
+			/**
+			 * 加载数据
+			 */
+			async loadData(isAppend) {
+				const me=this;
+				if (me.tabIndex == 0) {
+					me.loadDataNotice(isAppend);
+				} else {
+					me.loadDataMessage(isAppend);
+				}
+			},
+			async loadDataNotice(isAppend) {
+				const me = this;
+				if (isAppend) {
+					me.form.pageNum++;
+				} else {
+					me.form.pageNum = 1;
+				}
+				getList(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
+					}
+					const list = res.data.list;
+					me.loadingType = list.length < me.form.pageSize ? 'nomore' : 'more';
+					if (isAppend) {
+						if (list.length == 0) {
+							return;
+						}
+					} else {
+						me.list.splice(0, me.list.length);
+					}
+					//加入列表
+					me.list.push(...list);
+				});
+			},
+			async loadDataMessage(isAppend) {
+				const me = this;
+				if (isAppend) {
+					me.formMsg.pageNum++;
+				} else {
+					me.formMsg.pageNum = 1;
+				}
+				getListMsg(me.formMsg).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
+					}
+					const list = res.data.list;
+					me.loadingTypeMsg = list.length < me.formMsg.pageSize ? 'nomore' : 'more';
+					if (isAppend) {
+						if (list.length == 0) {
+							return;
+						}
+					} else {
+						me.listMsg.splice(0, me.listMsg.length);
+					}
+					//加入列表
+					me.listMsg.push(...list);
+				});
+			},
 		}
 	}
 </script>
@@ -69,6 +171,39 @@
 	page {
 		background-color: #f7f7f7;
 		padding-bottom: 30upx;
+	}
+
+	.container {
+		padding: 0 0 60px;
+	}
+
+	.hide {
+		display: none;
+	}
+
+	.tabs {
+		line-height: 40px;
+		background: #fff;
+		box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.08);
+		display: flex;
+		justify-content: space-between;
+
+
+		.li {
+			margin: 0 30upx 1px;
+			text-align: center;
+			flex: 1;
+		}
+
+		.hr {
+			width: 1px;
+			background-color: #f8f8f8;
+		}
+
+		.s {
+			color: #fa436a;
+			border-bottom: 2px solid #fa436a;
+		}
 	}
 
 	.notice-item {
@@ -95,24 +230,20 @@
 	}
 
 	.title {
-		display: flex;
-		align-items: center;
 		height: 90upx;
+		line-height: 90upx;
+		display: flex;
+		justify-content: space-between;
 		font-size: 32upx;
 		color: #303133;
 	}
 
-	.img-wrapper {
-		width: 100%;
-		height: 260upx;
-		position: relative;
-	}
-
-	.pic {
-		display: block;
-		width: 100%;
-		height: 100%;
-		border-radius: 6upx;
+	.unread {
+		width: 15upx;
+		height: 15upx;
+		margin-top: 15upx;
+		border-radius: 50%;
+		background-color: #fa436a;
 	}
 
 	.cover {
@@ -149,5 +280,10 @@
 
 	.more-icon {
 		font-size: 32upx;
+	}
+
+	.empty {
+		text-align: center;
+		line-height: 120upx;
 	}
 </style>

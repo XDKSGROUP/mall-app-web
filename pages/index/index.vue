@@ -66,15 +66,9 @@
 				<view class="icon"></view>
 				<view class="cont">
 					<swiper class="inbox" :vertical="true" :indicator-dots="false" :autoplay="true" :interval="5000"
-						:duration="500">
-						<swiper-item>
-							<view class="li">恭喜王**升级为社长！</view>
-						</swiper-item>
-						<swiper-item>
-							<view class="li">恭喜李**注册为公民！</view>
-						</swiper-item>
-						<swiper-item>
-							<view class="li">恭喜黄**升级为贡献者！</view>
+						:duration="500" v-if="showNotice">
+						<swiper-item v-for="(it,at) in listNotice" :key="at">
+							<view class="li">{{it.title}}</view>
 						</swiper-item>
 					</swiper>
 
@@ -106,8 +100,8 @@
 			</view>
 			<!-- 公益 -->
 			<view class="product">
-				<view class="title mt" @click="goto('/pages/product/list?sid=59')">
-					<image src="/static/index/tt2.png"></image>
+				<view class="title mt" @click="goto('/pages/product/list?sid=60')">
+					<image src="/static/index/tt3.png"></image>
 					<view class="cont">
 						<text class="tit">公益</text>
 						<text class="tit2">5折爱心值或贡献值专区</text>
@@ -115,7 +109,8 @@
 				</view>
 
 				<view class="cont">
-					<view v-for="(item, index) in listContribute5" :key="index" class="li" @click="navToDetailPage(item)">
+					<view v-for="(item, index) in listContribute5" :key="index" class="li"
+						@click="navToDetailPage(item)">
 						<view class="image-wrapper">
 							<image :src="item.pic" mode="aspectFill"></image>
 						</view>
@@ -129,16 +124,17 @@
 			</view>
 			<!-- 慈善 -->
 			<view class="product">
-				<view class="title mt" @click="goto('/pages/product/list?sid=59')">
-					<image src="/static/index/tt2.png"></image>
+				<view class="title mt" @click="goto('/pages/product/list?sid=61')">
+					<image src="/static/index/tt4.png"></image>
 					<view class="cont">
 						<text class="tit">慈善</text>
 						<text class="tit2">2.5折爱心值或贡献值专区</text>
 					</view>
 				</view>
-			
+
 				<view class="cont">
-					<view v-for="(item, index) in listContribute2_5" :key="index" class="li" @click="navToDetailPage(item)">
+					<view v-for="(item, index) in listContribute2_5" :key="index" class="li"
+						@click="navToDetailPage(item)">
 						<view class="image-wrapper">
 							<image :src="item.pic" mode="aspectFill"></image>
 						</view>
@@ -156,13 +152,24 @@
 
 <script>
 	import {
+		mapState
+	} from 'vuex';
+	import {
 		fetchContent,
 		fetchRecommendProductList
 	} from '@/api/home.js';
 	import {
 		formatDate
 	} from '@/utils/date';
+	import {
+		setTitleNViewStyle
+	} from '@/utils/extUni.js';
+	import {
+		getUnRead,
+		getList as getListNotice
+	} from '@/api/notice.js';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+
 	export default {
 		components: {
 			uniLoadMore
@@ -173,6 +180,8 @@
 				titleNViewBackgroundList: ['#ffd4ce', '#d9f0ea', '#e0f7dd'],
 				swiperCurrent: 0,
 				swiperLength: 0,
+				showNotice: false,
+				listNotice: [], //通知
 				listLove: [], //爱心专区列表
 				listContribute5: [], //5折贡献专区列表
 				listContribute2_5: [], //2.5折贡献专区列表
@@ -180,6 +189,9 @@
 		},
 		onLoad() {
 			this.loadData();
+		},
+		onShow() {
+			this.loadNotices();
 		},
 		//下拉刷新
 		onPullDownRefresh() {
@@ -219,6 +231,9 @@
 				return formatDate(date, 'hh:mm:ss')
 			},
 		},
+		computed: {
+			...mapState(['userInfo'])
+		},
 		methods: {
 			/**
 			 * 加载数据
@@ -233,6 +248,27 @@
 					this.listLove = response.data.listLove;
 					this.listContribute5 = response.data.listContribute5;
 					this.listContribute2_5 = response.data.listContribute2_5;
+				});
+			},
+			async loadNotices() {
+				const me = this;
+				if (!me.listNotice.length) {
+					getListNotice({
+						type: 2,
+						pageNum: 1,
+						pageSize: 10,
+					}).then(res => {
+						me.listNotice.push(...res.data.list);
+						me.showNotice = true;
+					});
+				}
+				if (!me.userInfo || !me.userInfo.id) return
+				getUnRead({
+					type: 1
+				}).then(res => {
+					if (res.data) {
+						setTitleNViewStyle(1, true);
+					}
 				});
 			},
 			//轮播图切换修改背景色
@@ -276,14 +312,6 @@
 					url: "/pages/me/invite"
 				})
 			} else if (index === 1) {
-				// #ifdef APP-PLUS
-				const pages = getCurrentPages();
-				const page = pages[pages.length - 1];
-				const currentWebview = page.$getAppWebview();
-				currentWebview.hideTitleNViewButtonRedDot({
-					index
-				});
-				// #endif
 				uni.navigateTo({
 					url: '/pages/notice/notice'
 				})

@@ -28,8 +28,7 @@
 								"text": "\ue744",
 								"fontSize": "27",
 								"color": "#303133",
-								"background": "rgba(0,0,0,0)",
-								"redDot": true
+								"background": "rgba(0,0,0,0)"
 							}
 						]
 					}
@@ -107,18 +106,19 @@
 				"navigationBarTitleText": "设置"
 			}
 		},
-
 		{
 			"path": "pages/userinfo/userinfo",
 			"style": {
 				"navigationBarTitleText": "修改资料"
 			}
-		}, {
+		},
+		{
 			"path": "pages/cart/cart",
 			"style": {
 				"navigationBarTitleText": "购物车"
 			}
-		}, {
+		},
+		{
 			"path": "pages/public/login",
 			"style": {
 				"navigationBarTitleText": "",
@@ -128,7 +128,8 @@
 					"animationType": "slide-in-bottom"
 				}
 			}
-		}, {
+		},
+		{
 			"path": "pages/public/register",
 			"style": {
 				"navigationBarTitleText": "",
@@ -138,7 +139,19 @@
 					"animationType": "slide-in-bottom"
 				}
 			}
-		}, {
+		}, 
+		{
+			"path": "pages/public/registerx",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false,
+					"animationType": "slide-in-bottom"
+				}
+			}
+		}, 
+		{
 			"path": "pages/public/forgotpassword",
 			"style": {
 				"navigationBarTitleText": "",
@@ -172,8 +185,7 @@
 								"text": "\ue744",
 								"fontSize": "28",
 								"color": "#303133",
-								"background": "rgba(0,0,0,0)",
-								"redDot": true
+								"background": "rgba(0,0,0,0)"
 							}
 						]
 					}
@@ -233,7 +245,20 @@
 			"style": {
 				"navigationBarTitleText": "通知"
 			}
-		}, {
+		},
+		{
+			"path": "pages/notice/detail",
+			"style": {
+				"navigationBarTitleText": "详细"
+			}
+		},
+		{
+			"path": "pages/notice/detailMsg",
+			"style": {
+				"navigationBarTitleText": "详细"
+			}
+		},
+		{
 			"path": "pages/category/category",
 			"style": {
 				"navigationBarTitleText": "分类",
@@ -328,6 +353,13 @@
 						}]
 					}
 				}
+			}
+		},
+		{
+			"path": "pages/me/myinfo",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "我的信息"
 			}
 		},
 		{
@@ -557,6 +589,12 @@
 				"iconPath": "static/tabbar/tab-cate.png",
 				"selectedIconPath": "static/tabbar/tab-cate-current.png",
 				"text": "发现项目"
+			},
+			{
+				"pagePath": "pages/cart/cart",
+				"iconPath": "static/tabbar/tab-cart.png",
+				"selectedIconPath": "static/tabbar/tab-cart-current.png",
+				"text": "购物车"
 			},
 			{
 				"pagePath": "pages/me/info",

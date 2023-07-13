@@ -571,7 +571,7 @@
 
 		.val {
 			vertical-align: middle;
-			flext: 1;
+			flex: 1;
 		}
 
 		.li {

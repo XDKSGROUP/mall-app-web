@@ -35,3 +35,12 @@ export function addMember(params) {
 		data: params
 	})
 }
+
+//注册会员信息
+export function addMember2(params) {
+	return request({
+		method: 'POST',
+		url: '/sso/register3',
+		data: params
+	})
+}

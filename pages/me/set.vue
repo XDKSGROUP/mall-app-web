@@ -1,6 +1,10 @@
 <template>
 	<view class="container">
-		<view class="list-cell b-b m-t" @click="navTo('/pages/me/edit')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b m-t" @click="navTo('/pages/me/myinfo')" hover-class="cell-hover" :hover-stay-time="50">
+			<text class="cell-tit">我的信息</text>
+			<text class="cell-more yticon icon-you"></text>
+		</view>	
+		<view class="list-cell b-b" @click="navTo('/pages/me/edit')" hover-class="cell-hover" :hover-stay-time="50">
 			<text class="cell-tit">个人资料</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>	

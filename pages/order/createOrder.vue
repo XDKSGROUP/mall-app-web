@@ -161,12 +161,13 @@
 		},
 		filters: {
 			formatProductAttr(jsonAttr) {
-				let attrArr = JSON.parse(jsonAttr);
+				let attrArr = jsonAttr?JSON.parse(jsonAttr):{};
 				let attrStr = '';
-				for (let attr of attrArr) {
-					attrStr += attr.key;
+				for (let key in attrArr) {
+					const obj=attrArr[key];
+					attrStr += obj.key;
 					attrStr += ":";
-					attrStr += attr.value;
+					attrStr += obj.value;
 					attrStr += ";";
 				}
 				return attrStr

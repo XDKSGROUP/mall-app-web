@@ -1,48 +1,58 @@
 <template>
-	<view class="content">
-		<view class="navbar" :style="{position:headerPosition,top:headerTop}">
-			<view class="nav-item" :class="{current: filterIndex === 0}" @click="tabClick(0)">
-				综合排序
-			</view>
-			<view class="nav-item" :class="{current: filterIndex === 1}" @click="tabClick(1)">
-				销量优先
-			</view>
-			<view class="nav-item" :class="{current: filterIndex === 2}" @click="tabClick(2)">
-				<text>价格</text>
-				<view class="p-box">
-					<text :class="{active: priceOrder === 1 && filterIndex === 2}" class="yticon icon-shang"></text>
-					<text :class="{active: priceOrder === 2 && filterIndex === 2}" class="yticon icon-shang xia"></text>
-				</view>
-			</view>
-			<text class="cate-item yticon icon-fenlei1" @click="toggleCateMask('show')"></text>
-		</view>
-		<view class="goods-list">
-			<view v-for="(item, index) in productList" :key="index" class="goods-item" @click="navToDetailPage(item)">
-				<view class="image-wrapper">
-					<image :src="item.pic" mode="aspectFill"></image>
-				</view>
-				<text class="title clamp">{{item.name}}</text>
-				<text class="title2">{{item.subTitle}}</text>
-				<view class="price-box">
-					<text class="price">{{item.price}}</text>
-					<text>已售 {{item.sale}}</text>
-				</view>
+	<view class="container">
+		<view class="empty" v-if="!isShow">
+			<image src="/static/cart/emptyCart.jpg" mode="aspectFit"></image>
+			<view class="empty-tips">
+				{{searchParam.productCategoryId==61?"需要社工才可以访问":"需要志愿者才可以访问"}}
+				<navigator class="navigator" url="/pages/product/list?sid=59">去爱心专区看看></navigator>
 			</view>
 		</view>
-		<uni-load-more :status="loadingType"></uni-load-more>
-
-		<view class="cate-mask" :class="cateMaskState===0 ? 'none' : cateMaskState===1 ? 'show' : ''"
-			@click="toggleCateMask">
-			<view class="cate-content" @click.stop.prevent="stopPrevent" @touchmove.stop.prevent="stopPrevent">
-				<scroll-view scroll-y class="cate-list">
-					<view v-for="item in cateList" :key="item.id">
-						<view class="cate-item b-b two">{{item.name}}</view>
-						<view v-for="tItem in item.children" :key="tItem.id" class="cate-item b-b"
-							:class="{active: tItem.id==searchParam.productCategoryId}" @click="changeCate(tItem)">
-							{{tItem.name}}
-						</view>
+		<view class="content" v-if="isShow">
+			<view class="navbar" :style="{position:headerPosition,top:headerTop}">
+				<view class="nav-item" :class="{current: filterIndex === 0}" @click="tabClick(0)">
+					综合排序
+				</view>
+				<view class="nav-item" :class="{current: filterIndex === 1}" @click="tabClick(1)">
+					销量优先
+				</view>
+				<view class="nav-item" :class="{current: filterIndex === 2}" @click="tabClick(2)">
+					<text>价格</text>
+					<view class="p-box">
+						<text :class="{active: priceOrder === 1 && filterIndex === 2}" class="yticon icon-shang"></text>
+						<text :class="{active: priceOrder === 2 && filterIndex === 2}"
+							class="yticon icon-shang xia"></text>
 					</view>
-				</scroll-view>
+				</view>
+				<text class="cate-item yticon icon-fenlei1" @click="toggleCateMask('show')"></text>
+			</view>
+			<view class="goods-list">
+				<view v-for="(item, index) in productList" :key="index" class="goods-item"
+					@click="navToDetailPage(item)">
+					<view class="image-wrapper">
+						<image :src="item.pic" mode="aspectFill"></image>
+					</view>
+					<text class="title clamp">{{item.name}}</text>
+					<text class="title2">{{item.subTitle}}</text>
+					<view class="price-box">
+						<text class="price">{{item.price}}</text>
+						<text>已售 {{item.sale}}</text>
+					</view>
+				</view>
+			</view>
+			<uni-load-more :status="loadingType"></uni-load-more>
+			<view class="cate-mask" :class="cateMaskState===0 ? 'none' : cateMaskState===1 ? 'show' : ''"
+				@click="toggleCateMask">
+				<view class="cate-content" @click.stop.prevent="stopPrevent" @touchmove.stop.prevent="stopPrevent">
+					<scroll-view scroll-y class="cate-list">
+						<view v-for="item in cateList" :key="item.id">
+							<view class="cate-item b-b two">{{item.name}}</view>
+							<view v-for="tItem in item.children" :key="tItem.id" class="cate-item b-b"
+								:class="{active: tItem.id==searchParam.productCategoryId}" @click="changeCate(tItem)">
+								{{tItem.name}}
+							</view>
+						</view>
+					</scroll-view>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -56,6 +66,9 @@
 		searchProductList,
 		fetchCategoryTreeList
 	} from '@/api/product.js';
+	import {
+		mapState
+	} from 'vuex';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 	export default {
 		components: {
@@ -63,6 +76,7 @@
 		},
 		data() {
 			return {
+				isShow: false,
 				cateMaskState: 0, //分类面板展开状态
 				headerPosition: "fixed",
 				headerTop: "0px",
@@ -80,16 +94,20 @@
 				}
 			};
 		},
-
 		onLoad(options) {
-			const me = this;
+			const me = this,
+				prm = me.searchParam,
+				ui = me.userInfo;
+			options.keyword && (prm.keyword = options.keyword);
+			options.sid && (prm.productCategoryId = options.sid);
+			me.isShow = prm.productCategoryId == 59 || prm.productCategoryId == 60 && ui.memberLevelId > 1 || prm
+				.productCategoryId == 61 && ui.memberLevelId > 2;
 			uni.getSystemInfo({
 				success: (res) => {
 					me.headerTop = res.windowTop + 'px';
 				}
 			});
-			options.keyword && (me.searchParam.keyword = options.keyword);
-			options.sid && (me.searchParam.productCategoryId = options.sid);
+
 			me.loadCateList(options.fid, options.sid);
 			me.loadData();
 		},
@@ -111,11 +129,31 @@
 			this.searchParam.pageNum++;
 			this.loadData();
 		},
+		computed: {
+			...mapState(['userInfo'])
+		},
 		methods: {
 			//加载分类
 			async loadCateList(fid, sid) {
 				fetchCategoryTreeList().then(response => {
 					this.cateList = response.data;
+					this.setTitle();
+				});
+			},
+			async setTitle() {
+				const me = this,
+					get = (list) => {
+						const lst = list.filter(t => t.id == me.searchParam.productCategoryId);
+						if (lst.length) return lst[0];
+						for (let i = 0, c = list.length; i < c; i++) {
+							const it = get(list[i].children);
+							if (it) return it;
+						}
+					},
+					cls = get(me.cateList);
+				if (!cls) return;
+				uni.setNavigationBarTitle({
+					title: cls.name
 				})
 			},
 			//加载商品 ，带下拉刷新和上滑加载
@@ -443,6 +481,37 @@
 			&:before {
 				content: '￥';
 				font-size: 26upx;
+			}
+		}
+	}
+
+	.empty {
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100vh;
+		padding-bottom: 100upx;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		background: #fff;
+
+		image {
+			width: 240upx;
+			height: 160upx;
+			margin-bottom: 30upx;
+		}
+
+		.empty-tips {
+			display: flex;
+			font-size: $font-sm+2upx;
+			color: $font-color-disabled;
+
+			.navigator {
+				color: $uni-color-primary;
+				margin-left: 16upx;
 			}
 		}
 	}

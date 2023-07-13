@@ -1,6 +1,13 @@
 <template>
 	<view class="container">
-		<view class="fixtop">
+		<view class="empty" v-if="!userInfo.memberLevelId||userInfo.memberLevelId<=1">
+			<image src="/static/cart/emptyCart.jpg" mode="aspectFit"></image>
+			<view class="empty-tips">
+				需要志愿者才可以访问
+				<navigator class="navigator" url="/pages/product/list?sid=59">去爱心专区看看></navigator>
+			</view>
+		</view>
+		<view class="fixtop" v-if="userInfo.memberLevelId>1">
 			<!-- 搜索 -->
 			<view class="search">
 				<input class="input" type="text" v-model="form.name" placeholder="输入项目名称" @confirm="loadData()" />
@@ -27,8 +34,7 @@
 					<text>{{it.name}}</text>
 				</view>
 			</view> -->
-
-		<view class="list">
+		<view class="list" v-if="userInfo.memberLevelId>1">
 			<view v-for="(item, index) in list" :key="index" class="li" @click="gotoDetail(item)">
 				<view class="img">
 					<image :src="item.pic.replace(/^\s+/,'')" mode="aspectFill"></image>
@@ -54,6 +60,9 @@
 	import {
 		formatDate
 	} from '@/utils/date';
+	import {
+		mapState
+	} from 'vuex';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 
 	export default {
@@ -79,7 +88,7 @@
 			};
 		},
 		onLoad(options) {
-			if(options.id)this.menusIndex.s1=parseInt(options.id);
+			if (options.id) this.menusIndex.s1 = parseInt(options.id);
 			this.loadMenus();
 		},
 		//下拉刷新
@@ -91,9 +100,28 @@
 		onReachBottom() {
 			this.loadData(1);
 		},
+		computed: {
+			...mapState(['userInfo'])
+		},
 		methods: {
 			getMenuWidth() {
 				return uni.upx2px(this.menus.length * 188);
+			},
+			async setTitle(list, id) {
+				const me = this,
+					get = (list) => {
+						const lst = list.filter(t => t.id == id);
+						if (lst.length) return lst[0];
+						for (let i = 0, c = list.length; i < c; i++) {
+							const it = get(list[i].children);
+							if (it) return it;
+						}
+					},
+					cls = get(list);
+				if (!cls) return;
+				uni.setNavigationBarTitle({
+					title: cls.name
+				})
 			},
 			loadMenus() {
 				const me = this;
@@ -125,6 +153,7 @@
 				me.menusIndex.lst2.splice(0, me.menusIndex.lst2.length);
 				const mainMenu = me.menus[s1];
 				me.form.categoryId = mainMenu.id;
+				me.setTitle(me.menus, mainMenu.id);
 				me.menusIndex.lst2.push(...me.menus[s1].lst);
 				me.loadData();
 			},
@@ -350,6 +379,37 @@
 			line-height: 90upx;
 			justify-content: center;
 
+		}
+	}
+
+	.empty {
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100vh;
+		padding-bottom: 100upx;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		background: #fff;
+
+		image {
+			width: 240upx;
+			height: 160upx;
+			margin-bottom: 30upx;
+		}
+
+		.empty-tips {
+			display: flex;
+			font-size: $font-sm+2upx;
+			color: $font-color-disabled;
+
+			.navigator {
+				color: $uni-color-primary;
+				margin-left: 16upx;
+			}
 		}
 	}
 </style>

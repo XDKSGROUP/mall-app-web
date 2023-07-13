@@ -5,7 +5,7 @@ const http = new Request()
 http.setConfig((config) => {
 	/* 设置全局配置 */
 	config.baseUrl = process.env.NODE_ENV == "development" ? 'http://192.168.124.88:8085' :
-		'http://47.110.144.8/apimall';//http://47.110.144.8/apimall
+		'http://47.110.144.8/apimall'; //http://47.110.144.8/apimall
 	config.header = {
 		...config.header
 	};
@@ -65,21 +65,22 @@ http.interceptor.response((response) => {
 			});
 		}
 		//提示错误信息
-		// uni.showToast({
-		// 	title: res.message,
-		// 	duration: 1500
-		// })		
+		uni.showToast({
+			title: res.message,
+			duration: 1500
+		});
+		console.log('报错：', response);
 		return Promise.reject(response);
 	} else {
 		return response.data;
 	}
 }, (response) => {
 	//提示错误信息
-	console.log('response error', response);
 	uni.showToast({
 		title: response.errMsg,
 		duration: 1500
-	})
+	});
+	console.log('报错：', response);
 	return Promise.reject(response);
 })
 

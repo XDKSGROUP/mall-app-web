@@ -64,7 +64,7 @@
 				const me=this;
 				const newValue = args[0].target.value;
 				me.$nextTick(()=>{
-					me.form[name]=newValue.replace(/[^1-9.]/g,"");
+					me.form[name]=newValue.replace(/[^0-9.]/g,"");
 				});
 			},
 			gotoList() {
@@ -101,8 +101,12 @@
 					me.$api.msg(`请输入帐号`);
 					return;
 				}
-				if (!me.form.money) {
+				if (me.form.money=="0") {
 					me.$api.msg(`请输入贡献值`);
+					return;
+				}
+				if (parseInt(me.form.money)%100>0) {
+					me.$api.msg(`贡献值必须是100的倍数`);
 					return;
 				}
 				addTransferRecord(me.form).then(res => {

@@ -2,6 +2,28 @@ export const enumTradeType = [{
 	name: "充值",
 	value: 0
 }, {
+	name: "扣除",
+	value: 1
+},{
+	name: "转入",
+	value: 2
+}, {
+	name: "转出",
+	value: 3
+}, {
+	name: "捐赠",
+	value: 4
+}, {
+	name: "购买",
+	value: 5
+}, {
+	name: "分红",
+	value: 6
+}];
+export const enumSourceType = [{
+	name: "充值",
+	value: 0
+}, {
 	name: "提现",
 	value: 1
 },{
@@ -19,6 +41,12 @@ export const enumTradeType = [{
 }, {
 	name: "分红",
 	value: 6
+}, {
+	name: "提现驳回",
+	value: 7
+}, {
+	name: "管理员操作",
+	value: 8
 }];
 export const enumLastTimeType = [{
 	name: "近一周",

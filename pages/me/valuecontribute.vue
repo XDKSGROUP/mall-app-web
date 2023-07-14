@@ -145,7 +145,7 @@
 			rtnDateTimeToStr,
 			setPicker,
 			getSource(source) {
-				const name = enumTradeType.find(t => t.value == source)?.name || "-";
+				const name = enumSourceType.find(t => t.value == source)?.name || "-";
 				return name;
 			},
 			loadData(isAppend) {

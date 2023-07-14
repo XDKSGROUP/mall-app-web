@@ -180,7 +180,7 @@
 				const me = this;
 				const newValue = args[0].target.value;
 				me.$nextTick(() => {
-					me.payForm[name] = newValue.replace(/[^1-9.]/g, "");
+					me.payForm[name] = newValue.replace(/[^0-9.]/g, "");
 				});
 			},
 			//显示密码框

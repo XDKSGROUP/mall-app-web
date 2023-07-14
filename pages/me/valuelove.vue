@@ -91,6 +91,7 @@
 	} from '@/utils/com.js';
 	import {
 		enumTradeType,
+		enumSourceType,
 		enumLastTimeType
 	} from '@/utils/enums.js';
 	import CheckListBox from '@/components/l/CheckListBox.vue';
@@ -145,7 +146,7 @@
 			rtnDateTimeToStr,
 			setPicker,
 			getSource(source) {
-				const name = enumTradeType.find(t => t.value == source)?.name || "-";
+				const name = enumSourceType.find(t => t.value == source)?.name || "-";
 				return name;
 			},
 			loadData(isAppend) {

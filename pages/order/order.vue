@@ -1,8 +1,8 @@
 <template>
 	<view class="content">
 		<view class="navbar">
-			<view v-for="(item, index) in navList" :key="index" class="nav-item" :class="{current: tabCurrentIndex === index}"
-			 @click="tabClick(index)">
+			<view v-for="(item, index) in navList" :key="index" class="nav-item"
+				:class="{current: tabCurrentIndex === index}" @click="tabClick(index)">
 				{{item.text}}
 			</view>
 		</view>
@@ -15,37 +15,56 @@
 
 					<!-- 订单列表 -->
 					<view v-for="(item,index) in orderList" :key="index" class="order-item">
-						<view class="i-top b-b">
-							<text class="time" @click="showOrderDetail(item.id)">{{item.createTime | formatDateTime}}</text>
-							<text class="state" :style="{color: '#fa436a'}">{{item.status | formatStatus}}</text>
-							<text v-if="item.status===3||item.status===4" class="del-btn yticon icon-iconfontshanchu1" @click="deleteOrder(item.id)"></text>
-						</view>
-						<view class="goods-box-single" v-for="(orderItem, itemIndex) in item.orderItemList"
-						 :key="itemIndex">
-							<image class="goods-img" :src="orderItem.productPic" mode="aspectFill"></image>
-							<view class="right">
-								<text class="title clamp">{{orderItem.productName}}</text>
-								<text class="attr-box">{{orderItem.productAttr | formatProductAttr}} x {{orderItem.productQuantity}}</text>
-								<text class="price">{{orderItem.productPrice}}</text>
+						<view class="inbox">
+							<view class="i-top b-b">
+								<text class="time"
+									@click="showOrderDetail(item.id)">{{item.createTime | formatDateTime}}</text>
+								<text class="state" :style="{color: '#fa436a'}">{{item.status | formatStatus}}</text>
+								<text v-if="item.status===3||item.status===4"
+									class="del-btn yticon icon-iconfontshanchu1" @click="deleteOrder(item.id)"></text>
 							</view>
-						</view>
+							<view class="goods-box-single" v-for="(orderItem, itemIndex) in item.orderItemList"
+								:key="itemIndex">
+								<image class="goods-img" :src="orderItem.productPic" mode="aspectFill"></image>
+								<view class="right">
+									<text class="title clamp">{{orderItem.productName}}</text>
+									<text class="attr-box">{{orderItem.productAttr | formatProductAttr}} x
+										{{orderItem.productQuantity}}</text>
+									<text class="price">{{orderItem.productPrice}}</text>
+								</view>
+							</view>
 
-						<view class="price-box">
-							共
-							<text class="num">{{calcTotalQuantity(item)}}</text>
-							件商品 实付款
-							<text class="price">{{item.payAmount}}</text>
-						</view>
-						<view class="action-box b-t" v-if="item.status == 0">
-							<button class="action-btn" @click="cancelOrder(item.id)">取消订单</button>
-							<button class="action-btn recom" @click="payOrder(item.id)">立即付款</button>
-						</view>
-						<view class="action-box b-t" v-if="item.status == 2">
-							<button class="action-btn" >查看物流</button>
-							<button class="action-btn recom" @click="receiveOrder(item.id)">确认收货</button>
-						</view>
-						<view class="action-box b-t" v-if="item.status == 3">
-							<button class="action-btn recom" >评价商品</button>
+							<view class="price-box">
+								共
+								<text class="num">{{calcTotalQuantity(item)}}</text>
+								件商品 实付款
+								<text class="price">{{item.payAmount}}</text>
+							</view>
+							<view class="action-box b-t" v-if="item.status == 0">
+								<button class="action-btn" @click="cancelOrder(item.id)">取消订单</button>
+								<button class="action-btn recom" @click="payOrder(item.id)">立即付款</button>
+							</view>
+							<view class="action-box b-t" v-if="item.status == 2">
+								<button class="action-btn" @click="viewLogistics(item,index)">查看物流</button>
+								<button class="action-btn recom" @click="receiveOrder(item.id)">确认收货</button>
+							</view>
+							<view class="logisticsinfo" :style="{height:showLogisticsInfo[index]?'':'0px'}">
+								<view class="li">
+									<view class="name">物流名称：</view>
+									<view class="value">{{item.deliveryCompany}}</view>
+								</view>
+								<view class="li">
+									<view class="name">物流单号：</view>
+									<view class="value">{{item.deliverySn}}</view>
+								</view>
+								<view class="li">
+									<view class="name">发货时间：</view>
+									<view class="value">{{item.deliveryTime}}</view>
+								</view>
+							</view>
+							<view class="action-box b-t" v-if="item.status == 3&&false">
+								<button class="action-btn recom">评价商品</button>
+							</view>
 						</view>
 					</view>
 
@@ -83,7 +102,7 @@
 					pageSize: 5
 				},
 				orderList: [],
-				loadingType:'more',
+				loadingType: 'more',
 				navList: [{
 						state: -1,
 						text: '全部'
@@ -105,6 +124,7 @@
 						text: '已取消'
 					}
 				],
+				showLogisticsInfo: {},
 			};
 		},
 		onLoad(options) {
@@ -146,10 +166,10 @@
 				return statusTip;
 			},
 			formatProductAttr(jsonAttr) {
-				let attrArr = jsonAttr?JSON.parse(jsonAttr):{};
+				let attrArr = jsonAttr ? JSON.parse(jsonAttr) : {};
 				let attrStr = '';
 				for (let key in attrArr) {
-					const obj=attrArr[key];
+					const obj = attrArr[key];
 					attrStr += obj.key;
 					attrStr += ":";
 					attrStr += obj.value;
@@ -167,10 +187,10 @@
 		},
 		methods: {
 			//获取订单列表
-			loadData(type='refresh') {
-				if(type=='refresh'){
-					this.orderParam.pageNum=1;
-				}else{
+			loadData(type = 'refresh') {
+				if (type == 'refresh') {
+					this.orderParam.pageNum = 1;
+				} else {
 					this.orderParam.pageNum++;
 				}
 				//这里是将订单挂载到tab列表下
@@ -185,14 +205,14 @@
 				this.loadingType = 'loading';
 				fetchOrderList(this.orderParam).then(response => {
 					let list = response.data.list;
-					if(type=='refresh'){
+					if (type == 'refresh') {
 						this.orderList = list;
 						this.loadingType = 'more';
-					}else{
-						if(list!=null&&list.length>0){
+					} else {
+						if (list != null && list.length > 0) {
 							this.orderList = this.orderList.concat(list);
 							this.loadingType = 'more';
-						}else{
+						} else {
 							this.orderParam.pageNum--;
 							this.loadingType = 'noMore';
 						}
@@ -212,87 +232,99 @@
 			deleteOrder(orderId) {
 				let superThis = this;
 				uni.showModal({
-				    title: '提示',
-				    content: '是否要删除该订单？',
-				    success: function (res) {
-				        if (res.confirm) {
-				            uni.showLoading({
-				            	title: '请稍后'
-				            })
-				            deleteUserOrder({orderId:orderId}).then(response=>{
-				            	uni.hideLoading();
-				            	superThis.loadData();
-				            });
-				        } else if (res.cancel) {
-				            console.log('用户点击取消');
-				        }
-				    }
+					title: '提示',
+					content: '是否要删除该订单？',
+					success: function(res) {
+						if (res.confirm) {
+							uni.showLoading({
+								title: '请稍后'
+							})
+							deleteUserOrder({
+								orderId: orderId
+							}).then(response => {
+								uni.hideLoading();
+								superThis.loadData();
+							});
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
 				});
 			},
 			//取消订单
 			cancelOrder(orderId) {
 				let superThis = this;
 				uni.showModal({
-				    title: '提示',
-				    content: '是否要取消该订单？',
-				    success: function (res) {
-				        if (res.confirm) {
-				            uni.showLoading({
-				            	title: '请稍后'
-				            })
-				            cancelUserOrder({orderId:orderId}).then(response=>{
-				            	uni.hideLoading();
-				            	superThis.loadData();
-				            });
-				        } else if (res.cancel) {
-				            console.log('用户点击取消');
-				        }
-				    }
+					title: '提示',
+					content: '是否要取消该订单？',
+					success: function(res) {
+						if (res.confirm) {
+							uni.showLoading({
+								title: '请稍后'
+							})
+							cancelUserOrder({
+								orderId: orderId
+							}).then(response => {
+								uni.hideLoading();
+								superThis.loadData();
+							});
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
 				});
 			},
 			//支付订单
-			payOrder(orderId){
+			payOrder(orderId) {
 				uni.redirectTo({
 					url: `/pages/money/pay?orderId=${orderId}`
 				});
 			},
 			//确认收货
-			receiveOrder(orderId){
+			receiveOrder(orderId) {
 				let superThis = this;
 				uni.showModal({
-				    title: '提示',
-				    content: '是否要确认收货？',
-				    success: function (res) {
-				        if (res.confirm) {
-				            uni.showLoading({
-				            	title: '请稍后'
-				            })
-				            confirmReceiveOrder({orderId:orderId}).then(response=>{
-				            	uni.hideLoading();
-				            	superThis.loadData();
-				            });
-				        } else if (res.cancel) {
-				            console.log('用户点击取消');
-				        }
-				    }
+					title: '提示',
+					content: '是否要确认收货？',
+					success: function(res) {
+						if (res.confirm) {
+							uni.showLoading({
+								title: '请稍后'
+							})
+							confirmReceiveOrder({
+								orderId: orderId
+							}).then(response => {
+								uni.hideLoading();
+								superThis.loadData();
+							});
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
 				});
 			},
 			//查看订单详情
-			showOrderDetail(orderId){
+			showOrderDetail(orderId) {
 				uni.navigateTo({
 					url: `/pages/order/orderDetail?orderId=${orderId}`
 				})
 			},
 			//计算商品总数量
-			calcTotalQuantity(order){
+			calcTotalQuantity(order) {
 				let totalQuantity = 0;
-				if(order.orderItemList!=null&&order.orderItemList.length>0){
-					for(let item of order.orderItemList){
-						totalQuantity+=item.productQuantity
+				if (order.orderItemList != null && order.orderItemList.length > 0) {
+					for (let item of order.orderItemList) {
+						totalQuantity += item.productQuantity
 					}
 				}
 				return totalQuantity;
 			},
+			//查看物流
+			viewLogistics(it, at) {
+				const obj = Object.assign({}, this.showLogisticsInfo)
+				obj[at] = !obj[at];
+				this.showLogisticsInfo = obj;
+			}
 		},
 	}
 </script>
@@ -353,11 +385,14 @@
 	}
 
 	.order-item {
-		display: flex;
-		flex-direction: column;
-		padding-left: 30upx;
 		background: #fff;
-		margin-top: 16upx;
+
+		.inbox {
+			width: calc(100% - 60upx);
+			margin: 16upx auto;
+			display: flex;
+			flex-direction: column;
+		}
 
 		.i-top {
 			display: flex;
@@ -651,5 +686,26 @@
 		100% {
 			opacity: .2
 		}
+	}
+
+	.logisticsinfo {
+		height: 225upx;
+		line-height: 65upx;
+		font-size: 27upx;
+		overflow: hidden;
+		transition: height 0.5s ease-in-out;
+	}
+
+	.logisticsinfo .li {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.logisticsinfo .name {
+		color: #999;
+	}
+
+	.logisticsinfo .value {
+		color: #333;
 	}
 </style>

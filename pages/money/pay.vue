@@ -221,9 +221,18 @@
 		border-radius: 10upx;
 		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
 	}
-	
-	.lastinfo{
-		margin:10upx 0 0;
+
+	.lastinfo {
+		margin: 10upx 0 0;
 		line-height: 80upx;
+	}
+
+	.placeholder {
+		height:60upx;
+		line-height:60upx;
+		padding: 10upx;
+		font-size:14px;
+		border: 1px solid #eee;
+		border-radius: 10upx;
 	}
 </style>

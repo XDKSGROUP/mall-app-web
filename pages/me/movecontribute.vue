@@ -105,7 +105,7 @@
 					me.$api.msg(`请输入贡献值`);
 					return;
 				}
-				if (parseInt(me.form.money)%100>0) {
+				if (parseFloat(me.form.money)%100>0) {
 					me.$api.msg(`贡献值必须是100的倍数`);
 					return;
 				}

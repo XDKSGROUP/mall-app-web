@@ -93,7 +93,8 @@
 						return;
 					}
 					me.$api.msg(`注册成功`);
-					me.loginIn();
+					me.logining = false;
+					//me.loginIn();
 				}).catch((err) => {
 					me.logining = false;
 				});

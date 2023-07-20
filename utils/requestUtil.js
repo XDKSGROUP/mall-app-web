@@ -1,11 +1,12 @@
 import Request from '@/js_sdk/luch-request/request.js'
+import {
+	baseUrl
+} from '@/config/host.js'
 
 const http = new Request()
-
 http.setConfig((config) => {
 	/* 设置全局配置 */
-	config.baseUrl = process.env.NODE_ENV == "development" ? 'http://192.168.124.88:8085' :
-		'http://47.110.144.8/apimall'; //http://47.110.144.8/apimall
+	config.baseUrl = baseUrl;
 	config.header = {
 		...config.header
 	};

@@ -14,30 +14,16 @@
 			<!-- 背景色区域 -->
 			<view class="titleNview-background" :style="{backgroundColor:titleNViewBackground}"></view>
 			<swiper class="carousel" circular @change="swiperChange">
-				<!--<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item"
-					@click="navToAdvertisePage(item)">
+				<swiper-item v-for="(item, index) in advertiseList" :key="index" class="carousel-item"
+					@click="goto(item.url)">
 					<image :src="item.pic" />
-				</swiper-item>-->
-				<swiper-item class="carousel-item">
-					<image src="/static/index/ad1.jpg" />
-				</swiper-item>
-				<swiper-item class="carousel-item">
-					<image src="/static/index/ad2.jpg" />
-				</swiper-item>
-				<swiper-item class="carousel-item">
-					<image src="/static/index/ad3.jpg" />
 				</swiper-item>
 			</swiper>
 			<!-- 自定义swiper指示器 -->
-			<!--<view class="swiper-dots">
-				<text class="num">{{swiperCurrent+1}}</text>
-				<text class="sign">/</text>
-				<text class="num">{{swiperLength}}</text>
-			</view>-->
 			<view class="swiper-dots">
 				<text class="num">{{swiperCurrent+1}}</text>
 				<text class="sign">/</text>
-				<text class="num">3</text>
+				<text class="num">{{swiperLength}}</text>
 			</view>
 		</view>
 		<view class="main">
@@ -147,6 +133,7 @@
 				</view>
 			</view>
 		</view>
+		<UpdateVersion :auto="true"></UpdateVersion>
 	</view>
 </template>
 
@@ -168,16 +155,19 @@
 		getUnRead,
 		getList as getListNotice
 	} from '@/api/notice.js';
+	import UpdateVersion from '@/components/l/UpdateVersion.vue';
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
 
 	export default {
 		components: {
+			UpdateVersion,
 			uniLoadMore
 		},
 		data() {
 			return {
+				advertiseList:[],
 				titleNViewBackground: '',
-				titleNViewBackgroundList: ['#ffd4ce', '#d9f0ea', '#e0f7dd'],
+				titleNViewBackgroundList: [],
 				swiperCurrent: 0,
 				swiperLength: 0,
 				showNotice: false,
@@ -242,6 +232,7 @@
 				fetchContent().then(response => {
 					this.advertiseList = response.data.advertiseList;
 					this.swiperLength = this.advertiseList.length;
+					this.titleNViewBackgroundList=this.advertiseList.map(t=>t.note);
 					this.titleNViewBackground = this.titleNViewBackgroundList[0];
 
 					this.homeFlashPromotion = response.data.homeFlashPromotion;

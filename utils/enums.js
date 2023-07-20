@@ -92,3 +92,14 @@ export const enumMoneyType = [{
 	name: "贡献值",
 	value: 1
 }];
+export const enumPayType = [{
+  name: "未知", value: "0"
+}, {
+  name: "支付宝", value: "1"
+}, {
+  name: "微信", value: "2"
+}, {
+  name: "爱心值", value: "3"
+}, {
+  name: "贡献值", value: "4"
+}];

@@ -47,7 +47,7 @@
 
 		<!-- 品牌制造商直供 -->
 		<view class="f-header m-t" @click="navToRecommendBrandPage()">
-			<image src="/static/icon_home_brand.png"></image>
+			<image src="/static/index/icon_home_brand.png"></image>
 			<view class="tit-box">
 				<text class="tit">品牌制造商直供</text>
 				<text class="tit2">工厂直达消费者，剔除品牌溢价</text>
@@ -67,7 +67,7 @@
 
 		<!-- 秒杀专区 -->
 		<view class="f-header m-t" v-if="homeFlashPromotion!==null">
-			<image src="/static/icon_flash_promotion.png"></image>
+			<image src="/static/index/icon_flash_promotion.png"></image>
 			<view class="tit-box">
 				<text class="tit">秒杀专区</text>
 				<text class="tit2">下一场 {{homeFlashPromotion.nextStartTime | formatTime}} 开始</text>
@@ -98,7 +98,7 @@
 
 		<!-- 新鲜好物 -->
 		<view class="f-header m-t" @click="navToNewProudctListPage()">
-			<image src="/static/icon_new_product.png"></image>
+			<image src="/static/index/icon_new_product.png"></image>
 			<view class="tit-box">
 				<text class="tit">新鲜好物</text>
 				<text class="tit2">为你寻觅世间好物</text>
@@ -120,7 +120,7 @@
 
 		<!-- 人气推荐楼层 -->
 		<view class="f-header m-t" @click="navToHotProudctListPage()">
-			<image src="/static/icon_hot_product.png"></image>
+			<image src="/static/index/icon_hot_product.png"></image>
 			<view class="tit-box">
 				<text class="tit">人气推荐</text>
 				<text class="tit2">大家都赞不绝口的</text>
@@ -143,7 +143,7 @@
 
 		<!-- 猜你喜欢-->
 		<view class="f-header m-t">
-			<image src="/static/icon_recommend_product.png"></image>
+			<image src="/static/index/icon_recommend_product.png"></image>
 			<view class="tit-box">
 				<text class="tit">猜你喜欢</text>
 				<text class="tit2">你喜欢的都在这里了</text>

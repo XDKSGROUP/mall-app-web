@@ -26,7 +26,7 @@ export function setTitleNViewStyle(index,show,text) {
             emt&&emt[1].classList.add('uni-page-head-btn-red-dot');  
 		} else {
 			emt=document.querySelectorAll('.uni-page-head-ft .uni-page-head-btn');
-            emt&&emt[index].classList.add('uni-page-head-btn-red-dot');  
+            emt&&emt[index]&&emt[index].classList.add('uni-page-head-btn-red-dot');  
         }  
     } else {  
         if(index === 0){

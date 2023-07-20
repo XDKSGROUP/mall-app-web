@@ -60,7 +60,7 @@
 				const me=this;
 				const newValue = args[0].target.value;
 				me.$nextTick(()=>{
-					me.form[name]=newValue.replace(/[^1-9.]/g,"");
+					me.form[name]=newValue.replace(/[^0-9.]/g,"");
 				});
 			},
 			gotoList() {
@@ -96,6 +96,10 @@
 				}
 				if (!me.form.applyMoney) {
 					me.$api.msg(`请输入爱心值`);
+					return;
+				}
+				if (parseFloat(me.form.applyMoney)%100>0) {
+					me.$api.msg(`爱心值必须是100的倍数`);
 					return;
 				}
 				addWithdrawalRecord(me.form).then(res => {

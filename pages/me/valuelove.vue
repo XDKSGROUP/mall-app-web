@@ -69,8 +69,15 @@
 						<view class="r">{{it.changeMoney}}</view>
 					</view>
 					<view class="dt">
+						<view class="l">变动前余额：{{it.beforeMoney}}</view>
+						<view class="r">变动后余额：{{it.afterMoney}}</view>
+					</view>
+					<view class="dt">
 						<view class="l">{{rtnDateTimeToStr(it.createTime)}}</view>
-						<view class="r">余额：{{it.afterMoney}}</view>
+						<view class="r"></view>
+					</view>
+					<view class="dt">
+						{{it.content}}
 					</view>
 				</view>
 				<view class="empty" v-if="list.length==0">
@@ -347,7 +354,8 @@
 				margin: 0 auto;
 
 				.li {
-					height: 118upx;
+					line-height: 48upx;
+					padding: 10upx 0;
 					border-bottom: 1upx solid #eee;
 					display: flex;
 					flex-direction: column;

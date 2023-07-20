@@ -14,6 +14,9 @@
 					<view class="lv">等级：{{userInfo.memberHonorLevelName||"P0"}}</view>
 					<view class="lv">帐号：{{userInfo.username||"***"}}</view>
 				</view>
+				<view class="zj">
+					{{userInfo.manageLevelId>=5?userInfo.manageLevelName:""}}
+				</view>
 			</view>
 		</view>
 
@@ -21,7 +24,7 @@
 				transform: coverTransform,
 				transition: coverTransition
 			}]" @touchstart="coverTouchstart" @touchmove="coverTouchmove" @touchend="coverTouchend">
-			<image class="arc" src="/static/arc.png"></image>
+			<image class="arc" src="/static/me/arc.png"></image>
 
 			<view class="tj-sction">
 				<view class="inbox">
@@ -114,7 +117,7 @@
 			</view>
 			<!-- 菜单 -->
 			<view class="history-section icon">
-				<list-cell icon="icon-shoucang" iconColor="#dd6666" title="爱心申购" v-if="userInfo.memberLevelId==5"
+				<list-cell icon="icon-shoucang" iconColor="#dd6666" title="爱心申购" v-if="userInfo.manageLevelId==5"
 					@eventClick="navTo('/pages/me/recharge')"></list-cell>
 				<list-cell icon="icon-share" iconColor="#ee77cc" title="爱心传递"
 					@eventClick="navTo('/pages/me/movelove')"></list-cell>
@@ -346,6 +349,9 @@
 			font-size: $font-lg;
 		}
 
+		.zj {
+			color: #fff;
+		}
 	}
 
 	.vip-card-box {
@@ -447,14 +453,15 @@
 			height: 10px;
 			font-size: 10px;
 			text-align: center;
-			color:#ccc;
-			background-color: rgba(255, 255, 255,0.1);
+			color: #ccc;
+			background-color: rgba(255, 255, 255, 0.1);
 			position: absolute;
 			bottom: 0;
 			border-radius: 100% 100% 0 0;
 		}
-		.refresh:active{
-			background-color: rgba(241, 93, 107,0.3);
+
+		.refresh:active {
+			background-color: rgba(241, 93, 107, 0.3);
 		}
 	}
 

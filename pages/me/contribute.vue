@@ -85,8 +85,7 @@
 	} from '@/api/me.js';
 
 	export default {
-		components: {
-		},
+		components: {},
 		data() {
 			return {
 				isSearch: false,
@@ -112,7 +111,7 @@
 		},
 		onLoad(option) {
 			this.loadData();
-			this.formReset=Object.assign({},this.form);
+			this.formReset = Object.assign({}, this.form);
 		},
 		//下拉刷新
 		onPullDownRefresh() {
@@ -156,14 +155,15 @@
 				isOk = isOk === undefined ? !me.isSearch : isOk;
 				me.isSearch = isOk;
 				if (me.form.donationTimeEnd) {
-					me.form.donationTimeEnd = isOk ? me.form.donationTimeEnd.replace(/ .*$/, "") : me.form.donationTimeEnd +
+					me.form.donationTimeEnd = isOk ? me.form.donationTimeEnd.replace(/ .*$/, "") : me.form
+						.donationTimeEnd +
 						" 23:59:59";
 				}
 				if (!isOk) me.loadData();
 			},
-			reset(){
-				Object.assign(this.form,this.formReset);
-				this.search(); 
+			reset() {
+				Object.assign(this.form, this.formReset);
+				this.search();
 			},
 			clickLastTime(item) {
 				const me = this;
@@ -331,7 +331,8 @@
 				margin: 0 auto;
 
 				.li {
-					height: 118upx;
+					line-height: 48upx;
+					padding: 10upx 0;
 					border-bottom: 1upx solid #eee;
 					display: flex;
 					flex-direction: column;

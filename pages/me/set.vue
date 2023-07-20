@@ -1,26 +1,31 @@
 <template>
 	<view class="container">
-		<view class="list-cell b-b m-t" @click="navTo('/pages/me/myinfo')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b m-t" @click="navTo('/pages/me/myinfo')" hover-class="cell-hover"
+			:hover-stay-time="50">
 			<text class="cell-tit">我的信息</text>
 			<text class="cell-more yticon icon-you"></text>
-		</view>	
+		</view>
 		<view class="list-cell b-b" @click="navTo('/pages/me/edit')" hover-class="cell-hover" :hover-stay-time="50">
 			<text class="cell-tit">个人资料</text>
 			<text class="cell-more yticon icon-you"></text>
-		</view>	
-		<view class="list-cell b-b" @click="navTo('/pages/me/realnameauth')" hover-class="cell-hover" :hover-stay-time="50">
+		</view>
+		<view class="list-cell b-b" @click="navTo('/pages/me/realnameauth')" hover-class="cell-hover"
+			:hover-stay-time="50">
 			<text class="cell-tit">实名认证</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		<view class="list-cell b-b" @click="navTo('/pages/address/address')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b" @click="navTo('/pages/address/address')" hover-class="cell-hover"
+			:hover-stay-time="50">
 			<text class="cell-tit">地址管理</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		<view class="list-cell b-b" @click="navTo('/pages/me/passwordpay')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b" @click="navTo('/pages/me/passwordpay')" hover-class="cell-hover"
+			:hover-stay-time="50">
 			<text class="cell-tit">支付密码</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		<view class="list-cell b-b" @click="navTo('/pages/me/passwordlogin')" hover-class="cell-hover" :hover-stay-time="50">
+		<view class="list-cell b-b" @click="navTo('/pages/me/passwordlogin')" hover-class="cell-hover"
+			:hover-stay-time="50">
 			<text class="cell-tit">登录密码</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
@@ -32,7 +37,12 @@
 			<text class="cell-tit">银行卡管理</text>
 			<text class="cell-more yticon icon-you"></text>
 		</view>
-		
+		<!-- #ifdef APP-PLUS -->
+		<view class="list-cell b-b" hover-class="cell-hover" :hover-stay-time="50">
+			<UpdateVersion :auto="false" className="cell-tit"></UpdateVersion>
+			<text class="cell-more yticon icon-you"></text>
+		</view>
+		<!-- #endif -->
 		<!--
 		<view class="list-cell m-t">
 			<text class="cell-tit">消息推送</text>
@@ -58,46 +68,51 @@
 </template>
 
 <script>
-	import {  
-	    mapMutations  
+	import {
+		mapMutations
 	} from 'vuex';
+	import UpdateVersion from '@/components/l/UpdateVersion.vue';
+
 	export default {
+		components: {
+			UpdateVersion
+		},
 		data() {
 			return {
-				
+
 			};
 		},
-		methods:{
+		methods: {
 			...mapMutations(['logout']),
 
-			navTo(url){
-				if(url.indexOf("pages")!=-1){
+			navTo(url) {
+				if (url.indexOf("pages") != -1) {
 					uni.navigateTo({
-						url:url
+						url: url
 					});
 				}
 				this.$api.msg(`跳转到${url}`);
 			},
-			navToOuter(url){
+			navToOuter(url) {
 				window.location.href = url;
 			},
 			//退出登录
-			toLogout(){
+			toLogout() {
 				uni.showModal({
-				    content: '确定要退出登录么',
-				    success: (e)=>{
-				    	if(e.confirm){
-				    		this.logout();
-				    		setTimeout(()=>{
-				    			uni.navigateBack();
-				    		}, 200)
-				    	}
-				    }
+					content: '确定要退出登录么',
+					success: (e) => {
+						if (e.confirm) {
+							this.logout();
+							setTimeout(() => {
+								uni.navigateBack();
+							}, 200)
+						}
+					}
 				});
 			},
 			//switch
-			switchChange(e){
-				let statusTip = e.detail.value ? '打开': '关闭';
+			switchChange(e) {
+				let statusTip = e.detail.value ? '打开' : '关闭';
 				this.$api.msg(`${statusTip}消息推送`);
 			},
 
@@ -106,51 +121,57 @@
 </script>
 
 <style lang='scss'>
-	page{
+	page {
 		background: $page-color-base;
 	}
-	.list-cell{
-		display:flex;
-		align-items:baseline;
+
+	.list-cell {
+		display: flex;
+		align-items: baseline;
 		padding: 20upx $page-row-spacing;
-		line-height:60upx;
-		position:relative;
+		line-height: 60upx;
+		position: relative;
 		background: #fff;
 		justify-content: center;
-		&.log-out-btn{
+
+		&.log-out-btn {
 			margin-top: 40upx;
-			.cell-tit{
+
+			.cell-tit {
 				color: $uni-color-primary;
 				text-align: center;
 				margin-right: 0;
 			}
 		}
-		&.cell-hover{
-			background:#fafafa;
+
+		&.cell-hover {
+			background: #fafafa;
 		}
-		&.b-b:after{
-			left: 30upx;
+
+		&.m-t {
+			margin-top: 16upx;
 		}
-		&.m-t{
-			margin-top: 16upx; 
-		}
-		.cell-more{
+
+		.cell-more {
 			align-self: baseline;
-			font-size:$font-lg;
-			color:$font-color-light;
-			margin-left:10upx;
+			font-size: $font-lg;
+			color: $font-color-light;
+			margin-left: 10upx;
 		}
-		.cell-tit{
+
+		.cell-tit {
 			flex: 1;
 			font-size: $font-base + 2upx;
 			color: $font-color-dark;
-			margin-right:10upx;
+			margin-right: 10upx;
 		}
-		.cell-tip{
+
+		.cell-tip {
 			font-size: $font-base;
 			color: $font-color-light;
 		}
-		switch{
+
+		switch {
 			transform: translateX(16upx) scale(.84);
 		}
 	}

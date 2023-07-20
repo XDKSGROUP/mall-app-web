@@ -140,7 +140,7 @@
 				ctx.fillText(t, p.x, p.y); // （文字，x，y）
 
 				// 头像板块
-				let photoUrl = me.userInfo.icon || "/static/me/user-head.jpg";
+				let photoUrl = me.userInfo.icon || "/static/me/user-head.png";
 				let img = await getImageSize(photoUrl);
 				let photoWidth = img.width || 300,
 					photoHeight = img.height || 300,
@@ -167,6 +167,7 @@
 				ctx.lineWidth = 2;
 				ctx.beginPath(); //开始路径
 				ctx.arc(drawXCircle, drawYdrawY, radius, 0, Math.PI * 2); //画一个整圆.
+				ctx.fill();//填充颜色
 				ctx.stroke(); //绘制边线
 				// 截圆形图
 				ctx.save();
@@ -181,7 +182,7 @@
 				// 获取uQRCode实例
 				var qr = new UQRCode();
 				// 设置二维码内容
-				qr.data = "http://mallwap.tooljoin.com/pages/public/register?inviterTelephone=" + me.userInfo.phone;
+				qr.data = "http://47.110.144.8/pages/public/register?inviterTelephone=" + me.userInfo.phone;
 				// 设置二维码大小，必须与canvas设置的宽高一致
 				qr.size = uni.upx2px(300);
 				// 调用制作二维码方法

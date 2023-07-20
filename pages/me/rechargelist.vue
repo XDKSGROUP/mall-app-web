@@ -100,7 +100,7 @@
 					createTimeMax: '2100-01-01',
 				},
 				form: {
-					type: 1, //贡献值
+					type: 0, //爱心值
 					createTimeType: 1,
 					createTimeStart: getLastWeekStartTime(),
 					createTimeEnd: undefined,

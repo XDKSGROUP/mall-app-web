@@ -28,7 +28,7 @@
 			</view>
 			<!-- 列表信息楼层 -->
 			<view class="title mt">
-				<image src="/static/icon_hot_product.png"></image>
+				<image src="/static/index/icon_hot_product.png"></image>
 				<view class="cont">
 					<text class="h1">项目信息</text>
 					<text class="h2">和爱心用户一起做好事吧~和爱心用户一起做好事吧~和爱心用户一起做好事吧~和爱心用户一起做好事吧~和爱心用户一起做好事吧~和爱心用户一起做好事吧~</text>

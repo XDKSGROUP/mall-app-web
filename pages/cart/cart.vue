@@ -38,7 +38,7 @@
 			<!-- 底部菜单栏 -->
 			<view class="action-section">
 				<view class="checkbox">
-					<image :src="allChecked?'/static/selected.png':'/static/select.png'" mode="aspectFit"
+					<image :src="allChecked?'/static/common/selected.png':'/static/common/select.png'" mode="aspectFit"
 						@click="check('all')"></image>
 					<view class="clear-btn" :class="{show: allChecked}" @click="clearCart">
 						清空
@@ -128,7 +128,7 @@
 			},
 			//监听image加载失败
 			onImageError(key, index) {
-				this[key][index].productPic = '/static/errorImage.jpg';
+				this[key][index].productPic = '/static/common/errorImage.jpg';
 			},
 			navToLogin() {
 				uni.navigateTo({

@@ -73,6 +73,10 @@
 					me.$api.msg(`请上传截图`);
 					return;
 				}
+				if (parseFloat(data.rechargeMoney)%100>0) {
+					me.$api.msg(`爱心值必须是100的倍数`);
+					return;
+				}
 				addRecharge(data).then(res => {
 					if (res.code != 200) {
 						me.$api.msg(res.message);

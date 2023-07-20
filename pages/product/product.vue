@@ -271,22 +271,22 @@
 	}];
 	const defaultShareList = [{
 			type: 1,
-			icon: '/static/temp/share_wechat.png',
+			icon: '/static/common/share_wechat.png',
 			text: '微信好友'
 		},
 		{
 			type: 2,
-			icon: '/static/temp/share_moment.png',
+			icon: '/static/common/share_moment.png',
 			text: '朋友圈'
 		},
 		{
 			type: 3,
-			icon: '/static/temp/share_qq.png',
+			icon: '/static/common/share_qq.png',
 			text: 'QQ好友'
 		},
 		{
 			type: 4,
-			icon: '/static/temp/share_qqzone.png',
+			icon: '/static/common/share_qqzone.png',
 			text: 'QQ空间'
 		}
 	]
@@ -533,7 +533,8 @@
 							//支持手动新增的
 							let valueList = data.productAttributeValueList;
 							let filterValueList = valueList.filter(value => value.productAttributeId == item.id);
-							let inputList = filterValueList[0].value.split(',');
+							let inputList = filterValueList[0] && filterValueList[0].value ? filterValueList[0].value
+								.split(',') : [];
 							for (let j = 0; j < inputList.length; j++) {
 								this.specChildList.push({
 									pid: item.id,
@@ -617,15 +618,7 @@
 			//初始化商品详情信息
 			initProductDesc() {
 				let rawhtml = this.product.detailMobileHtml;
-				let tempNode = document.createElement('div');
-				tempNode.innerHTML = rawhtml;
-				let imgs = tempNode.getElementsByTagName('img');
-				for (let i = 0; i < imgs.length; i++) {
-					imgs[i].style.width = '100%';
-					imgs[i].style.height = 'auto';
-					imgs[i].style.display = 'block';
-				}
-				this.desc = tempNode.innerHTML;
+				this.desc = `<div>${rawhtml}</div>`;
 			},
 			//处理创建浏览记录
 			handleReadHistory() {
@@ -681,7 +674,7 @@
 					return;
 				}
 				const me = this;
-				let productSkuStock = this.getSkuStock()||{};
+				let productSkuStock = this.getSkuStock() || {};
 				let cartItem = {
 					price: this.product.price,
 					productAttr: productSkuStock.spData,

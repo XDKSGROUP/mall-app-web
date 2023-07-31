@@ -105,7 +105,7 @@
         },
         "domain" : "",
         "router" : {
-            "base" : "",
+            "base" : "./",
             "mode" : "history"
         },
         "title" : "mall",

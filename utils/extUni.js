@@ -1,3 +1,4 @@
+//隐藏消息中的红点
 export function setTitleNViewStyle(index,show,text) {  
     let pages = getCurrentPages();  
     let page = pages[pages.length - 1];  

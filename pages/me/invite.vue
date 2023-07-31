@@ -12,6 +12,9 @@
 
 <script>
 	import {
+		message
+	} from '@/utils/message.js';
+	import {
 		getImageSize
 	} from "@/utils/com.js"
 	import UQRCode from 'uqrcodejs';
@@ -208,11 +211,6 @@
 
 
 				ctx.draw(true, (ret) => { // draw方法 把以上内容画到 canvas 中。
-					// uni.showToast({
-					// 	icon: 'success',
-					// 	mask: true,
-					// 	title: '绘制完成',
-					// });
 					uni.canvasToTempFilePath({ // 保存canvas为图片
 						canvasId: 'img',
 						quality: 1,
@@ -224,15 +222,11 @@
 								filePath: res.tempFilePath,
 								success: (res) => {
 									uni.hideLoading()
-									uni.showToast({
-										title: '生成海报成功'
-									})
+									message('生成海报成功');
 								},
 								fail: (res) => {
 									uni.hideLoading()
-									uni.showToast({
-										title: '生成海报失败'
-									})
+									message('生成海报失败');
 								}
 							})
 						}

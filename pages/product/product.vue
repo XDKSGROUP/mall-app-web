@@ -230,6 +230,9 @@
 </template>
 
 <script>
+	import {
+		message
+	} from '@/utils/message.js';
 	import share from '@/components/share';
 	import {
 		fetchProductDetail
@@ -406,10 +409,7 @@
 				fetchProductCouponList(this.product.id).then(response => {
 					this.couponList = response.data;
 					if (this.couponList == null || this.couponList.length == 0) {
-						uni.showToast({
-							title: "暂无可领优惠券",
-							icon: "none"
-						})
+						message("暂无可领优惠券")
 						return;
 					}
 					let timer = type === 'show' ? 10 : 300;
@@ -449,10 +449,7 @@
 			addCoupon(coupon) {
 				this.toggleCoupon();
 				addMemberCoupon(coupon.id).then(response => {
-					uni.showToast({
-						title: '领取优惠券成功！',
-						duration: 2000
-					});
+					message('领取优惠券成功！');
 				});
 			},
 			//分享
@@ -469,10 +466,7 @@
 					deleteProductCollection({
 						productId: this.product.id
 					}).then(response => {
-						uni.showToast({
-							title: "取消收藏成功！",
-							icon: 'none'
-						});
+						message("取消收藏成功！");
 						this.favorite = !this.favorite;
 					});
 				} else {
@@ -485,19 +479,13 @@
 						productSubTitle: this.product.subTitle
 					}
 					createProductCollection(productCollection).then(response => {
-						uni.showToast({
-							title: "收藏成功！",
-							icon: 'none'
-						});
+						message("收藏成功！");
 						this.favorite = !this.favorite;
 					});
 				}
 			},
 			buy() {
-				uni.showToast({
-					title: "暂时只支持从购物车下单！",
-					icon: 'none'
-				});
+				message("暂时只支持从购物车下单！");
 			},
 			stopPrevent() {},
 			//设置头图信息
@@ -692,10 +680,7 @@
 				};
 				addCartItem(cartItem).then(response => {
 					me.loadCartNum();
-					uni.showToast({
-						title: response.message,
-						duration: 1500
-					})
+					message(response.message);
 				});
 			},
 			//检查登录状态并弹出登录框

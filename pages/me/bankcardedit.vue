@@ -31,6 +31,9 @@
 
 <script>
 	import {
+		message
+	} from '@/utils/message.js';
+	import {
 		getBankCard,
 		setBankCard,
 		addBankCard,
@@ -91,34 +94,18 @@
 				if (this.manageType == 'edit') {
 					setBankCard(this.form).then(res => {
 						if (res.code != 200) {
-							uni.showToast({
-								title: res.message,
-								duration: 1000
-							});
+							message(res.message);
 							return;
 						}
-						uni.showToast({
-							title: '修改成功',
-							icon: 'none',
-							mask: true,
-							duration: 1000
-						});
+						message('修改成功');
 					});
 				} else {
 					addBankCard(this.form).then(res => {
 						if (res.code != 200) {
-							uni.showToast({
-								title: res.message,
-								duration: 1000
-							});
+							message(res.message);
 							return;
 						}
-						uni.showToast({
-							title: '添加成功',
-							icon: 'none',
-							mask: true,
-							duration: 1000
-						});
+						message('添加成功');
 					});
 				}
 				setTimeout(() => {

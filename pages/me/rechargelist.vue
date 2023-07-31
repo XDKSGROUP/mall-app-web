@@ -59,6 +59,9 @@
 						<view class="l">{{rtnDateTimeToStr(it.createTime)}}</view>
 						<view class="r">状态：{{getStatus(it.status)}}</view>
 					</view>
+					<view v-if="it.status==2" class="dt">
+						作废原因：{{it.abolishReason}}
+					</view>
 				</view>
 				<view class="empty" v-if="list.length==0">
 					暂无信息
@@ -332,7 +335,8 @@
 				margin: 0 auto;
 
 				.li {
-					height: 118upx;
+					line-height: 45upx;
+					padding:10upx 0;
 					border-bottom: 1upx solid #eee;
 					display: flex;
 					flex-direction: column;

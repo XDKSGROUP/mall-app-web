@@ -33,6 +33,9 @@
 
 <script>
 	import {
+		message
+	} from '@/utils/message.js';
+	import {
 		addAddress,
 		updateAddress,
 		fetchAddressDetail
@@ -98,26 +101,26 @@
 			confirm() {
 				let data = this.addressData;
 				if (!data.name) {
-					this.$api.msg('请填写收货人姓名');
+					message('请填写收货人姓名');
 					return;
 				}
 				if (!/(^1[3|4|5|7|8][0-9]{9}$)/.test(data.phoneNumber)) {
-					this.$api.msg('请输入正确的手机号码');
+					message('请输入正确的手机号码');
 					return;
 				}
 				// if (!data.province) {
-				// 	this.$api.msg('请在地图选择所在位置');
+				// 	message('请在地图选择所在位置');
 				// 	return;
 				// }
 				if (!data.detailAddress) {
-					this.$api.msg('请填写详细地址信息');
+					message('请填写详细地址信息');
 					return;
 				}
 				if(this.manageType=='edit'){
 					updateAddress(this.addressData).then(response=>{
 						//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
 						this.$api.prePage().refreshList(data, this.manageType);
-						this.$api.msg("地址修改成功！");
+						message("地址修改成功！");
 						setTimeout(() => {
 							uni.navigateBack()
 						}, 800)
@@ -126,7 +129,7 @@
 					addAddress(this.addressData).then(response=>{
 						//this.$api.prePage()获取上一页实例，可直接调用上页所有数据和方法，在App.vue定义
 						this.$api.prePage().refreshList(data, this.manageType);
-						this.$api.msg("地址添加成功！");
+						message("地址添加成功！");
 						setTimeout(() => {
 							uni.navigateBack()
 						}, 800)

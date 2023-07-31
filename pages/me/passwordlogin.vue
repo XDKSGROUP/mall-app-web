@@ -22,6 +22,9 @@
 
 <script>
 	import {
+		message
+	} from '@/utils/message.js';
+	import {
 		setLoginPassword2
 	} from '@/api/me.js';
 
@@ -50,23 +53,15 @@
 			confirm() {
 				let data = this.form;
 				if (data.password != data.password2) {
-					this.$api.msg('两次密码不一致');
+					message('两次密码不一致');
 					return;
 				}
 				setLoginPassword2(data).then(res => {
 					if (res.code != 200) {
-						uni.showToast({
-							title: res.message,
-							duration: 1000
-						});
+						message(res.message);
 						return;
 					}
-					uni.showToast({
-						title: '修改成功',
-						icon: 'none',
-						mask: true,
-						duration: 1000
-					});
+					message('修改成功');
 					setTimeout(() => {
 						uni.navigateTo({
 							url:"/pages/me/set"

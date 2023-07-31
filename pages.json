@@ -107,12 +107,6 @@
 			}
 		},
 		{
-			"path": "pages/userinfo/userinfo",
-			"style": {
-				"navigationBarTitleText": "修改资料"
-			}
-		},
-		{
 			"path": "pages/cart/cart",
 			"style": {
 				"navigationBarTitleText": "购物车"
@@ -540,7 +534,7 @@
 		{
 			"path": "pages/me/contactus",
 			"style": {
-				"enablePullDownRefresh": true,
+				"enablePullDownRefresh": false,
 				"navigationBarTitleText": "联系客服"
 			}
 		},
@@ -554,7 +548,7 @@
 		{
 			"path": "pages/me/aboutus",
 			"style": {
-				"enablePullDownRefresh": true,
+				"enablePullDownRefresh": false,
 				"navigationBarTitleText": "关于我们"
 			}
 		},

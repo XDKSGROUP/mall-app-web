@@ -10,7 +10,7 @@
 			</view>
 			<view v-else class="empty-tips">
 				空空如也
-				<view class="navigator" @click="navToLogin">去登陆></view>
+				<view class="navigator" @click="navToLogin">去登录></view>
 			</view>
 		</view>
 		<view v-else>
@@ -54,6 +54,9 @@
 </template>
 
 <script>
+	import {
+		message
+	} from '@/utils/message.js';
 	import {
 		mapState
 	} from 'vuex';
@@ -109,7 +112,7 @@
 						let spDataArr = item.productAttr ? JSON.parse(item.productAttr) : {};
 						let spDataStr = '';
 						for (let key in spDataArr) {
-							const obj=spDataArr[key];
+							const obj = spDataArr[key];
 							spDataStr += obj.key;
 							spDataStr += ":";
 							spDataStr += obj.value;
@@ -215,10 +218,7 @@
 					}
 				})
 				if (cartIds.length == 0) {
-					uni.showToast({
-						title: '您还未选择要下单的商品！',
-						duration: 1000
-					})
+					message('您还未选择要下单的商品！')
 					return;
 				}
 				uni.navigateTo({

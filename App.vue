@@ -1,26 +1,42 @@
 <script>
-	/**
-	 * vuex管理登陆状态，具体可以参考官方登陆模板示例
-	 */
 	import {
 		mapMutations
 	} from 'vuex';
+
 	export default {
 		methods: {
-			...mapMutations(['login'])
+			...mapMutations(['login']),
+			goto(url) {
+				// #ifdef APP-PLUS
+				uni.reLaunch({
+					url: url,
+					success() {
+						plus.navigator.closeSplashscreen()
+					}
+				});
+				// #endif
+				// #ifdef H5
+				uni.navigateTo({
+					url: url
+				})
+				// #endif
+			}
 		},
 		onLaunch: function() {
-			let userInfo = uni.getStorageSync('userInfo') || '';
-			if(userInfo.id){
-				//更新登陆状态
+			const me = this;
+			let url, userInfo = uni.getStorageSync('userInfo') || '';
+			if (userInfo.id) {
+				//更新登录状态
 				uni.getStorage({
 					key: 'userInfo',
 					success: (res) => {
-						this.login(res.data);
+						me.login(res.data);
+						me.goto("pages/index/index");
 					}
 				});
+			} else {
+				me.goto("pages/public/login");
 			}
-			
 		},
 		onShow: function() {
 			//console.log('App Show')
@@ -39,7 +55,7 @@
 		font-family: yticon;
 		font-weight: normal;
 		font-style: normal;
-		src: url('https://at.alicdn.com/t/font_1078604_w4kpxh0rafi.ttf') format('truetype');
+		src: url('/static/common/font.ttf') format('truetype');
 	}
 
 	.yticon {
@@ -364,6 +380,7 @@
 	video {
 		box-sizing: border-box;
 	}
+
 	/* 骨架屏替代方案 */
 	.Skeleton {
 		background: #f3f3f3;

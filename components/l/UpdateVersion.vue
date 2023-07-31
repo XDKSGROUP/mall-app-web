@@ -11,10 +11,10 @@
 	import {
 		isDev,
 		baseUrl
-	} from '@/config/host.js'
+	} from '@/utils/config.js';
 	import {
 		message
-	} from '@/utils/message.js'
+	} from '@/utils/message.js';
 
 	export default {
 		name: "LUpdateVersion",

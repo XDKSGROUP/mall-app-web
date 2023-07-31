@@ -69,6 +69,9 @@
 
 <script>
 	import {
+		message
+	} from '@/utils/message.js';
+	import {
 		mapMutations
 	} from 'vuex';
 	import UpdateVersion from '@/components/l/UpdateVersion.vue';
@@ -91,7 +94,7 @@
 						url: url
 					});
 				}
-				this.$api.msg(`跳转到${url}`);
+				//message(`跳转到${url}`);
 			},
 			navToOuter(url) {
 				window.location.href = url;
@@ -103,9 +106,9 @@
 					success: (e) => {
 						if (e.confirm) {
 							this.logout();
-							setTimeout(() => {
-								uni.navigateBack();
-							}, 200)
+							uni.navigateTo({
+								url: '/pages/public/login'
+							});
 						}
 					}
 				});
@@ -113,7 +116,7 @@
 			//switch
 			switchChange(e) {
 				let statusTip = e.detail.value ? '打开' : '关闭';
-				this.$api.msg(`${statusTip}消息推送`);
+				message(`${statusTip}消息推送`);
 			},
 
 		}

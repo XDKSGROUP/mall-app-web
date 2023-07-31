@@ -44,6 +44,9 @@
 </template>
 
 <script>
+	import {
+		message
+	} from '@/utils/message.js'
 	import share from '@/components/share';
 	import {
 		getBrandDetail,
@@ -103,10 +106,7 @@
 					deleteBrandAttention({
 						brandId: this.brand.id
 					}).then(response => {
-						uni.showToast({
-							title: "取消收藏成功！",
-							icon: 'none'
-						});
+						message("取消收藏成功！");
 						this.favoriteStatus = !this.favoriteStatus;
 					});
 				} else {
@@ -118,10 +118,7 @@
 						brandCity : ""
 					}
 					createBrandAttention(brandAttention).then(response=>{
-						uni.showToast({
-							title: "收藏成功！",
-							icon: 'none'
-						});
+						message("收藏成功！");
 						this.favoriteStatus = !this.favoriteStatus;
 					});
 				}

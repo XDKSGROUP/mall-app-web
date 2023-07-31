@@ -1,5 +1,10 @@
 <template>
 	<view class="content">
+		<view class="row b-b row2">
+			<text class="tit">头像</text>
+			<view class="link" @click="selectFile()">上传</view>
+			<image class="img" :src="form.icon"></image>
+		</view>
 		<view class="row b-b">
 			<text class="tit">昵称</text>
 			<input class="input" type="text" v-model="form.nickname" placeholder="输入昵称"
@@ -15,8 +20,8 @@
 		<view class="row b-b">
 			<text class="tit">生日</text>
 			<picker mode="date" :value="form.birthday" :start="'1900-01-01'" :end="'2100-01-01'" @change="setBirthday">
-				<input class="input" type="text" v-model="form.birthday" placeholder="选择生日" @focus="hideKeyboard()" readyonly
-					placeholder-class="placeholder" />
+				<input class="input" type="text" v-model="form.birthday" placeholder="选择生日" @focus="hideKeyboard()"
+					readyonly placeholder-class="placeholder" />
 			</picker>
 		</view>
 
@@ -25,6 +30,9 @@
 </template>
 
 <script>
+	import {
+		uploadFile
+	} from "@/api/file.js"
 	import {
 		mapState,
 		mapMutations
@@ -41,6 +49,7 @@
 			return {
 				sexs: ['未知', '男', '女'],
 				form: {
+					icon: '',
 					nickname: '',
 					genderName: '',
 					gender: 0,
@@ -59,6 +68,7 @@
 			const me = this,
 				form = me.form,
 				ui = me.userInfo;
+			form.icon = ui.icon;
 			form.nickname = ui.nickname;
 			form.gender = ui.gender;
 			form.genderName = me.sexs[ui.gender];
@@ -69,6 +79,15 @@
 		},
 		methods: {
 			...mapMutations(['login']),
+			async selectFile() {
+				const me = this;
+				const res = await uploadFile();
+				if (!res.success) {
+					me.$api.msg(res.message);
+					return;
+				}
+				me.form.icon = res.data;
+			},
 			setBirthday(e) {
 				this.form.birthday = e.detail.value;
 			},
@@ -103,7 +122,7 @@
 					}, 1500)
 				});
 			},
-			hideKeyboard(){
+			hideKeyboard() {
 				uni.hideKeyboard();
 			},
 		}
@@ -167,5 +186,21 @@
 		background-color: $base-color;
 		border-radius: 10upx;
 		box-shadow: 1px 2px 5px rgba(219, 63, 96, 0.4);
+	}
+
+	.row2 {
+		height: 230upx;
+	}
+
+	.link {
+		color: royalblue;
+	}
+
+	.img {
+		width: 200upx;
+		height: 200upx;
+		margin: 15upx 0 15upx 40upx;
+		background-color: #eee;
+		border-radius: 50%;
 	}
 </style>

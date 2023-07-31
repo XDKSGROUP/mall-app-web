@@ -129,6 +129,9 @@
 
 <script>
 	import {
+		message
+	} from '@/utils/message.js';
+	import {
 		generateConfirmOrder,
 		generateOrder
 	} from '@/api/order.js';
@@ -301,10 +304,7 @@
 			handleIntegrationInput(event) {
 				if (event.detail.value > this.memberIntegration) {
 					this.useIntegration = this.memberIntegration;
-					uni.showToast({
-						title: `您的积分只有${this.memberIntegration}`,
-						duration: 1000
-					})
+					message(`您的积分只有${this.memberIntegration}`);
 				}
 			},
 		}

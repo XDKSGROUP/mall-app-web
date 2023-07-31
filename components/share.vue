@@ -31,6 +31,10 @@
 </template>
 
 <script>
+	import {
+		message
+	} from '@/utils/message.js';
+	
 	export default {
 		data() {
 			return {
@@ -110,7 +114,7 @@
 			stopPrevent(){},
 			//分享操作
 			shareToFriend(type){
-				this.$api.msg(`分享给${type}`);
+				message(`分享给${type}`);
 				this.toggleMask();
 			},
 		}

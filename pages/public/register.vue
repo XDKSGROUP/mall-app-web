@@ -22,7 +22,7 @@
 				<view class="input-item">
 					<text class="tit">密码</text>
 					<input type="text" v-model="form.password" placeholder="8-18位不含特殊字符的数字、字母组合"
-						placeholder-class="input-empty" maxlength="20" password />
+						placeholder-class="input-empty" maxlength="18" password />
 				</view>
 				<view class="input-item">
 					<text class="tit">邀请人</text>
@@ -92,10 +92,15 @@
 			},
 			async register() {
 				const me = this;
+				if((me.form.telephone||"").length!=11){
+					me.$api.msg("请输入11位手机号码");
+					return;
+				}
 				me.logining = true;
 				addMember(me.form).then(res => {
 					if (res.code != 200) {
 						me.$api.msg(res.message);
+						me.logining = false;
 						return;
 					}
 					me.$api.msg(`注册成功`);

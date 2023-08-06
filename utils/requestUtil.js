@@ -1,6 +1,6 @@
 import Request from '@/js_sdk/luch-request/request.js'
 import {
-	baseUrl
+	apiUrl
 } from '@/utils/config.js'
 import {
 	message
@@ -9,7 +9,7 @@ import {
 const http = new Request()
 http.setConfig((config) => {
 	/* 设置全局配置 */
-	config.baseUrl = baseUrl;
+	config.baseUrl = apiUrl;
 	config.header = {
 		...config.header
 	};

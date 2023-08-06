@@ -1,9 +1,11 @@
 export const isDev = process.env.NODE_ENV == "development";
-const config = {};	
+const config = {};
 if (isDev) {
-	config.baseUrl = 'http://192.168.124.88:8085';
+	config.apiUrl = 'http://192.168.124.88:8085';
 } else {
-	config.baseUrl = 'https://appweb.pinganhuayu.com.cn';
-	//config.baseUrl = 'http://47.110.144.8/apimall';
+	config.apiUrl = 'https://appweb.pinganhuayu.com.cn';
+	//config.apiUrl = 'http://47.110.144.8/apimall';
 }
-export const baseUrl=config.baseUrl;
+config.apiHttps = /^https/.test(config.apiUrl);
+export const apiUrl = config.apiUrl;
+export const apiHttps = config.apiHttps;

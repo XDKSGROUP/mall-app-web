@@ -85,6 +85,10 @@
 			},
 			async register() {
 				const me = this;
+				if((me.form.telephone||"").length!=11){
+					me.$api.msg("请输入11位手机号码");
+					return;
+				}
 				me.logining = true;
 				me.form.pointTelephone=me.form.inviterTelephone;
 				addMember2(me.form).then(res => {

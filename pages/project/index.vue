@@ -404,7 +404,8 @@
 		.empty-tips {
 			display: flex;
 			font-size: $font-sm+2upx;
-			color: $font-color-disabled;
+			color: #333;
+			font-weight: 700;
 
 			.navigator {
 				color: $uni-color-primary;

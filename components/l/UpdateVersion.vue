@@ -10,7 +10,7 @@
 <script>
 	import {
 		isDev,
-		baseUrl
+		apiUrl
 	} from '@/utils/config.js';
 	import {
 		message
@@ -47,9 +47,9 @@
 }*/
 			async getServerVersion() {
 				return new Promise((resolve, reject) => {
-					console.log(baseUrl + '/home/getVersion?t=' + new Date().getTime())
+					// console.log(apiUrl + '/home/getVersion?t=' + new Date().getTime())
 					uni.request({
-						url: baseUrl + '/home/getVersion?t=' + new Date().getTime(), //版本检测
+						url: apiUrl + '/home/getVersion?t=' + new Date().getTime(), //版本检测
 						method: 'POST',
 						data: {},
 						header: {},

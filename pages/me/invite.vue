@@ -1,7 +1,11 @@
 <template>
 	<view class="container">
-		<view class="error" v-if="message">
-			{{message}}
+		<view class="empty" v-if="message">
+			<image src="/static/cart/emptyCart.jpg" mode="aspectFit"></image>
+			<view class="empty-tips">
+				{{message}}
+				<navigator class="navigator" url="/pages/product/list?sid=59">去爱心专区看看></navigator>
+			</view>
 		</view>
 		<div class="img" v-if="!message">
 			<canvas canvas-id="img" :style="{width:info.canvasW+'px',height:info.canvasH+'px'}"></canvas>
@@ -253,11 +257,38 @@
 			left: 230upx;
 			position: absolute
 		}
+	}
+	
+	.empty {
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100vh;
+		padding-bottom: 100upx;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		background: #fff;
 
-		.error {
-			line-height: 200upx;
-			text-align: center;
-			font-size: 50upx;
+		image {
+			width: 240upx;
+			height: 160upx;
+			margin-bottom: 30upx;
+		}
+
+		.empty-tips {
+			display: flex;
+			font-size: $font-sm+2upx;
+			color: #333;
+			font-weight: 700;
+
+			.navigator {
+				color: $uni-color-primary;
+				margin-left: 16upx;
+			}
 		}
 	}
+
 </style>

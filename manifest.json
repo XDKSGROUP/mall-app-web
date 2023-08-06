@@ -2,8 +2,8 @@
     "name" : "平安华裕",
     "appid" : "__UNI__81130C1",
     "description" : "",
-    "versionName" : "1.0.9",
-    "versionCode" : 109,
+    "versionName" : "1.1.1",
+    "versionCode" : 111,
     "transformPx" : false,
     "app-plus" : {
         /* 5+App特有相关 */
@@ -105,7 +105,7 @@
         },
         "domain" : "",
         "router" : {
-            "base" : "./",
+            "base" : "",
             "mode" : "history"
         },
         "title" : "mall",

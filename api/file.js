@@ -1,5 +1,8 @@
 import request from '@/utils/requestUtil'
 import {
+	formatDate
+} from '@/utils/date';
+import {
 	getError,
 	getResult
 } from "@/utils/com.js"
@@ -30,7 +33,9 @@ export async function uploadFile() {
 					formData.policy = response.data.policy;
 					formData.signature = response.data.signature;
 					formData.ossaccessKeyId = response.data.accessKeyId;
-					formData.key = response.data.dir + '/' + file.name;
+					const tname = formatDate(new Date(), "yyyyMMddhhmmss" + Math.round(
+						Math.random() * 100000));
+					formData.key = response.data.dir + '/' + tname;
 					formData.dir = response.data.dir;
 					formData.host = response.data.host;
 					formData.success_action_status = "200";

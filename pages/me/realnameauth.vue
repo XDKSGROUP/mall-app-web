@@ -78,6 +78,7 @@
 					me.$api.msg(res.message);
 					return;
 				}
+				console.log(res.data)
 				me.form["idCard" + (num == 1 ? "Front" : "Back")] = res.data;
 			},
 			//提交

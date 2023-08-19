@@ -21,6 +21,9 @@
 	import {
 		getImageSize
 	} from "@/utils/com.js"
+	import {
+		baseUrl
+	} from "@/utils/config.js"
 	import UQRCode from 'uqrcodejs';
 	import {
 		mapState
@@ -189,7 +192,7 @@
 				// 获取uQRCode实例
 				var qr = new UQRCode();
 				// 设置二维码内容
-				qr.data = "http://47.110.144.8/pages/public/register?inviterTelephone=" + me.userInfo.phone;
+				qr.data = baseUrl+"/pages/public/register?inviterTelephone=" + me.userInfo.phone;
 				// 设置二维码大小，必须与canvas设置的宽高一致
 				qr.size = uni.upx2px(300);
 				// 调用制作二维码方法

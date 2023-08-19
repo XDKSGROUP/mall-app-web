@@ -57,7 +57,7 @@
 					</view>
 					<view class="dt">
 						<view class="l">{{rtnDateTimeToStr(it.createTime)}}</view>
-						<view class="r">接收人：{{it.receiverMemberUsername}}</view>
+						<view class="r">接收人：{{it.receiverUsername}}</view>
 					</view>
 				</view>
 				<view class="empty" v-if="list.length==0">

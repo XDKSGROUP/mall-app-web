@@ -146,6 +146,9 @@
 		fetchRecommendProductList
 	} from '@/api/home.js';
 	import {
+		baseUrl
+	} from '@/utils/config.js';
+	import {
 		formatDate
 	} from '@/utils/date';
 	import {
@@ -300,7 +303,7 @@
 			const index = e.index;
 			if (index === 0) {
 				uni.navigateTo({
-					url: "/pages/me/invite"
+					url:"/pages/public/register?inviterTelephone=" + this.userInfo.phone
 				})
 			} else if (index === 1) {
 				uni.navigateTo({

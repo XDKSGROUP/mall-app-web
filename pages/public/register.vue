@@ -26,7 +26,8 @@
 				</view>
 				<view class="input-item">
 					<text class="tit">邀请人</text>
-					<input type="text" v-model="form.inviterTelephone" placeholder="请输入邀请人" maxlength="11" />
+					<text v-if="form.inviterTelephone">{{form.inviterTelephone}}</text>
+					<input v-else type="text" v-model="form.inviterTelephone" placeholder="请输入邀请人" maxlength="11" />
 				</view>
 			</view>
 			<button class="confirm-btn" @click="register" :disabled="logining">注册并登录</button>
@@ -36,7 +37,7 @@
 
 <script>
 	import {
-		mapMutations
+		mapState,mapMutations
 	} from 'vuex';
 	import {
 		getVerifyCode
@@ -65,12 +66,19 @@
 			me.form.username = uni.getStorageSync('username') || '';
 			me.form.password = uni.getStorageSync('password') || '';
 		},
+		computed: {
+			...mapState(['userInfo'])
+		},
 		methods: {
 			...mapMutations(['login']),
 			gotoLogin() {
-				uni.navigateTo({
-					url: '/pages/public/login'
-				});
+				if (this.userInfo.id) {
+					this.gotoHome();
+				} else {
+					uni.navigateTo({
+						url: '/pages/public/login'
+					});
+				}
 			},
 			gotoHome() {
 				uni.switchTab({
@@ -92,7 +100,7 @@
 			},
 			async register() {
 				const me = this;
-				if((me.form.telephone||"").length!=11){
+				if ((me.form.telephone || "").length != 11) {
 					me.$api.msg("请输入11位手机号码");
 					return;
 				}
@@ -104,7 +112,11 @@
 						return;
 					}
 					me.$api.msg(`注册成功`);
-					me.loginIn();
+					if (userInfo.id) {
+						me.gotoHome();
+					}else{
+						me.loginIn();
+					}
 				}).catch((err) => {
 					me.logining = false;
 				});

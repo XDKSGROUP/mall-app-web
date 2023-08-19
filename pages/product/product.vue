@@ -30,7 +30,7 @@
 				<view class="bot-row">
 					<text>销量: {{product.sale}}</text>
 					<text>库存: {{product.stock}}</text>
-					<text>浏览量: 768</text>
+					<text>浏览量: {{product.views}}</text>
 				</view>
 			</view>
 

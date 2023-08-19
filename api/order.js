@@ -35,9 +35,6 @@ export function cancelUserOrder(data) {
 	return request({
 		method: 'POST',
 		url: '/order/cancelUserOrder',
-		header: {
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-		},
 		data: data
 	})
 }
@@ -46,9 +43,6 @@ export function confirmReceiveOrder(data) {
 	return request({
 		method: 'POST',
 		url: '/order/confirmReceiveOrder',
-		header: {
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-		},
 		data: data
 	})
 }
@@ -57,9 +51,6 @@ export function deleteUserOrder(data) {
 	return request({
 		method: 'POST',
 		url: '/order/deleteOrder',
-		header: {
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-		},
 		data: data
 	})
 }
@@ -68,9 +59,6 @@ export function payOrderSuccess(data) {
 	return request({
 		method: 'POST',
 		url: '/order/paySuccess',
-		header: {
-			'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-		},
 		data: data
 	})
 }

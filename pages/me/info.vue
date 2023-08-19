@@ -40,7 +40,7 @@
 						<text class="num">{{userInfo.networkValue || '0'}}</text>
 						<text>人脉值</text>
 					</view>
-					<view class="tj-item" @click="navTo('/pages/me/valueteam')">
+					<view class="tj-item" @click="showTeamView()">
 						<text class="num">{{userInfo.teamValue || '0'}}</text>
 						<text>团队值</text>
 					</view>
@@ -82,7 +82,7 @@
 					<image src="/static/me/lb2.png"></image>
 					<text>我的项目</text>
 				</view>
-				<view class="order-item" @click="navTo('/pages/me/invite')" hover-class="common-hover"
+				<view class="order-item" @click="navTo('/pages/public/register?inviterTelephone=' + userInfo.phone)" hover-class="common-hover"
 					:hover-stay-time="50">
 					<image src="/static/me/lb3.png"></image>
 					<text>公益名片</text>
@@ -277,7 +277,12 @@
 					uni.switchTab({
 						url: "/pages/me/info"
 					})
+					me.$api.msg("会员信息已刷新");
 				});
+			},
+			showTeamView() {
+				// this.navTo('/pages/me/valueteam');
+				this.$api.msg("您网体下团队总人为" + (this.userInfo.teamValue || '0') + "人");
 			}
 		}
 	}

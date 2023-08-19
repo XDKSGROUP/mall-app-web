@@ -11,13 +11,13 @@
 					<image :src="item.icon" mode="aspectFill" class="img"></image>
 					<view class="right">
 						<view class="name">
-							<text>昵称</text><text>{{item.nickname}}</text>
+							<text>帐号</text><text>{{item.username}}</text>
 						</view>
 						<view class="username">
-							<text>用户名</text><text>{{item.username}}</text>
+							<text>角色</text><text>{{item.memberLevelName}}</text>
 						</view>
 						<view class="phone">
-							<text>手机</text><text>{{item.phone}}</text>
+							<text>等级</text><text>{{item.memberHonorLevelName}}</text>
 						</view>
 					</view>
 				</view>

@@ -113,8 +113,8 @@
 					me.login(ui);
 					//返回页面
 					setTimeout(() => {
-						uni.navigateTo({
-							url: "/pages/me/set",
+						uni.switchTab({
+							url: "/pages/me/info",
 							fail(err) {
 								console.log(err)
 							}

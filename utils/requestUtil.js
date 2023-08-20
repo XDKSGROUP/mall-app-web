@@ -70,16 +70,16 @@ http.interceptor.response((response) => {
 			// });
 		}
 		//提示错误信息
-		message(res.message);
 		console.log('报错：', response);
+		message(response.data && response.data.message || "非法操作");
 		return Promise.reject(response);
 	} else {
 		return response.data;
 	}
 }, (response) => {
 	//提示错误信息
-	message(response.errMsg);
 	console.log('报错：', response);
+	message("非法操作");
 	return Promise.reject(response);
 })
 

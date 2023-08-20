@@ -137,8 +137,6 @@
 					@eventClick="navTo('/pages/help/volunteer')"></list-cell>
 			</view>
 		</view>
-
-
 	</view>
 </template>
 <script>
@@ -205,6 +203,9 @@
 			...mapState(['hasLogin', 'userInfo'])
 		},
 		methods: {
+			test(){
+				test({});
+			},
 			async loadNotices() {
 				const me = this;
 				if (!me.userInfo || !me.userInfo.id) return;

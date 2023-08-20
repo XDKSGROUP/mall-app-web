@@ -94,8 +94,8 @@
 					me.login(me.userInfo);
 					me.$api.msg(`修改成功`);
 					setTimeout(() => {
-						uni.navigateTo({
-							url: "/pages/me/set"
+						uni.switchTab({
+							url: "/pages/me/info"
 						})
 					}, 1500)
 				});

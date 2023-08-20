@@ -99,7 +99,7 @@
 				<button class="action-btn recom" @click="payOrder(order.id)">立即付款</button>
 			</view>
 			<view class="action-box b-t" v-if="order.status == 2">
-				<button class="action-btn">查看物流</button>
+				<button v-if="false" class="action-btn">查看物流</button>
 				<button class="action-btn recom" @click="receiveOrder(order.id)">确认收货</button>
 			</view>
 			<view class="action-box b-t" v-if="order.status == 3">

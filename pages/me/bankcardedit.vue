@@ -109,8 +109,8 @@
 					});
 				}
 				setTimeout(() => {
-					uni.navigateTo({
-						url: "/pages/me/bankcard"
+					uni.switchTab({
+						url: "/pages/me/info"
 					})
 				}, 2000)
 			},

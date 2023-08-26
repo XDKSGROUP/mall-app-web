@@ -51,6 +51,10 @@
 				logining: false
 			}
 		},
+		onBackPress(){
+			plus.runtime.quit();
+			return false;
+		},
 		onLoad() {
 			this.username = uni.getStorageSync('username') || '';
 			this.password = uni.getStorageSync('password') || '';

@@ -122,7 +122,10 @@
 						this.$api.prePage().refreshList(data, this.manageType);
 						message("地址修改成功！");
 						setTimeout(() => {
-							uni.navigateBack()
+							uni.switchTab({
+								url: "/pages/me/info"
+							})
+							//uni.navigateBack()
 						}, 800)
 					});
 				}else{
@@ -131,7 +134,10 @@
 						this.$api.prePage().refreshList(data, this.manageType);
 						message("地址添加成功！");
 						setTimeout(() => {
-							uni.navigateBack()
+							uni.switchTab({
+								url: "/pages/me/info"
+							})
+							//uni.navigateBack()
 						}, 800)
 					});
 				}

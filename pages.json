@@ -194,6 +194,54 @@
 				}
 			}
 		}, {
+			"path": "pages/order/applyRefund",
+			"style": {
+				"navigationBarTitleText": "申请退款",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/applyRefundMoney",
+			"style": {
+				"navigationBarTitleText": "申请退款",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/applyRefundGoods",
+			"style": {
+				"navigationBarTitleText": "申请退货",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/applyRefundSuccess",
+			"style": {
+				"navigationBarTitleText": "申请成功",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/listRefund",
+			"style": {
+				"navigationBarTitleText": "退款信息",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/detailRefund",
+			"style": {
+				"navigationBarTitleText": "退款详情",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
 			"path": "pages/money/money",
 			"style": {}
 		}, {

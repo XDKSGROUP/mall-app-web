@@ -79,3 +79,12 @@ export function payOrderProject(data) {
 		data: data
 	})
 }
+
+/**申请退货*/
+export function applyRefund(data) {
+	return request({
+		method: 'POST',
+		url: '/returnApply/create',
+		data: data
+	})
+}

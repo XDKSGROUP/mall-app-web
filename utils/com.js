@@ -1,11 +1,21 @@
 /**设置时间:enums=[{name:"",value:""}]*/
-export function setPicker(obj, name, args, enums) {
+export function getPickerRange(enums) {
+	return enums.map(t => t.name);
+}
+/**设置时间:enums=[{name:"",value:""}]*/
+export function setPicker(obj, valOrValName, args, enums) {
 	const o = (obj.value || obj),
-		names = name.split('.'),
-		eo = names.length - 1,
-		val = args[0].detail.value;
-	for (var i = 0; i < eo; i++) o = o[names[i]];
-	o[names[eo]] = enums?.find(it => it.value === val).name || val;
+		val = args[0].detail.value || 0,
+		ks = typeof(valOrValName) == "string" ? [valOrValName] : valOrValName;
+	ks.forEach((it, at) => {
+		if (!it) return;
+		const keys = it.split('.'),
+			eo = keys.length - 1;
+		for (var i = 0; i < eo; i++) o = o[keys[i]];
+		o[keys[eo]] = enums ? enums[val][
+			["value", "name"][at]
+		] : val;
+	})
 }
 /**切换枚举值，有则删除无则添加:enumValues=number[]*/
 export function toggleEnum(enumValues, enumItem) {

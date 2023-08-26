@@ -14,7 +14,7 @@ export function memberLogin(data) {
 export function memberInfo() {
 	return request({
 		method: 'GET',
-		url: '/sso/info'
+		url: '/member/info/info'
 	})
 }
 

@@ -25,7 +25,7 @@ export function getListChangeMoneys(params) {
 export function setLoginPassword(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/updatePassword',
+		url: '/member/info/updatePassword',
 		data: params
 	});
 }
@@ -33,7 +33,7 @@ export function setLoginPassword(params) {
 export function setLoginPassword2(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/updatePassword2',
+		url: '/member/info/updatePassword2',
 		params: params
 	});
 }
@@ -42,7 +42,7 @@ export function setLoginPassword2(params) {
 export function setPayPassword(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/updatePaymentPassword',
+		url: '/member/info/updatePaymentPassword',
 		params: params
 	});
 }
@@ -50,7 +50,7 @@ export function setPayPassword(params) {
 export function setPayPassword2(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/updatePaymentPassword2',
+		url: '/member/info/updatePaymentPassword2',
 		params: params
 	});
 }
@@ -59,7 +59,7 @@ export function setPayPassword2(params) {
 export function setMobile(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/changeTelephone',
+		url: '/member/info/changeTelephone',
 		params: params
 	});
 }
@@ -68,7 +68,7 @@ export function setMobile(params) {
 export function setMemberInfo(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/updateMemberInfo',
+		url: '/member/info/updateMemberInfo',
 		data: params
 	});
 }
@@ -171,7 +171,7 @@ export function getListWithdrawalRecord(params) {
 export function getMeInfo() {
 	return request({
 		method: 'GET',
-		url: '/sso/info'
+		url: '/member/info/info'
 	})
 }
 
@@ -228,7 +228,7 @@ export function getProjectsContribute(params) {
 export function setRealnameAuth(params) {
 	return request({
 		method: 'POST',
-		url: '/sso/certificationApply',
+		url: '/member/info/certificationApply',
 		params: params
 	})
 }

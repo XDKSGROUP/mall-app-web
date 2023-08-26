@@ -13,7 +13,7 @@ import {
 export async function policy() {
 	return request({
 		method: 'GET',
-		url: '/aliyun/oss/policy?https=' + apiHttps,
+		url: '/aliyun/oss/policy?https=' + (apiHttps||""),
 	})
 }
 

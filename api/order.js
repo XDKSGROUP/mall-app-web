@@ -81,10 +81,38 @@ export function payOrderProject(data) {
 }
 
 /**申请退货*/
-export function applyRefund(data) {
+export async function applyRefund(data) {
 	return request({
 		method: 'POST',
 		url: '/returnApply/create',
 		data: data
 	})
 }
+
+/**退货列表*/
+export async function listRefund(data) {
+	return request({
+		method: 'POST',
+		url: '/returnApply/list',
+		data: data
+	})
+}
+
+/**退货详细*/
+export async function detailRefund(data) {
+	return request({
+		method: 'POST',
+		url: '/returnApply/detail',
+		data: data
+	})
+}
+
+/**填写退货信息*/
+export async function setRefundGoods(data) {
+	return request({
+		method: 'POST',
+		url: '/returnApply/fill',
+		data: data
+	})
+}
+

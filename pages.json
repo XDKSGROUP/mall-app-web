@@ -202,7 +202,7 @@
 				}
 			}
 		}, {
-			"path": "pages/order/applyRefundMoney",
+			"path": "pages/order/applyRefundForm",
 			"style": {
 				"navigationBarTitleText": "申请退款",
 				"app-plus": {
@@ -210,25 +210,10 @@
 				}
 			}
 		}, {
-			"path": "pages/order/applyRefundGoods",
-			"style": {
-				"navigationBarTitleText": "申请退货",
-				"app-plus": {
-					"bounce": "none"
-				}
-			}
-		}, {
-			"path": "pages/order/applyRefundSuccess",
-			"style": {
-				"navigationBarTitleText": "申请成功",
-				"app-plus": {
-					"bounce": "none"
-				}
-			}
-		}, {
 			"path": "pages/order/listRefund",
 			"style": {
-				"navigationBarTitleText": "退款信息",
+				"navigationBarTitleText": "退款/售后",
+				"enablePullDownRefresh": true,
 				"app-plus": {
 					"bounce": "none"
 				}

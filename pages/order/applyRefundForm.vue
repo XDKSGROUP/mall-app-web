@@ -24,26 +24,26 @@
 				退款信息
 			</view>
 			<view class="cont">
-				<view class="item">
+				<view class="item" v-if="!isMoney">
 					<view class="name">
 						货物状态<text>*</text>
 					</view>
 					<view class="input">
-						<picker @change="setPicker(form,[,'status'],arguments,enumGoodsStatus)"
+						<picker @change="setPicker(form,[,'type'],arguments,enumGoodsStatus)"
 							:range="getPickerRange(enumGoodsStatus)">
-							{{form.status||"请选择"}}
+							{{form.type||"请选择"}}
 							<uni-icons type="right" size="10"></uni-icons>
 						</picker>
 					</view>
 				</view>
-				<view class="item" v-if="form.status">
+				<view class="item" v-if="form.type">
 					<view class="name">
 						退货原因<text>*</text>
 					</view>
 					<view class="input">
 						<picker
-							@change="setPicker(form,[,'reason'],arguments,form.status=='未收到货'?enumRefundMoneyReason:enumRefundGoodsReason)"
-							:range="getPickerRange(form.status=='未收到货'?enumRefundMoneyReason:enumRefundGoodsReason)">
+							@change="setPicker(form,[,'reason'],arguments,form.type=='未收到货'?enumRefundMoneyReason:enumRefundGoodsReason)"
+							:range="getPickerRange(form.type=='未收到货'?enumRefundMoneyReason:enumRefundGoodsReason)">
 							{{form.reason||"请选择"}}
 							<uni-icons type="right" size="10"></uni-icons>
 						</picker>
@@ -102,9 +102,10 @@
 				items: {},
 				orderId: 0,
 				itemId: 0,
+				isMoney:0,
 				money: 0,
 				form: {
-					status: "",
+					type: "",
 					reason: "",
 					description: "",
 				},
@@ -114,6 +115,9 @@
 			};
 		},
 		onLoad(options) {
+			this.isMoney=options.isMoney?true:false;
+			this.isMoney&&(this.form.type="已收到货");
+			console.log(this.isMoney,this.form.type)
 			this.itemId = options.itemId;
 			this.orderId = options.orderId;
 			this.loadData();
@@ -143,6 +147,7 @@
 					me.order = response.data;
 					me.items = me.order.orderItemList;
 					me.money = me.order.payAmount;
+					console.log(me.items)
 					if (me.itemId) {
 						me.items = me.items.filter((it, at) => it.id == me.itemId);
 						me.items.length && (me.money = me.items[0].realAmount);
@@ -151,20 +156,23 @@
 			},
 			//提交
 			async handleSubmit() {
+				const me=this;
 				const data = {
-					"orderId": this.orderId,
-					"orderItemIds": this.items.map(t => t.id),
-					"reason": this.form.reason,
-					"description": this.form.description,
-					"proofPics": this.form.files.join(","),
+					"orderId": me.orderId,
+					"orderItemIds": me.items.map(t => t.id),
+					"type": me.form.type,
+					"reason": me.form.reason,
+					"description": me.form.description,
+					"proofPics": me.form.files.map(t=>t.src).join(","),
 				}
-				const rst = await applyRefund(data);
+				const res = await applyRefund(data);
 				if (res.code != 200) {
 					me.$api.msg(res.message);
 					return;
 				}
+				me.$api.msg(res.message);
 				uni.redirectTo({
-					url: '/pages/order/applyRefundSuccess'
+					url: '/pages/order/listRefund'
 				})
 			},
 		},

@@ -153,3 +153,25 @@ export const enumRefundGoodsReason = [{
 	name: "质量问题",
 	value: "5"
 }];
+export const enumRefundStatus = [{
+	name: "申请退款",
+	value: "1"
+}, {
+	name: "同意退款",
+	value: "2"
+}, {
+	name: "寄回商品",
+	value: "3"
+}, {
+	name: "确认收货",
+	value: "4"
+}, {
+	name: "退款成功",
+	value: "5"
+}, {
+	name: "拒绝退款",
+	value: "6"
+}, {
+	name: "撤销退款",
+	value: "7"
+}];

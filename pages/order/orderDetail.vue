@@ -112,7 +112,6 @@
 				<text class="price">{{order.payAmount}}</text>
 			</view>
 		</view>
-
 	</view>
 </template>
 

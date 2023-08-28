@@ -66,7 +66,7 @@
 					sizeType: ['original', 'compressed'], //original 原图，compressed 压缩图，默认二者都有
 					sourceType: ['album'], //album 从相册选图，camera 使用相机，默认二者都有
 					success: (res) => {
-						const images = res.tempFilePaths;
+						const images = res.tempFiles;
 						this.uploadFiles(images);
 						this.setValue();
 					}
@@ -75,7 +75,7 @@
 			//上传图片
 			async uploadFiles(images) {
 				this.imageList.push({
-					filePath: images[0],
+					filePath: images[0].path,
 					progress: 0
 				});
 				uni.showLoading({
@@ -114,13 +114,14 @@
 					const formData = {
 						thumb_mode: 1,
 					};
+					console.log(file)
 					//获取上传权限
 					policy().then(response => {
 						formData.policy = response.data.policy;
 						formData.signature = response.data.signature;
 						formData.ossaccessKeyId = response.data.accessKeyId;
 						const tname = formatDate(new Date(), "yyyyMMddhhmmss" + Math.round(
-							Math.random() * 100000));
+							Math.random() * 100000))+file.name.replace(/^.*?(\.\w+)$/,"$1");
 						formData.key = response.data.dir + '/' + tname;
 						formData.dir = response.data.dir;
 						formData.host = response.data.host;

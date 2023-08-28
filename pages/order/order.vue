@@ -28,8 +28,9 @@
 								<image class="goods-img" :src="orderItem.productPic" mode="aspectFill"></image>
 								<view class="right">
 									<text class="title clamp">{{orderItem.productName}}</text>
-									<text class="attr-box">{{orderItem.productAttr | formatProductAttr}} x
-										{{orderItem.productQuantity}}</text>
+									<text class="attr-box">
+										{{orderItem.productAttr | formatProductAttr}} x{{orderItem.productQuantity}}
+									</text>
 									<text class="price">{{orderItem.productPrice}}</text>
 								</view>
 							</view>
@@ -40,13 +41,19 @@
 								件商品 实付款
 								<text class="price">{{item.payAmount}}</text>
 							</view>
-							<view class="action-box b-t" v-if="item.status == 0">
-								<button class="action-btn" @click="cancelOrder(item.id)">取消订单</button>
-								<button class="action-btn recom" @click="payOrder(item.id)">立即付款</button>
-							</view>
-							<view class="action-box b-t" v-if="item.status == 2">
-								<button class="action-btn" @click="viewLogistics(item,index)">查看物流</button>
-								<button class="action-btn recom" @click="receiveOrder(item.id)">确认收货</button>
+							<view class="action-box b-t">
+								<button class="action-btn-min" @click="viewMoreBtnInfo(item,index)"
+									v-if="item.status == 1||item.status == 2">更多</button>
+								<span style="flex:1"></span>
+								<button class="action-btn" @click="cancelOrder(item.id)"
+									v-if="item.status == 0">取消订单</button>
+								<button class="action-btn recom" @click="payOrder(item.id)"
+									v-if="item.status == 0">立即付款</button>
+								<button class="action-btn" @click="viewLogistics(item,index)"
+									v-if="item.status == 2">查看物流</button>
+								<button class="action-btn recom" @click="receiveOrder(item.id)"
+									v-if="item.status == 2">确认收货</button>
+								<button class="action-btn recom" v-if="item.status == 3&&false">评价商品</button>
 							</view>
 							<view class="logisticsinfo" :style="{height:showLogisticsInfo[index]?'':'0px'}">
 								<view class="li">
@@ -62,8 +69,9 @@
 									<view class="value">{{item.deliveryTime}}</view>
 								</view>
 							</view>
-							<view class="action-box b-t" v-if="item.status == 3&&false">
-								<button class="action-btn recom">评价商品</button>
+							<view class="morebtninfo" :style="{height:showMoreBtnInfo[index]?'':'0px'}">
+								<button class="action-btn"
+									@click="goto('/pages/order/applyRefund?orderId='+item.id)">退款</button>
 							</view>
 						</view>
 					</view>
@@ -125,6 +133,7 @@
 					}
 				],
 				showLogisticsInfo: {},
+				showMoreBtnInfo: {},
 			};
 		},
 		onLoad(options) {
@@ -324,7 +333,19 @@
 				const obj = Object.assign({}, this.showLogisticsInfo)
 				obj[at] = !obj[at];
 				this.showLogisticsInfo = obj;
-			}
+			},
+			//查看物流
+			viewMoreBtnInfo(it, at) {
+				const obj = Object.assign({}, this.showMoreBtnInfo)
+				obj[at] = !obj[at];
+				this.showMoreBtnInfo = obj;
+			},
+			//转到指定页
+			goto(url) {
+				uni.navigateTo({
+					url
+				});
+			},
 		},
 	}
 </script>
@@ -527,6 +548,21 @@
 			padding-right: 30upx;
 		}
 
+		.action-btn-min {
+			height: 40upx;
+			line-height: 40upx;
+			margin: 0;
+			text-align: center;
+			font-size: $font-sm + 2upx;
+			color: $font-color-dark;
+			border: 0;
+			background: none;
+
+			&:after {
+				display: none;
+			}
+		}
+
 		.action-btn {
 			width: 160upx;
 			height: 60upx;
@@ -693,7 +729,7 @@
 		line-height: 65upx;
 		font-size: 27upx;
 		overflow: hidden;
-		transition: height 0.5s ease-in-out;
+		transition: height 0.3s ease-in-out;
 	}
 
 	.logisticsinfo .li {
@@ -707,5 +743,13 @@
 
 	.logisticsinfo .value {
 		color: #333;
+	}
+
+	.morebtninfo {
+		height: 85upx;
+		line-height: 55upx;
+		font-size: 27upx;
+		overflow: hidden;
+		transition: height 0.3s ease-in-out;
 	}
 </style>

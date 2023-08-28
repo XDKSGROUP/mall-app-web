@@ -1,170 +1,157 @@
 <template>
-	<view class="content">
-		<view class="navbar">
-			<view v-for="(item, index) in navList" :key="index" class="nav-item"
-				:class="{current: tabCurrentIndex === index}" @click="tabClick(index)">
-				{{item.text}}
+	<view class="main">
+		<view class="process">
+			<view class="title">
+				{{currentStatus}}
+			</view>
+			<view class="dt">
+				{{currentTime}}
+			</view>
+			<view class="cont">
+				<view class="li" :class="{s:dicLogs['申请退款']}">申请退款</view>
+				<view class="li" v-if="dicLogs['拒绝退款']" :class="{s:dicLogs['拒绝退款']}">拒绝退款</view>
+				<view class="li" v-else-if="dicLogs['撤销退款']" :class="{s:dicLogs['撤销退款']}">撤销退款</view>
+				<view class="li" v-else :class="{s:dicLogs['同意退款']}">退货中</view>
+				<view class="li" v-if="!(dicLogs['拒绝退款']||dicLogs['撤销退款'])" :class="{s:dicLogs['退款成功']}">退款成功</view>
 			</view>
 		</view>
-
-		<swiper :current="tabCurrentIndex" class="swiper-box" duration="300" @change="changeTab">
-			<swiper-item class="tab-content" v-for="(tabItem,tabIndex) in navList" :key="tabIndex">
-				<scroll-view class="list-scroll-content" scroll-y @scrolltolower="loadData('add')">
-					<!-- 空白页 -->
-					<empty v-if="orderList==null||orderList.length === 0"></empty>
-
-					<!-- 订单列表 -->
-					<view v-for="(item,index) in orderList" :key="index" class="order-item">
-						<view class="inbox">
-							<view class="i-top b-b">
-								<text class="time"
-									@click="showOrderDetail(item.id)">{{item.createTime | formatDateTime}}</text>
-								<text class="state" :style="{color: '#fa436a'}">{{item.status | formatStatus}}</text>
-								<text v-if="item.status===3||item.status===4"
-									class="del-btn yticon icon-iconfontshanchu1" @click="deleteOrder(item.id)"></text>
-							</view>
-							<view class="goods-box-single" v-for="(orderItem, itemIndex) in item.orderItemList"
-								:key="itemIndex">
-								<image class="goods-img" :src="orderItem.productPic" mode="aspectFill"></image>
-								<view class="right">
-									<text class="title clamp">{{orderItem.productName}}</text>
-									<text class="attr-box">{{orderItem.productAttr | formatProductAttr}} x
-										{{orderItem.productQuantity}}</text>
-									<text class="price">{{orderItem.productPrice}}</text>
-								</view>
-							</view>
-
-							<view class="price-box">
-								共
-								<text class="num">{{calcTotalQuantity(item)}}</text>
-								件商品 实付款
-								<text class="price">{{item.payAmount}}</text>
-							</view>
-							<view class="action-box b-t" v-if="item.status == 0">
-								<button class="action-btn" @click="cancelOrder(item.id)">取消订单</button>
-								<button class="action-btn recom" @click="payOrder(item.id)">立即付款</button>
-							</view>
-							<view class="action-box b-t" v-if="item.status == 2">
-								<button class="action-btn" @click="viewLogistics(item,index)">查看物流</button>
-								<button class="action-btn recom" @click="receiveOrder(item.id)">确认收货</button>
-							</view>
-							<view class="logisticsinfo" :style="{height:showLogisticsInfo[index]?'':'0px'}">
-								<view class="li">
-									<view class="name">物流名称：</view>
-									<view class="value">{{item.deliveryCompany}}</view>
-								</view>
-								<view class="li">
-									<view class="name">物流单号：</view>
-									<view class="value">{{item.deliverySn}}</view>
-								</view>
-								<view class="li">
-									<view class="name">发货时间：</view>
-									<view class="value">{{item.deliveryTime}}</view>
-								</view>
-							</view>
-							<view class="action-box b-t" v-if="item.status == 3&&false">
-								<button class="action-btn recom">评价商品</button>
-							</view>
-						</view>
+		<view class="history info">
+			<view class="title">
+				历史信息
+			</view>
+			<view class="cont">
+				<li v-if="info.createTime">
+					<text class="tm">{{info.createTime}}</text>
+					<text class="msg">申请退款</text>
+				</li>
+				<li v-if="info.handleTime">
+					<text class="tm">{{info.handleTime}}</text>
+					<text class="msg">{{info.status===3?"拒绝退款":"同意退款"}}</text>
+				</li>
+				<li v-if="info.returnedTime">
+					<text class="tm">{{info.returnedTime}}</text>
+					<text class="msg">发货成功</text>
+				</li>
+				<li v-if="info.receiveTime">
+					<text class="tm">{{info.receiveTime}}</text>
+					<text class="msg">收货成功</text>
+				</li>
+				<li v-if="info.refundTime">
+					<text class="tm">{{info.refundTime}}</text>
+					<text class="msg">退款成功</text>
+				</li>
+				<li v-if="info.revokeTime">
+					<text class="tm">{{info.revokeTime}}</text>
+					<text class="msg">用户撤销</text>
+				</li>
+			</view>
+		</view>
+		<view class="product info">
+			<view class="title">
+				退款商品
+			</view>
+			<view class="prms" v-if="info.status==2">
+				<view class="li">
+					<view class="name">收货人</view>
+					<view class="value">{{address.name}}</view>
+				</view>
+				<view class="li">
+					<view class="name">退货地址</view>
+					<view class="value">{{address.province}} {{address.city}} {{address.region}}
+						{{address.detailAddress}}
 					</view>
+				</view>
+			</view>
+			<view class="cont">
+				<image class="img" :src="info.productPic" mode="aspectFill"></image>
+				<view class="right">
+					<text class="tt clamp">
+						{{info.productName}}
+					</text>
+					<text class="attr-box">
+						{{info.productAttr | formatProductAttr}} x{{info.productCount}}
+					</text>
+				</view>
+			</view>
+			<view class="prms">
+				<view class="li">
+					<view class="name">退款原因</view>
+					<view class="value">{{info.reason}}</view>
+				</view>
+				<view class="li">
+					<view class="name">退款金额</view>
+					<view class="value">￥{{info.productPrice}}</view>
+				</view>
+				<view class="li">
+					<view class="name">申请时间</view>
+					<view class="value">{{info.createTime}}</view>
+				</view>
+				<view class="li">
+					<view class="name">退款编号</view>
+					<view class="value">{{info.id}}</view>
+				</view>
+				<view class="li">
+					<view class="name">凭证</view>
+					<view class="value">
+						<image class="img" v-for="(it,at) in (info.proofPics?info.proofPics.split(','):[])" :key="at"
+							:src="it" mode="aspectFill"></image>
+					</view>
+				</view>
+				<view class="li">
+					<view class="name">详细描述</view>
+					<view class="value">{{info.description}}</view>
+				</view>
+				<view class="li">
+					<view class="name">物流公司</view>
+					<view class="value">{{info.deliveryCompany}}</view>
+				</view>
+				<view class="li">
+					<view class="name">物流编号</view>
+					<view class="value">{{info.deliverySn}}</view>
+				</view>
+			</view>
+		</view>
+		<view class="submit">
+			<button @click="showRefundGoods" class="button" v-if="info.status==2">填写退货信息</button>
+			<button form-type="submit" @click="handleSubmit" v-if="false">联系客服</button>
+		</view>
 
-					<uni-load-more :status="loadingType"></uni-load-more>
-
-				</scroll-view>
-			</swiper-item>
-		</swiper>
+		<uni-popup ref="popup" type="dialog">
+			<uni-popup-dialog mode="" title="填写退货信息" :before-close="true" @confirm="setRefundGoods"
+				@close="hideRefundGoods">
+				<div class="form">
+					<input type="text" v-model="form.deliveryCompany" placeholder="物流名称" maxlength="20" class="input" />
+					<input type="text" v-model="form.deliverySn" placeholder="物流单号" maxlength="30" class="input" />
+				</div>
+			</uni-popup-dialog>
+		</uni-popup>
 	</view>
 </template>
-
 <script>
-	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-	import empty from "@/components/empty";
 	import {
-		formatDate
-	} from '@/utils/date';
-	import {
-		fetchOrderList,
-		cancelUserOrder,
-		confirmReceiveOrder,
-		deleteUserOrder
+		detailRefund,
+		setRefundGoods,
 	} from '@/api/order.js';
 	export default {
-		components: {
-			uniLoadMore,
-			empty
-		},
 		data() {
 			return {
-				tabCurrentIndex: 0,
-				orderParam: {
-					status: -1,
-					pageNum: 1,
-					pageSize: 5
+				id: 0,
+				info: {},
+				currentStatus: "",
+				currentTime: "",
+				form: {
+					deliveryCompany: "",
+					deliverySn: "",
 				},
-				orderList: [],
-				loadingType: 'more',
-				navList: [{
-						state: -1,
-						text: '全部'
-					},
-					{
-						state: 0,
-						text: '待付款'
-					},
-					{
-						state: 2,
-						text: '待收货'
-					},
-					{
-						state: 3,
-						text: '已完成'
-					},
-					{
-						state: 4,
-						text: '已取消'
-					}
-				],
-				showLogisticsInfo: {},
+				dicLogs: {},
+				address: {}
 			};
 		},
 		onLoad(options) {
-			/**
-			 * 修复app端点击除全部订单外的按钮进入时不加载数据的问题
-			 * 替换onLoad下代码即可
-			 */
-			this.tabCurrentIndex = +options.state;
-			// #ifndef MP
+			this.id = options.id;
 			this.loadData()
-			// #endif
-			// #ifdef MP
-			if (options.state == 0) {
-				this.loadData()
-			}
-			// #endif
-
 		},
 		filters: {
-			formatStatus(status) {
-				let statusTip = '';
-				switch (+status) {
-					case 0:
-						statusTip = '等待付款';
-						break;
-					case 1:
-						statusTip = '等待发货';
-						break;
-					case 2:
-						statusTip = '等待收货';
-						break;
-					case 3:
-						statusTip = '交易完成';
-						break;
-					case 4:
-						statusTip = '交易关闭';
-						break;
-				}
-				return statusTip;
-			},
 			formatProductAttr(jsonAttr) {
 				let attrArr = jsonAttr ? JSON.parse(jsonAttr) : {};
 				let attrStr = '';
@@ -176,286 +163,180 @@
 					attrStr += ";";
 				}
 				return attrStr
-			},
-			formatDateTime(time) {
-				if (time == null || time === '') {
-					return 'N/A';
-				}
-				let date = new Date(time);
-				return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
-			},
+			}
 		},
 		methods: {
-			//获取订单列表
-			loadData(type = 'refresh') {
-				if (type == 'refresh') {
-					this.orderParam.pageNum = 1;
-				} else {
-					this.orderParam.pageNum++;
-				}
-				//这里是将订单挂载到tab列表下
-				let index = this.tabCurrentIndex;
-				let navItem = this.navList[index];
-				let state = navItem.state;
-				if (this.loadingType === 'loading') {
-					//防止重复加载
-					return;
-				}
-				this.orderParam.status = navItem.state;
-				this.loadingType = 'loading';
-				fetchOrderList(this.orderParam).then(response => {
-					let list = response.data.list;
-					if (type == 'refresh') {
-						this.orderList = list;
-						this.loadingType = 'more';
-					} else {
-						if (list != null && list.length > 0) {
-							this.orderList = this.orderList.concat(list);
-							this.loadingType = 'more';
-						} else {
-							this.orderParam.pageNum--;
-							this.loadingType = 'noMore';
-						}
-					}
+			setCurrent() {
+				const me = this,
+					log = me.info.log[me.info.log.length - 1];
+				me.currentStatus = log.operateType;
+				me.currentTime = log.operateTime;
+				me.info.log.forEach((it) => me.dicLogs[it.operateType] = it);
+				me.address = me.info.address || {};
+			},
+			//获取订单详细
+			async loadData() {
+				const me = this;
+				if (!me.id) return;
+				detailRefund({
+					id: me.id
+				}).then(response => {
+					me.info = response.data;
+					me.setCurrent();
 				});
 			},
-			//swiper 切换
-			changeTab(e) {
-				this.tabCurrentIndex = e.target.current;
-				this.loadData();
+			showRefundGoods() {
+				this.$refs.popup.open();
 			},
-			//顶部tab点击
-			tabClick(index) {
-				this.tabCurrentIndex = index;
+			hideRefundGoods() {
+				this.$refs.popup.close();
 			},
-			//删除订单
-			deleteOrder(orderId) {
-				let superThis = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否要删除该订单？',
-					success: function(res) {
-						if (res.confirm) {
-							uni.showLoading({
-								title: '请稍后'
-							})
-							deleteUserOrder({
-								orderId: orderId
-							}).then(response => {
-								uni.hideLoading();
-								superThis.loadData();
-							});
-						} else if (res.cancel) {
-							console.log('用户点击取消');
-						}
+			//获取订单详细
+			async setRefundGoods() {
+				const me = this;
+				if (!me.id) return;
+				me.form.id = me.id;
+				setRefundGoods(me.form).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+						return;
 					}
+					me.$api.msg(res.message);
+					me.gotoDetail();
 				});
 			},
-			//取消订单
-			cancelOrder(orderId) {
-				let superThis = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否要取消该订单？',
-					success: function(res) {
-						if (res.confirm) {
-							uni.showLoading({
-								title: '请稍后'
-							})
-							cancelUserOrder({
-								orderId: orderId
-							}).then(response => {
-								uni.hideLoading();
-								superThis.loadData();
-							});
-						} else if (res.cancel) {
-							console.log('用户点击取消');
-						}
-					}
-				});
-			},
-			//支付订单
-			payOrder(orderId) {
+			//跳转到申请页
+			async gotoDetail() {
 				uni.redirectTo({
-					url: `/pages/money/pay?orderId=${orderId}`
-				});
-			},
-			//确认收货
-			receiveOrder(orderId) {
-				let superThis = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否要确认收货？',
-					success: function(res) {
-						if (res.confirm) {
-							uni.showLoading({
-								title: '请稍后'
-							})
-							confirmReceiveOrder({
-								orderId: orderId
-							}).then(response => {
-								uni.hideLoading();
-								superThis.loadData();
-							});
-						} else if (res.cancel) {
-							console.log('用户点击取消');
-						}
-					}
-				});
-			},
-			//查看订单详情
-			showOrderDetail(orderId) {
-				uni.navigateTo({
-					url: `/pages/order/orderDetail?orderId=${orderId}`
+					url: '/pages/order/detailRefund'
 				})
 			},
-			//计算商品总数量
-			calcTotalQuantity(order) {
-				let totalQuantity = 0;
-				if (order.orderItemList != null && order.orderItemList.length > 0) {
-					for (let item of order.orderItemList) {
-						totalQuantity += item.productQuantity
-					}
-				}
-				return totalQuantity;
-			},
-			//查看物流
-			viewLogistics(it, at) {
-				const obj = Object.assign({}, this.showLogisticsInfo)
-				obj[at] = !obj[at];
-				this.showLogisticsInfo = obj;
-			}
 		},
 	}
 </script>
 
 <style lang="scss">
-	page,
-	.content {
+	page {
 		background: $page-color-base;
-		height: 100%;
 	}
 
-	.swiper-box {
-		height: calc(100% - 40px);
+	.main {}
+
+	.info {
+		margin: 20upx;
+		padding: 20upx;
+		background-color: #fff;
+		border-radius: 20upx;
+
+		.title {
+			margin-bottom: 20upx;
+			padding: 20upx 0;
+			font-size: 28upx;
+			font-weight: 600;
+			border-bottom: 1px solid #eee;
+		}
+
+		.cont {
+			color: #666;
+			line-height: 46upx;
+			font-size: 28upx;
+		}
 	}
 
-	.list-scroll-content {
-		height: 100%;
-	}
+	.process {
+		margin: 20upx;
+		padding: 20upx;
+		background-color: #fff;
+		border-radius: 20upx;
 
-	.navbar {
-		display: flex;
-		height: 40px;
-		padding: 0 5px;
-		background: #fff;
-		box-shadow: 0 1px 5px rgba(0, 0, 0, .06);
-		position: relative;
-		z-index: 10;
+		.title {
+			padding: 20upx 0;
+			font-size: 30upx;
+			font-weight: 600;
+			text-align: center;
+		}
 
-		.nav-item {
-			flex: 1;
+		.dt {
+			margin-bottom: 20upx;
+			padding: 0 0 20upx;
+			font-size: 24upx;
+			color: #999;
+			border-bottom: 1px solid #eee;
+			text-align: center;
+		}
+
+		.cont {
+			width: 80%;
+			margin: 0 auto;
+			padding: 20upx 0 10upx;
+			color: #666;
+			line-height: 46upx;
+			font-size: 28upx;
 			display: flex;
 			justify-content: center;
-			align-items: center;
-			height: 100%;
-			font-size: 15px;
-			color: $font-color-dark;
-			position: relative;
 
-			&.current {
-				color: $base-color;
-
-				&:after {
-					content: '';
-					position: absolute;
-					left: 50%;
-					bottom: 0;
-					transform: translateX(-50%);
-					width: 44px;
-					height: 0;
-					border-bottom: 2px solid $base-color;
-				}
-			}
-		}
-	}
-
-	.uni-swiper-item {
-		height: auto;
-	}
-
-	.order-item {
-		background: #fff;
-
-		.inbox {
-			width: calc(100% - 60upx);
-			margin: 16upx auto;
-			display: flex;
-			flex-direction: column;
-		}
-
-		.i-top {
-			display: flex;
-			align-items: center;
-			height: 80upx;
-			padding-right: 30upx;
-			font-size: $font-base;
-			color: $font-color-dark;
-			position: relative;
-
-			.time {
+			.li {
 				flex: 1;
-			}
-
-			.state {
-				color: $base-color;
-			}
-
-			.del-btn {
-				padding: 10upx 0 10upx 36upx;
-				font-size: $font-lg;
-				color: $font-color-light;
+				text-align: center;
 				position: relative;
-
-				&:after {
-					content: '';
-					width: 0;
-					height: 30upx;
-					border-left: 1px solid $border-color-dark;
-					position: absolute;
-					left: 20upx;
-					top: 50%;
-					transform: translateY(-50%);
-				}
-			}
-		}
-
-		/* 多条商品 */
-		.goods-box {
-			height: 160upx;
-			padding: 20upx 0;
-			white-space: nowrap;
-
-			.goods-item {
-				width: 120upx;
-				height: 120upx;
-				display: inline-block;
-				margin-right: 24upx;
 			}
 
-			.goods-img {
+			.li::before {
+				content: "";
+				width: 10upx;
+				height: 10upx;
+				margin: 0 auto 10upx;
+				border: 1px solid red;
+				background-color: #fff;
 				display: block;
-				width: 100%;
-				height: 100%;
+				position: relative;
+				z-index: 1;
+				border-radius: 50%;
+			}
+
+			.li::after {
+				content: "";
+				width: calc(100%);
+				height: 1px;
+				background-color: red;
+				right: 0;
+				top: 6upx;
+				position: absolute;
+			}
+
+			.li:first-child.li::after {
+				content: "";
+				width: calc(50%);
+				height: 1px;
+				background-color: red;
+				right: 0;
+				top: 6upx;
+				position: absolute;
+			}
+
+			.li:last-child.li::after {
+				content: "";
+				width: calc(50%);
+				height: 1px;
+				background-color: red;
+				left: 0;
+				top: 6upx;
+				position: absolute;
+			}
+
+			.s::before {
+				background-color: red;
 			}
 		}
+	}
 
-		/* 单条商品 */
-		.goods-box-single {
+	.product {
+		.cont {
+			line-height: 30upx;
 			display: flex;
 			padding: 20upx 0;
 
-			.goods-img {
+			.img {
 				display: block;
 				width: 120upx;
 				height: 120upx;
@@ -468,7 +349,7 @@
 				padding: 0 30upx 0 24upx;
 				overflow: hidden;
 
-				.title {
+				.tt {
 					font-size: $font-base + 2upx;
 					color: $font-color-dark;
 					line-height: 1;
@@ -493,219 +374,88 @@
 			}
 		}
 
-		.price-box {
-			display: flex;
-			justify-content: flex-end;
-			align-items: baseline;
-			padding: 20upx 30upx;
-			font-size: $font-sm + 2upx;
-			color: $font-color-light;
+		.prms {
+			.li {
+				line-height: 50upx;
+				font-size: 25upx;
+				display: flex;
 
-			.num {
-				margin: 0 8upx;
-				color: $font-color-dark;
-			}
+				.name {
+					width: 200upx;
+					color: #999;
+				}
 
-			.price {
-				font-size: $font-lg;
-				color: $font-color-dark;
+				.value {}
 
-				&:before {
-					content: '￥';
-					font-size: $font-sm;
-					margin: 0 2upx 0 8upx;
+				.img {
+					width: 100upx;
+					height: 100upx;
 				}
 			}
 		}
+	}
 
-		.action-box {
-			display: flex;
-			justify-content: flex-end;
-			align-items: center;
-			height: 100upx;
-			position: relative;
-			padding-right: 30upx;
+	.type {
+		.cont {
+			.item {
+				padding: 30upx 20upx;
+				display: flex;
+				border-radius: 15upx;
+
+				.icon {
+					width: 80upx;
+					margin-right: 20upx;
+				}
+
+				.li {
+					flex: 1;
+					padding: 0 20upx;
+				}
+
+				.tt {
+					color: #333;
+					font-weight: 600;
+				}
+
+				.in {
+					width: 40upx;
+				}
+			}
+
+			.item:hover,
+			.item:active {
+				background-color: #f6f6f6;
+			}
 		}
+	}
 
-		.action-btn {
-			width: 160upx;
+	.submit {
+		width: calc(100% - 40upx);
+		margin: 0 20upx 20upx;
+
+		.button {
 			height: 60upx;
-			margin: 0;
-			margin-left: 24upx;
-			padding: 0;
-			text-align: center;
 			line-height: 60upx;
-			font-size: $font-sm + 2upx;
-			color: $font-color-dark;
-			background: #fff;
-			border-radius: 100px;
-
-			&:after {
-				border-radius: 100px;
-			}
-
-			&.recom {
-				background: #fff9f9;
-				color: $base-color;
-
-				&:after {
-					border-color: #f7bcc8;
-				}
-			}
+			border-radius: 60upx;
+			font-size: 28upx;
+			color: #fff;
+			background-color: crimson;
 		}
 	}
 
-
-	/* load-more */
-	.uni-load-more {
+	.form {
+		width: 100%;
 		display: flex;
-		flex-direction: row;
-		height: 80upx;
-		align-items: center;
-		justify-content: center
-	}
+		flex-direction: column;
 
-	.uni-load-more__text {
-		font-size: 28upx;
-		color: #999
-	}
-
-	.uni-load-more__img {
-		height: 24px;
-		width: 24px;
-		margin-right: 10px
-	}
-
-	.uni-load-more__img>view {
-		position: absolute
-	}
-
-	.uni-load-more__img>view view {
-		width: 6px;
-		height: 2px;
-		border-top-left-radius: 1px;
-		border-bottom-left-radius: 1px;
-		background: #999;
-		position: absolute;
-		opacity: .2;
-		transform-origin: 50%;
-		animation: load 1.56s ease infinite
-	}
-
-	.uni-load-more__img>view view:nth-child(1) {
-		transform: rotate(90deg);
-		top: 2px;
-		left: 9px
-	}
-
-	.uni-load-more__img>view view:nth-child(2) {
-		transform: rotate(180deg);
-		top: 11px;
-		right: 0
-	}
-
-	.uni-load-more__img>view view:nth-child(3) {
-		transform: rotate(270deg);
-		bottom: 2px;
-		left: 9px
-	}
-
-	.uni-load-more__img>view view:nth-child(4) {
-		top: 11px;
-		left: 0
-	}
-
-	.load1,
-	.load2,
-	.load3 {
-		height: 24px;
-		width: 24px
-	}
-
-	.load2 {
-		transform: rotate(30deg)
-	}
-
-	.load3 {
-		transform: rotate(60deg)
-	}
-
-	.load1 view:nth-child(1) {
-		animation-delay: 0s
-	}
-
-	.load2 view:nth-child(1) {
-		animation-delay: .13s
-	}
-
-	.load3 view:nth-child(1) {
-		animation-delay: .26s
-	}
-
-	.load1 view:nth-child(2) {
-		animation-delay: .39s
-	}
-
-	.load2 view:nth-child(2) {
-		animation-delay: .52s
-	}
-
-	.load3 view:nth-child(2) {
-		animation-delay: .65s
-	}
-
-	.load1 view:nth-child(3) {
-		animation-delay: .78s
-	}
-
-	.load2 view:nth-child(3) {
-		animation-delay: .91s
-	}
-
-	.load3 view:nth-child(3) {
-		animation-delay: 1.04s
-	}
-
-	.load1 view:nth-child(4) {
-		animation-delay: 1.17s
-	}
-
-	.load2 view:nth-child(4) {
-		animation-delay: 1.3s
-	}
-
-	.load3 view:nth-child(4) {
-		animation-delay: 1.43s
-	}
-
-	@-webkit-keyframes load {
-		0% {
-			opacity: 1
+		.input {
+			height: 60upx;
+			line-height: 60upx;
+			padding: 10upx;
+			margin-bottom: 20upx;
+			font-size: 14px;
+			border: 1px solid #eee;
+			border-radius: 10upx;
 		}
-
-		100% {
-			opacity: .2
-		}
-	}
-
-	.logisticsinfo {
-		height: 225upx;
-		line-height: 65upx;
-		font-size: 27upx;
-		overflow: hidden;
-		transition: height 0.5s ease-in-out;
-	}
-
-	.logisticsinfo .li {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.logisticsinfo .name {
-		color: #999;
-	}
-
-	.logisticsinfo .value {
-		color: #333;
 	}
 </style>

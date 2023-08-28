@@ -1,10 +1,10 @@
 <template>
 	<view class="main">
-		<view v-for="(orderItem, itemIndex) in item.orderItemList" :key="itemIndex" class="product info">
+		<view class="product info">
 			<view class="title">
 				退款商品
 			</view>
-			<view class="cont">
+			<view class="cont" v-for="(orderItem, itemIndex) in items" :key="itemIndex">
 				<image class="img" :src="orderItem.productPic" mode="aspectFill"></image>
 				<view class="right">
 					<text class="tt clamp">
@@ -24,116 +24,89 @@
 				退款信息
 			</view>
 			<view class="cont">
-				<view class="item">
-					<view>
-						货物状态*
+				<view class="item" v-if="form.type">
+					<view class="name">
+						退货原因<text>*</text>
 					</view>
-					<view>
-						<picker :value="form.status" @change="changeStatus()" :range="listStatus">
-							<input placeholder="起始交易时间" :value="form.donationTimeStart" />
-							<uni-icons type="bottom" size="10"></uni-icons>
+					<view class="input">
+						<picker
+							@change="setPicker(form,[,'reason'],arguments,form.type=='未收到货'?enumRefundMoneyReason:enumRefundGoodsReason)"
+							:range="getPickerRange(form.type=='未收到货'?enumRefundMoneyReason:enumRefundGoodsReason)">
+							{{form.reason||"请选择"}}
+							<uni-icons type="right" size="10"></uni-icons>
 						</picker>
-						请选择
 					</view>
 				</view>
 				<view class="item">
-					<img src="/static/order/icon_goods.svg" class="icon" />
-					<view class="li">
-						<view class="tt">
-							我要退货退款
-						</view>
-						<view class="txt">
-							已收到货，需要退还收到的货物
-						</view>
-						</div>
+					<view class="name">
+						退货金额<text>*</text>
 					</view>
-					<img src="/static/order/icon_in.svg" class="in" />
+					<view class="money">
+						￥ {{money}}
+					</view>
 				</view>
 			</view>
 		</view>
 		<view class="resume info">
 			<view class="title">
-				我的服务
+				补充描述与任证
 			</view>
 			<view class="cont">
-				退货保障：买家个人原因由买家自行承担运费，商家原因由商家承担运费
+				<textarea v-model="form.description" auto-height placeholder="在些填写补充描述,有助于商家更好的处理售后问题"
+					maxlength="200"></textarea>
+				<view class="pics">
+					<UploadImages v-model="form.files" :length="9"></UploadImages>
+					<view>上传凭证(最多9张)</view>
+				</view>
 			</view>
+		</view>
+		<view class="submit">
+			<button form-type="submit" @click="handleSubmit">提交</button>
 		</view>
 	</view>
 </template>
 <script>
-	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-	import empty from "@/components/empty";
-	
 	import {
-		formatDate
-	} from '@/utils/date';
-	import {
-		fetchOrderList,
-		cancelUserOrder,
-		confirmReceiveOrder,
-		deleteUserOrder
+		fetchOrderDetail,
+		applyRefund
 	} from '@/api/order.js';
+	import {
+		enumGoodsStatus,
+		enumRefundMoneyReason,
+		enumRefundGoodsReason
+	} from "@/utils/enums"
+	import {
+		setPicker,
+		getPickerRange
+	} from "@/utils/com"
+	import UploadImages from "@/components/l/UploadImages.vue"
 	export default {
 		components: {
-			uniLoadMore,
-			empty
+			UploadImages
 		},
 		data() {
 			return {
-				tabCurrentIndex: 0,
-				orderParam: {
-					status: -1,
-					pageNum: 1,
-					pageSize: 5
+				order: {},
+				items: {},
+				orderId: 0,
+				itemId: 0,
+				money: 0,
+				form: {
+					type: "已收到货",
+					reason: "",
+					description: "",
 				},
-				orderList: [],
-				showLogisticsInfo: {},
-				item: {},
-				form: {},
-				listStatus: [{
-						name: "未收到货",
-						value: 1
-					},
-					{
-						name: "已收到货",
-						value: 2
-					},
-				],
+				enumGoodsStatus,
+				enumRefundMoneyReason,
+				enumRefundGoodsReason,
 			};
 		},
 		onLoad(options) {
-			// #ifndef MP
-			this.loadData()
-			// #endif
-			// #ifdef MP
-			if (options.state == 0) {
-				this.loadData()
-			}
-			// #endif
+			this.itemId = options.itemId;
+			this.orderId = options.orderId;
+			this.loadData();
 		},
 		filters: {
-			formatStatus(status) {
-				let statusTip = '';
-				switch (+status) {
-					case 0:
-						statusTip = '等待付款';
-						break;
-					case 1:
-						statusTip = '等待发货';
-						break;
-					case 2:
-						statusTip = '等待收货';
-						break;
-					case 3:
-						statusTip = '交易完成';
-						break;
-					case 4:
-						statusTip = '交易关闭';
-						break;
-				}
-				return statusTip;
-			},
 			formatProductAttr(jsonAttr) {
 				let attrArr = jsonAttr ? JSON.parse(jsonAttr) : {};
 				let attrStr = '';
@@ -146,139 +119,45 @@
 				}
 				return attrStr
 			},
-			formatDateTime(time) {
-				if (time == null || time === '') {
-					return 'N/A';
-				}
-				let date = new Date(time);
-				return formatDate(date, 'yyyy-MM-dd hh:mm:ss')
-			},
 		},
 		methods: {
-			//获取订单列表
-			loadData(type = 'refresh') {
-				if (type == 'refresh') {
-					this.orderParam.pageNum = 1;
-				} else {
-					this.orderParam.pageNum++;
+			setPicker,
+			getPickerRange,
+			//获取订单详细
+			async loadData() {
+				const me = this;
+				if (!me.orderId) return;
+				fetchOrderDetail(me.orderId).then(response => {
+					me.order = response.data;
+					me.items = me.order.orderItemList;
+					me.money = me.order.payAmount;
+					if (me.itemId) {
+						me.items = me.items.filter((it, at) => it.id == me.itemId);
+						me.items.length && (me.money = me.items[0].realAmount);
+					}
+				});
+			},
+			//提交
+			async handleSubmit() {
+				console.log(this.form.files)
+				const data = {
+					"orderId": this.orderId,
+					"orderItemIds": this.items.map(t => t.id),
+					"type": this.form.type,
+					"reason": this.form.reason,
+					"description": this.form.description,
+					"proofPics": this.form.files.map(t=>t.src).join(","),
 				}
-				if (this.loadingType === 'loading') {
-					//防止重复加载
+				const res = await applyRefund(data);
+				if (res.code != 200) {
+					me.$api.msg(res.message);
 					return;
 				}
-				this.loadingType = 'loading';
-				fetchOrderList(this.orderParam).then(response => {
-					let list = response.data.list;
-					this.item = list.length ? list[0] : {};
-				});
-			},
-
-			//swiper 切换
-			changeTab(e) {
-				this.tabCurrentIndex = e.target.current;
-				this.loadData();
-			},
-			//顶部tab点击
-			tabClick(index) {
-				this.tabCurrentIndex = index;
-			},
-			//删除订单
-			deleteOrder(orderId) {
-				let superThis = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否要删除该订单？',
-					success: function(res) {
-						if (res.confirm) {
-							uni.showLoading({
-								title: '请稍后'
-							})
-							deleteUserOrder({
-								orderId: orderId
-							}).then(response => {
-								uni.hideLoading();
-								superThis.loadData();
-							});
-						} else if (res.cancel) {
-							console.log('用户点击取消');
-						}
-					}
-				});
-			},
-			//取消订单
-			cancelOrder(orderId) {
-				let superThis = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否要取消该订单？',
-					success: function(res) {
-						if (res.confirm) {
-							uni.showLoading({
-								title: '请稍后'
-							})
-							cancelUserOrder({
-								orderId: orderId
-							}).then(response => {
-								uni.hideLoading();
-								superThis.loadData();
-							});
-						} else if (res.cancel) {
-							console.log('用户点击取消');
-						}
-					}
-				});
-			},
-			//支付订单
-			payOrder(orderId) {
+				me.$api.msg(res.message);
 				uni.redirectTo({
-					url: `/pages/money/pay?orderId=${orderId}`
-				});
-			},
-			//确认收货
-			receiveOrder(orderId) {
-				let superThis = this;
-				uni.showModal({
-					title: '提示',
-					content: '是否要确认收货？',
-					success: function(res) {
-						if (res.confirm) {
-							uni.showLoading({
-								title: '请稍后'
-							})
-							confirmReceiveOrder({
-								orderId: orderId
-							}).then(response => {
-								uni.hideLoading();
-								superThis.loadData();
-							});
-						} else if (res.cancel) {
-							console.log('用户点击取消');
-						}
-					}
-				});
-			},
-			//查看订单详情
-			showOrderDetail(orderId) {
-				uni.navigateTo({
-					url: `/pages/order/orderDetail?orderId=${orderId}`
+					url: '/pages/order/detailRefund'
 				})
 			},
-			//计算商品总数量
-			calcTotalQuantity(order) {
-				let totalQuantity = 0;
-				if (order.orderItemList != null && order.orderItemList.length > 0) {
-					for (let item of order.orderItemList) {
-						totalQuantity += item.productQuantity
-					}
-				}
-				return totalQuantity;
-			},
-			//查看物流
-			viewLogistics(it, at) {
-				const obj = Object.assign({}, this.showLogisticsInfo)
-				obj[at] = !obj[at];
-				this.showLogisticsInfo = obj;
-			}
 		},
 	}
 </script>
@@ -363,24 +242,20 @@
 				padding: 30upx 20upx;
 				display: flex;
 				border-radius: 15upx;
+				justify-content: space-between;
 
-				.icon {
-					width: 80upx;
-					margin-right: 20upx;
-				}
-
-				.li {
+				.input {
+					text-align: right;
 					flex: 1;
-					padding: 0 20upx;
 				}
 
-				.tt {
-					color: #333;
-					font-weight: 600;
+				.name text {
+					color: red;
 				}
 
-				.in {
-					width: 40upx;
+				.money {
+					margin-right: 10upx;
+					color: red;
 				}
 			}
 
@@ -388,6 +263,32 @@
 			.item:active {
 				background-color: #f6f6f6;
 			}
+		}
+	}
+
+	.resume {
+		textarea {
+			font-size: 28upx;
+		}
+
+		.pics {
+			margin-top: 20upx;
+		}
+	}
+
+	.submit {
+		width: calc(100% - 40upx);
+		margin: 0 20upx 20upx;
+		position: fixed;
+		bottom: 0;
+
+		button {
+			height: 60upx;
+			line-height: 60upx;
+			border-radius: 60upx;
+			font-size: 28upx;
+			color: #fff;
+			background-color: crimson;
 		}
 	}
 </style>

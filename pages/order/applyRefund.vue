@@ -24,7 +24,7 @@
 				选择服务类型
 			</view>
 			<view class="cont">
-				<view class="item" @click="goto('/pages/order/applyRefundMoney?orderId='+orderId+'&itemId='+itemId)">
+				<view class="item" @click="goto('/pages/order/applyRefundForm?orderId='+orderId+(itemId?'&itemId='+itemId:'')+'&isMoney=1')">
 					<img src="/static/order/icon_money.svg" class="icon" />
 					<view class="li">
 						<view class="tt">
@@ -37,7 +37,7 @@
 					</view>
 					<img src="/static/order/icon_in.svg" class="in" />
 				</view>
-				<view class="item" @click="goto('/pages/order/applyRefundGoods?orderId='+orderId+'&itemId='+itemId)">
+				<view class="item" @click="goto('/pages/order/applyRefundForm?orderId='+orderId+(itemId?'&itemId='+itemId:''))">
 					<img src="/static/order/icon_goods.svg" class="icon" />
 					<view class="li">
 						<view class="tt">

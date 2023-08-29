@@ -4,20 +4,23 @@
 			<view class="title">
 				退款商品
 			</view>
-			<view class="cont" v-for="(orderItem, itemIndex) in items" :key="itemIndex">
-				<image class="img" :src="orderItem.productPic" mode="aspectFill"></image>
-				<view class="right">
-					<text class="tt clamp">
-						{{orderItem.productName}}
-					</text>
-					<text class="attr-box">
-						{{orderItem.productAttr | formatProductAttr}} x{{orderItem.productQuantity}}
-					</text>
-					<text class="price">
-						{{orderItem.productPrice}}
-					</text>
+			<checkbox-group @change="setItems">
+				<view class="cont" v-for="(orderItem, itemIndex) in order.orderItemList" :key="itemIndex">
+					<checkbox :value="orderItem.id.toString()" :checked="items.filter(t=>orderItem.id==t).length>0" />
+					<image class="img" :src="orderItem.productPic" mode="aspectFill"></image>
+					<view class="right">
+						<text class="tt clamp">
+							{{orderItem.productName}}
+						</text>
+						<text class="attr-box">
+							{{orderItem.productAttr | formatProductAttr}} x {{orderItem.productQuantity}}
+						</text>
+						<text class="price">
+							{{orderItem.productPrice}}
+						</text>
+					</view>
 				</view>
-			</view>
+			</checkbox-group>
 		</view>
 		<view class="type info">
 			<view class="title">
@@ -99,10 +102,10 @@
 		data() {
 			return {
 				order: {},
-				items: {},
+				items: [],
 				orderId: 0,
 				itemId: 0,
-				isMoney:0,
+				isMoney: 0,
 				money: 0,
 				form: {
 					type: "",
@@ -115,9 +118,8 @@
 			};
 		},
 		onLoad(options) {
-			this.isMoney=options.isMoney?true:false;
-			this.isMoney&&(this.form.type="已收到货");
-			console.log(this.isMoney,this.form.type)
+			this.isMoney = options.isMoney ? true : false;
+			this.isMoney && (this.form.type = "已收到货");
 			this.itemId = options.itemId;
 			this.orderId = options.orderId;
 			this.loadData();
@@ -145,25 +147,32 @@
 				if (!me.orderId) return;
 				fetchOrderDetail(me.orderId).then(response => {
 					me.order = response.data;
-					me.items = me.order.orderItemList;
 					me.money = me.order.payAmount;
-					console.log(me.items)
-					if (me.itemId) {
-						me.items = me.items.filter((it, at) => it.id == me.itemId);
-						me.items.length && (me.money = me.items[0].realAmount);
-					}
+					me.setItems({
+						detail: {
+							value: me.order.orderItemList.map(t => t.id.toString())
+						}
+					})
 				});
+			},
+			setItems(e) {
+				const lst = e.detail.value;
+				this.items = lst;
 			},
 			//提交
 			async handleSubmit() {
-				const me=this;
+				const me = this;
+				if(!me.items.length){
+					me.$api.msg("请勾选要退款的商品！");
+					return;
+				}
 				const data = {
 					"orderId": me.orderId,
-					"orderItemIds": me.items.map(t => t.id),
+					"orderItemIds": me.items,
 					"type": me.form.type,
 					"reason": me.form.reason,
 					"description": me.form.description,
-					"proofPics": me.form.files.map(t=>t.src).join(","),
+					"proofPics": me.form.files?.map(t => t.src).join(",") || "",
 				}
 				const res = await applyRefund(data);
 				if (res.code != 200) {
@@ -213,6 +222,7 @@
 			line-height: 30upx;
 			display: flex;
 			padding: 20upx 0;
+			align-items: center;
 
 			.img {
 				display: block;

@@ -116,3 +116,11 @@ export async function setRefundGoods(data) {
 	})
 }
 
+/**撤销退款*/
+export async function cancelRefund(data) {
+	return request({
+		method: 'POST',
+		url: '/returnApply/revoke',
+		data: data
+	})
+}

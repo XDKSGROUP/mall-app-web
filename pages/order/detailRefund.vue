@@ -20,29 +20,9 @@
 				历史信息
 			</view>
 			<view class="cont">
-				<li v-if="info.createTime">
-					<text class="tm">{{info.createTime}}</text>
-					<text class="msg">申请退款</text>
-				</li>
-				<li v-if="info.handleTime">
-					<text class="tm">{{info.handleTime}}</text>
-					<text class="msg">{{info.status===3?"拒绝退款":"同意退款"}}</text>
-				</li>
-				<li v-if="info.returnedTime">
-					<text class="tm">{{info.returnedTime}}</text>
-					<text class="msg">发货成功</text>
-				</li>
-				<li v-if="info.receiveTime">
-					<text class="tm">{{info.receiveTime}}</text>
-					<text class="msg">收货成功</text>
-				</li>
-				<li v-if="info.refundTime">
-					<text class="tm">{{info.refundTime}}</text>
-					<text class="msg">退款成功</text>
-				</li>
-				<li v-if="info.revokeTime">
-					<text class="tm">{{info.revokeTime}}</text>
-					<text class="msg">用户撤销</text>
+				<li v-for="(it,at) in info.log" :key="at">
+					<text class="tm">{{it.operateTime}}</text>
+					<text class="msg">{{it.operateType}}{{it.remark?","+it.remark:""}}</text>
 				</li>
 			</view>
 		</view>
@@ -101,11 +81,11 @@
 					<view class="name">详细描述</view>
 					<view class="value">{{info.description}}</view>
 				</view>
-				<view class="li">
+				<view class="li" v-if="info.deliveryCompany">
 					<view class="name">物流公司</view>
 					<view class="value">{{info.deliveryCompany}}</view>
 				</view>
-				<view class="li">
+				<view class="li" v-if="info.deliverySn">
 					<view class="name">物流编号</view>
 					<view class="value">{{info.deliverySn}}</view>
 				</view>
@@ -113,7 +93,9 @@
 		</view>
 		<view class="submit">
 			<button @click="showRefundGoods" class="button" v-if="info.status==2">填写退货信息</button>
-			<button form-type="submit" @click="handleSubmit" v-if="false">联系客服</button>
+			<button @click="cancelRefund" class="button"
+				v-if="info.status==1||info.status==2||info.status==3||info.status==4">撤消退款</button>
+			<button @click="handleSubmit" form-type="submit" class="button" v-if="false">联系客服</button>
 		</view>
 
 		<uni-popup ref="popup" type="dialog">
@@ -131,6 +113,7 @@
 	import {
 		detailRefund,
 		setRefundGoods,
+		cancelRefund,
 	} from '@/api/order.js';
 	export default {
 		data() {
@@ -191,7 +174,7 @@
 			hideRefundGoods() {
 				this.$refs.popup.close();
 			},
-			//获取订单详细
+			//设置物流信息
 			async setRefundGoods() {
 				const me = this;
 				if (!me.id) return;
@@ -202,13 +185,40 @@
 						return;
 					}
 					me.$api.msg(res.message);
-					me.gotoDetail();
+					me.gotoList();
 				});
 			},
-			//跳转到申请页
-			async gotoDetail() {
+			//撤销退款
+			async cancelRefund() {
+				const me = this;
+				if (!me.id) return;
+				const fn = function() {
+					cancelRefund({
+						id: me.id
+					}).then(res => {
+						if (res.code != 200) {
+							me.$api.msg(res.message);
+							return;
+						}
+						me.$api.msg(res.message);
+						me.gotoList();
+					});
+				}
+				uni.showModal({
+					content: '确定要撤销吗？',
+					success: (res) => {
+						if (res.confirm) {
+							fn();
+						}
+					}
+				});
+
+
+			},
+			//跳转到列表页
+			async gotoList() {
 				uni.redirectTo({
-					url: '/pages/order/detailRefund'
+					url: '/pages/order/listRefund'
 				})
 			},
 		},
@@ -390,42 +400,15 @@
 				.img {
 					width: 100upx;
 					height: 100upx;
+					margin-right: 10upx;
 				}
 			}
 		}
 	}
 
-	.type {
-		.cont {
-			.item {
-				padding: 30upx 20upx;
-				display: flex;
-				border-radius: 15upx;
-
-				.icon {
-					width: 80upx;
-					margin-right: 20upx;
-				}
-
-				.li {
-					flex: 1;
-					padding: 0 20upx;
-				}
-
-				.tt {
-					color: #333;
-					font-weight: 600;
-				}
-
-				.in {
-					width: 40upx;
-				}
-			}
-
-			.item:hover,
-			.item:active {
-				background-color: #f6f6f6;
-			}
+	.history {
+		.msg {
+			margin-left: 20upx;
 		}
 	}
 

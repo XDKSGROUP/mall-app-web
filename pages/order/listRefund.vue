@@ -2,7 +2,12 @@
 	<view class="main">
 		<view class="product info" v-for="(orderItem, itemIndex) in list" :key="itemIndex">
 			<view class="title">
-				<view>{{orderItem.type=="已收到货"?"退货":"退款"}}</view>
+				<view>
+					<text>{{orderItem.type=="已收到货"?"退货":"退款"}}</text>
+					<text style="margin:0 5upx;">-</text>
+					<text class="status"
+						:class="{s:orderItem.status==1||orderItem.status==2||orderItem.status==3||orderItem.status==4}">{{orderItem.status|getStatus}}</text>
+				</view>
 				<view class="dt">{{orderItem.updateTime}}</view>
 			</view>
 			<view class="cont">
@@ -30,6 +35,9 @@
 		fetchOrderDetail,
 		listRefund,
 	} from '@/api/order.js';
+	import {
+		enumRefundStatus
+	} from "@/utils/enums"
 	export default {
 		data() {
 			return {
@@ -65,6 +73,10 @@
 					attrStr += ";";
 				}
 				return attrStr
+			},
+			getStatus(status) {
+				const it = enumRefundStatus.filter(t => t.value == status)[0];
+				return it ? it.name : "";
 			}
 		},
 		methods: {
@@ -132,6 +144,17 @@
 	}
 
 	.product {
+		.title {
+			.status {
+				font-weight: 400;
+				color: #ccc;
+			}
+
+			.status.s {
+				color: firebrick;
+			}
+		}
+
 		.cont {
 			line-height: 40upx;
 			display: flex;
@@ -178,12 +201,13 @@
 		.detail {
 			display: flex;
 			justify-content: right;
+
 			.btn {
-				width:160upx;
+				width: 160upx;
 				line-height: 50upx;
 				font-size: 28upx;
 				text-align: center;
-				color:red;
+				color: red;
 				border: 1px solid red;
 				border-radius: 50upx;
 			}

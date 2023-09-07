@@ -419,6 +419,7 @@
 		.button {
 			height: 60upx;
 			line-height: 60upx;
+			margin-bottom: 20upx;
 			border-radius: 60upx;
 			font-size: 28upx;
 			color: #fff;

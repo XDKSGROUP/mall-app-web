@@ -5,7 +5,8 @@
 				退款商品
 			</view>
 			<checkbox-group @change="setItems">
-				<view class="cont" v-for="(orderItem, itemIndex) in order.orderItemList" :key="itemIndex">
+				<view class="cont" v-for="(orderItem, itemIndex) in order.orderItemList" :key="itemIndex"
+					v-show="!(orderItem.returnId>0)">
 					<checkbox :value="orderItem.id.toString()" :checked="items.filter(t=>orderItem.id==t).length>0" />
 					<image class="img" :src="orderItem.productPic" mode="aspectFill"></image>
 					<view class="right">
@@ -16,7 +17,7 @@
 							{{orderItem.productAttr | formatProductAttr}} x {{orderItem.productQuantity}}
 						</text>
 						<text class="price">
-							{{orderItem.productPrice}}
+							{{orderItem.realAmount}}
 						</text>
 					</view>
 				</view>
@@ -119,7 +120,7 @@
 		},
 		onLoad(options) {
 			this.isMoney = options.isMoney ? true : false;
-			this.isMoney && (this.form.type = "已收到货");
+			this.isMoney && (this.form.type = "未收到货");
 			this.itemId = options.itemId;
 			this.orderId = options.orderId;
 			this.loadData();
@@ -150,19 +151,24 @@
 					me.money = me.order.payAmount;
 					me.setItems({
 						detail: {
-							value: me.order.orderItemList.map(t => t.id.toString())
+							value: me.order.orderItemList.filter(t => !(t.returnId > 0)).map(t => t.id
+								.toString())
 						}
 					})
 				});
 			},
 			setItems(e) {
-				const lst = e.detail.value;
+				const lst = e.detail.value,
+					me = this;
+				me.money = 0;
+				me.order.orderItemList.filter(t => lst.filter(s => s ==t.id&& !(t.returnId>0)).length).forEach(t => me.money += t
+					.realAmount);
 				this.items = lst;
 			},
 			//提交
 			async handleSubmit() {
 				const me = this;
-				if(!me.items.length){
+				if (!me.items.length) {
 					me.$api.msg("请勾选要退款的商品！");
 					return;
 				}

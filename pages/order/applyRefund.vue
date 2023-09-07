@@ -4,7 +4,8 @@
 			<view class="title">
 				退款商品
 			</view>
-			<view class="cont" v-for="(orderItem, itemIndex) in order.orderItemList" :key="itemIndex">
+			<view class="cont" v-for="(orderItem, itemIndex) in order.orderItemList" :key="itemIndex"
+				v-show="!(orderItem.returnId>0)">
 				<image class="img" :src="orderItem.productPic" mode="aspectFill"></image>
 				<view class="right">
 					<text class="tt clamp">
@@ -24,7 +25,8 @@
 				选择服务类型
 			</view>
 			<view class="cont">
-				<view class="item" @click="goto('/pages/order/applyRefundForm?orderId='+orderId+(itemId?'&itemId='+itemId:'')+'&isMoney=1')">
+				<view class="item"
+					@click="goto('/pages/order/applyRefundForm?orderId='+orderId+(itemId?'&itemId='+itemId:'')+'&isMoney=1')">
 					<img src="/static/order/icon_money.svg" class="icon" />
 					<view class="li">
 						<view class="tt">
@@ -37,7 +39,8 @@
 					</view>
 					<img src="/static/order/icon_in.svg" class="in" />
 				</view>
-				<view class="item" @click="goto('/pages/order/applyRefundForm?orderId='+orderId+(itemId?'&itemId='+itemId:''))">
+				<view class="item"
+					@click="goto('/pages/order/applyRefundForm?orderId='+orderId+(itemId?'&itemId='+itemId:''))">
 					<img src="/static/order/icon_goods.svg" class="icon" />
 					<view class="li">
 						<view class="tt">

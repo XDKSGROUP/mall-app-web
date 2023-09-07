@@ -227,6 +227,38 @@
 				}
 			}
 		}, {
+			"path": "pages/order/commentSubmitForm",
+			"style": {
+				"navigationBarTitleText": "评价",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/commentAppendSubmitForm",
+			"style": {
+				"navigationBarTitleText": "追加评价",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/commentList",
+			"style": {
+				"navigationBarTitleText": "评价列表",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
+			"path": "pages/order/commentDetail",
+			"style": {
+				"navigationBarTitleText": "评价详情",
+				"app-plus": {
+					"bounce": "none"
+				}
+			}
+		}, {
 			"path": "pages/money/money",
 			"style": {}
 		}, {
@@ -298,6 +330,12 @@
 			"style": {
 				"enablePullDownRefresh": true,
 				"navigationBarTitleText": "商品列表"
+			}
+		}, {
+			"path": "pages/product/commentList",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "商品评论"
 			}
 		}, {
 			"path": "pages/coupon/couponList",

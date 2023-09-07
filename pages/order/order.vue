@@ -27,7 +27,11 @@
 								:key="itemIndex">
 								<image class="goods-img" :src="orderItem.productPic" mode="aspectFill"></image>
 								<view class="right">
-									<text class="title clamp">{{orderItem.productName}}</text>
+									<view class="title clamp">
+										{{orderItem.productName}}
+										<text class="refund" @click="gotoRefundDetail(orderItem.returnId)"
+											v-if="orderItem.returnId > 0 && item.status < 3">(退款详情)</text>
+									</view>
 									<text class="attr-box">
 										{{orderItem.productAttr | formatProductAttr}} x{{orderItem.productQuantity}}
 									</text>
@@ -71,6 +75,7 @@
 							</view>
 							<view class="morebtninfo" :style="{height:showMoreBtnInfo[index]?'':'0px'}">
 								<button class="action-btn"
+									v-if="item.status < 3&&item.orderItemList.filter(t=>!(t.returnId > 0)).length"
 									@click="goto('/pages/order/applyRefund?orderId='+item.id)">退款</button>
 							</view>
 						</view>
@@ -346,6 +351,11 @@
 					url
 				});
 			},
+			gotoRefundDetail(id) {
+				uni.navigateTo({
+					url: "/pages/order/detailRefund?id=" + id
+				});
+			}
 		},
 	}
 </script>
@@ -493,6 +503,13 @@
 					font-size: $font-base + 2upx;
 					color: $font-color-dark;
 					line-height: 1;
+				}
+
+				.refund {
+					color: #d00;
+					margin-left: 10px;
+					font-size: 20upx;
+					cursor: pointer;
 				}
 
 				.attr-box {

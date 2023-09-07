@@ -135,6 +135,8 @@
 					@eventClick="navTo('/pages/me/aboutus')"></list-cell>
 				<list-cell icon="icon-yishouhuo" iconColor="#54b4ef" title="义工系统"
 					@eventClick="navTo('/pages/help/volunteer')"></list-cell>
+				<list-cell icon="icon-comment" iconColor="#54b4ef" title="我的评价"
+					@eventClick="navTo('/pages/order/commentList')"></list-cell>
 			</view>
 		</view>
 	</view>

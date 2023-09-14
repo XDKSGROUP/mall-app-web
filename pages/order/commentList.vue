@@ -14,12 +14,6 @@
 					</view>
 				</view>
 			</view>
-			<view class="append" v-for="(it,at) in orderItem.replayList">
-				<view class="dt">{{it.createTime}} <span style="margin-left:20upx;color:#00cc00;">商家回复</span></view>
-				<view>
-					{{it.content}}
-				</view>
-			</view>
 			<view class="append" v-if="orderItem.addedContent">
 				<view class="dt">{{orderItem.addedTime}} <span style="margin-left:20upx;color:#cc0000;">追评</span></view>
 				<view>
@@ -29,8 +23,15 @@
 					<image :src="it" v-for="(it,at) in (orderItem.addedPics||'').split(',')" @click="open(it)"></image>
 				</view>
 			</view>
+			<view class="append" v-for="(it,at) in orderItem.replayList">
+				<view class="dt">{{it.createTime}} <span style="margin-left:20upx;color:#00cc00;">商家回复</span></view>
+				<view>
+					{{it.content}}
+				</view>
+			</view>
 			<view class="cont">
-				<image class="img" :src="orderItem.productPic" mode="aspectFill" @click="open(orderItem.productPic)"></image>
+				<image class="img" :src="orderItem.productPic" mode="aspectFill" @click="open(orderItem.productPic)">
+				</image>
 				<view class="right">
 					<text class="tt clamp">
 						{{orderItem.productName}}
@@ -73,7 +74,7 @@
 	} from '@/api/comment.js';
 	import {
 		enumRefundStatus
-	} from "@/utils/enums"
+	} from "@/utils/enums";
 	import PreviewImage from '@/components/l/PreviewImage.vue';
 	export default {
 		components: {
@@ -86,7 +87,6 @@
 					pageNum: 1,
 					pageSize: 15,
 				},
-
 			};
 		},
 		//下拉刷新
@@ -145,7 +145,7 @@
 						1 : 0)
 				});
 			},
-			async open(url){
+			async open(url) {
 				this.$refs.preview.open(url);
 			},
 		},

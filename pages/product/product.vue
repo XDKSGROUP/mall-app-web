@@ -86,26 +86,43 @@
 			</view>
 
 			<!-- 评价 -->
-			<!-- <view class="eva-section">
-			<view class="e-header">
-				<text class="tit">评价</text>
-				<text>(86)</text>
-				<text class="tip">好评率 100%</text>
-				<text class="yticon icon-you"></text>
-			</view>
-			<view class="eva-box">
-				<image class="portrait" src="http://img3.imgtn.bdimg.com/it/u=1150341365,1327279810&fm=26&gp=0.jpg"
-					mode="aspectFill"></image>
-				<view class="right">
-					<text class="name">Leo yo</text>
-					<text class="con">商品收到了，79元两件，质量不错，试了一下有点瘦，但是加个外罩很漂亮，我很喜欢</text>
-					<view class="bot">
-						<text class="attr">购买类型：XL 红色</text>
-						<text class="time">2019-04-01 19:21</text>
+			<view class="eva-section">
+				<view class="e-header">
+					<text class="tit">评价</text>
+					<text>({{commentTotal}})</text>
+					<text class="tip" @click="gotoCommentList(productId)">查看全部</text>
+					<text class="yticon icon-you"></text>
+				</view>
+				<view class="eva-box" v-for="(it,at) in commentList">
+					<image class="portrait" :src="it.memberIcon" mode="aspectFill"></image>
+					<view class="right">
+						<text class="name">{{it.memberNickName}}</text>
+						<view class="bot">
+							<text class="attr">
+								{{it.productAttribute | formatProductAttr}}
+							</text>
+							<text class="time">{{it.addedTime}}</text>
+						</view>
+						<text class="con">{{it.content}}</text>
+						<view class="imgs" v-if="it.pics">
+							<image v-for="(o,i) in it.pics.split(',')" :src="o"></image>
+						</view>
+						<text class="con">{{it.content}} <span style="color:#c00;margin-left:10px;">追评</span></text>
+						<view class="imgs" v-if="it.pics">
+							<image v-for="(o,i) in it.pics.split(',')" :src="o"></image>
+						</view>
+						<view class="con" v-for="(o,i) in it.replayList">
+							<view class="time">
+								{{o.createTime}}
+								<text style="margin-left:20upx;color:#00cc00;">商家回复</text>
+							</view>
+							<view>
+								{{o.content}}
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
-		</view> -->
 
 			<!-- 品牌信息 -->
 			<view class="brand-info">
@@ -254,6 +271,9 @@
 		productCollectionDetail
 	} from '@/api/memberProductCollection.js';
 	import {
+		getList,
+	} from '@/api/comment.js';
+	import {
 		mapState
 	} from 'vuex';
 	import {
@@ -300,6 +320,7 @@
 		data() {
 			return {
 				isShow: false,
+				productId: 0,
 				searchParam: {
 					productCategoryId: 0
 				},
@@ -320,13 +341,16 @@
 				attrList: [],
 				promotionTipList: [],
 				couponState: 0,
-				couponList: []
+				couponList: [],
+				commentList: [], //评价列表
+				commentTotal: 0, //评价总数
 			};
 		},
 		async onLoad(options) {
-			let id = options.id;
+			this.productId = options.id;
 			this.shareList = defaultShareList;
-			this.loadData(id);
+			this.loadData(this.productId);
+			this.loadCommentList(this.productId);
 		},
 		onShow() {
 			this.loadCartNum();
@@ -335,6 +359,18 @@
 			...mapState(['hasLogin', 'userInfo'])
 		},
 		filters: {
+			formatProductAttr(jsonAttr) {
+				let attrArr = jsonAttr ? JSON.parse(jsonAttr) : {};
+				let attrStr = '';
+				for (let key in attrArr) {
+					const obj = attrArr[key];
+					attrStr += obj.key;
+					attrStr += ":";
+					attrStr += obj.value;
+					attrStr += ";";
+				}
+				return attrStr
+			},
 			formatDateTime(time) {
 				if (time == null || time === '') {
 					return 'N/A';
@@ -723,6 +759,27 @@
 					url: `/pages/brand/brandDetail?id=${id}`
 				})
 			},
+			//跳转到评价列表页
+			gotoCommentList(id) {
+				uni.navigateTo({
+					url: `/pages/product/commentList?id=${id}`
+				})
+			},
+			//加载评价列表
+			loadCommentList(id) {
+				const me = this;
+				getList({
+					productId: id,
+					pageNum: 1,
+					pageSize: 3
+				}).then(res => {
+					if (res.code != 200) {
+						me.$api.msg(res.message);
+					}
+					me.commentList.push(...res.data.list);
+					me.commentTotal = res.data.total;
+				});
+			}
 		},
 
 	}
@@ -1001,6 +1058,14 @@
 				font-size: $font-base;
 				color: $font-color-dark;
 				padding: 20upx 0;
+			}
+
+			.imgs {
+				image {
+					width: 150upx;
+					height: 150upx;
+					margin: 20upx 10upx 0 0;
+				}
 			}
 
 			.bot {

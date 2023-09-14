@@ -103,8 +103,8 @@
 				<button class="action-btn recom" @click="receiveOrder(order.id)">确认收货</button>
 			</view>
 			<view class="action-box b-t" v-if="order.status == 3">
-				<button class="action-btn" @click="goto('/pages/order/applyRefund?orderId='+order.id)">申请退货</button>
-				<button class="action-btn recom" @click="goto('/pages/order/commentSubmitForm?orderId='+order.id)">评价商品</button>
+				<button class="action-btn" v-if="order.orderItemList.filter(t=>!t.returnId).length" @click="goto('/pages/order/applyRefund?orderId='+order.id)">申请退款</button>
+				<button class="action-btn recom" v-if="!order.commentTime" @click="goto('/pages/order/commentSubmitForm?orderId='+order.id)">评价商品</button>
 			</view>
 			<view class="price-content" v-if="order.status==0">
 				<text>应付金额</text>
